@@ -92,8 +92,9 @@ export default function Home() {
             WebkitClipPath: `circle(88px at ${mousePosition.x}px ${mousePosition.y}px)`,
           }}
         >
+          <div className="absolute inset-0 bg-black"></div>
           <div className="absolute inset-0 flex items-center justify-center -translate-y-4 sm:-translate-y-30">
-            <div className="relative w-[380px] sm:w-[500px] md:w-[620px] lg:w-[580px] aspect-square">
+            <div className="relative w-[380px] sm:w-[460px] md:w-[530px] lg:w-[580px] aspect-square">
               <Image
                 src="/assassinscreed-logo.svg"
                 alt="Assassin's Creed logo aura"
