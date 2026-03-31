@@ -10,15 +10,64 @@ interface PageShellProps {
 
 export const PageShell = ({ title, description, children }: PageShellProps) => {
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(15,118,110,0.15),_transparent_55%),_linear-gradient(to_bottom,_#f8fafc,_#eef2ff)]">
+    <div style={{ minHeight: "100vh", background: "#0a0a0f" }}>
       <SiteHeader />
-      <main className="mx-auto w-full max-w-6xl px-4 pb-20 pt-12 sm:px-6 lg:px-8">
-        <section className="mb-12 rounded-2xl border border-white/60 bg-white/75 p-8 shadow-sm backdrop-blur-sm">
-          <h1 className="text-3xl font-semibold text-[var(--secondary-color)] sm:text-4xl">{title}</h1>
-          <p className="mt-3 max-w-3xl text-slate-600">{description}</p>
+      <main style={{ maxWidth: "1152px", margin: "0 auto", padding: "3rem 1.5rem 5rem" }}>
+        <section
+          style={{
+            marginBottom: "3rem",
+            padding: "2rem 2.5rem",
+            background: "rgba(10,10,15,0.75)",
+            border: "1px solid rgba(201,168,76,0.25)",
+            borderRadius: "16px",
+            backdropFilter: "blur(16px)",
+            WebkitBackdropFilter: "blur(16px)",
+            position: "relative",
+            overflow: "hidden",
+          }}
+        >
+          {/* Corner accent */}
+          <div style={{
+            position: "absolute", top: 0, left: 0,
+            width: "60px", height: "2px",
+            background: "linear-gradient(to right, #c9a84c, transparent)",
+          }} />
+          <div style={{
+            position: "absolute", top: 0, left: 0,
+            width: "2px", height: "60px",
+            background: "linear-gradient(to bottom, #c9a84c, transparent)",
+          }} />
+
+          <h1
+            style={{
+              fontFamily: "'Cinzel', serif",
+              fontSize: "clamp(1.6rem, 4vw, 2.5rem)",
+              fontWeight: 700,
+              color: "#c9a84c",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              textShadow: "0 0 12px rgba(201,168,76,0.5), 0 0 28px rgba(201,168,76,0.3)",
+              margin: "0 0 0.75rem",
+            }}
+          >
+            {title}
+          </h1>
+          <p
+            style={{
+              fontFamily: "'Rajdhani', sans-serif",
+              fontSize: "1.05rem",
+              color: "rgba(226,213,176,0.65)",
+              lineHeight: 1.7,
+              maxWidth: "600px",
+              margin: 0,
+            }}
+          >
+            {description}
+          </p>
         </section>
         {children}
       </main>
     </div>
   );
 };
+

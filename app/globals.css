@@ -1,9 +1,14 @@
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap");
 @import "tailwindcss";
 
 :root {
-  --primary-color: #0f766e;
-  --secondary-color: #0f172a;
-  --font-family: "Manrope", "Segoe UI", sans-serif;
+  --primary-color: #c9a84c;
+  --secondary-color: #0a0a0f;
+  --accent-color: #e8c97a;
+  --glow-color: #c9a84c;
+  --font-family: "Rajdhani", "Segoe UI", sans-serif;
+  --font-display: "Cinzel", serif;
+  --font-mono: "Orbitron", monospace;
 }
 
 * {
@@ -18,8 +23,8 @@ body {
 
 body {
   font-family: var(--font-family);
-  color: #0f172a;
-  background-color: #f8fafc;
+  color: #e2d5b0;
+  background-color: #0a0a0f;
 }
 
 a {
@@ -27,17 +32,66 @@ a {
   text-decoration: none;
 }
 
+/* ─── Glow Animations ─── */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-main > * {
-  animation: fadeIn 420ms ease-out;
+@keyframes glowPulse {
+  0%, 100% { text-shadow: 0 0 8px var(--glow-color), 0 0 20px var(--glow-color), 0 0 40px var(--glow-color); }
+  50%       { text-shadow: 0 0 4px var(--glow-color), 0 0 12px var(--glow-color), 0 0 24px var(--glow-color); }
 }
+
+@keyframes borderGlow {
+  0%, 100% { box-shadow: 0 0 8px rgba(201,168,76,0.4), inset 0 0 8px rgba(201,168,76,0.05); }
+  50%       { box-shadow: 0 0 20px rgba(201,168,76,0.7), inset 0 0 14px rgba(201,168,76,0.08); }
+}
+
+@keyframes particleDrift {
+  0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0.7; }
+  50%  { transform: translateY(-18px) translateX(6px) scale(1.15); opacity: 1; }
+  100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.7; }
+}
+
+@keyframes scanline {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes revealUp {
+  from { opacity: 0; transform: translateY(32px); clip-path: inset(100% 0 0 0); }
+  to   { opacity: 1; transform: translateY(0); clip-path: inset(0% 0 0 0); }
+}
+
+/* ─── Global Selections ─── */
+::selection {
+  background: rgba(201,168,76,0.3);
+  color: #fff;
+}
+
+/* ─── Section entry animations ─── */
+main > * {
+  animation: fadeIn 500ms ease-out both;
+}
+
+/* ─── Glow text utility ─── */
+.text-glow {
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+.text-glow-static {
+  text-shadow: 0 0 10px var(--glow-color), 0 0 24px rgba(201,168,76,0.5);
+}
+
+/* ─── Gold border utility ─── */
+.border-glow {
+  animation: borderGlow 3s ease-in-out infinite;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0a0a0f; }
+::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.4); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(201,168,76,0.7); }
+
