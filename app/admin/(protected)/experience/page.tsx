@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
 import { SubmitButton } from "@/components/admin/submit-button";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +17,7 @@ export default async function AdminExperiencePage() {
   const experience = await getAdminExperience();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-4xl mx-auto p-4 sm:p-8"><Link href="/admin" className="text-slate-400 hover:text-white flex items-center gap-2 mb-4 text-sm font-sans underline">← Back to Live Editor</Link>
       <section>
         <h1 className="text-2xl font-semibold text-white">Experience</h1>
         <p className="text-sm text-slate-400">Manage role history entries and publish to the public pages.</p>
