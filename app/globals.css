@@ -1,18 +1,26 @@
-@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap');
 @import "tailwindcss";
 
 :root {
-  --primary-color: #c9a84c;
-  --secondary-color: #0a0a0f;
-  --accent-color: #e8c97a;
-  --glow-color: #c9a84c;
-  --font-family: "Rajdhani", "Segoe UI", sans-serif;
-  --font-display: "Cinzel", serif;
-  --font-mono: "Orbitron", monospace;
+  --primary: #000000;
+  --on-primary: #e2e2e2;
+  --surface: #f9f9f9;
+  --surface-dim: #dadada;
+  --surface-container-low: #f3f3f3;
+  --surface-container-high: #e8e8e8;
+  --surface-container-lowest: #ffffff;
+  --outline: #777777;
+  --outline-variant: #c6c6c6;
+  --error: #ba1a1a;
+  
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
 }
 
 * {
   box-sizing: border-box;
+  /* Zero rounded corners globally */
+  border-radius: 0 !important;
 }
 
 html,
@@ -22,9 +30,10 @@ body {
 }
 
 body {
-  font-family: var(--font-family);
-  color: #e2d5b0;
-  background-color: #0a0a0f;
+  font-family: var(--font-body);
+  color: var(--primary);
+  background-color: var(--surface);
+  line-height: 1.6;
 }
 
 a {
@@ -32,66 +41,118 @@ a {
   text-decoration: none;
 }
 
-/* ─── Glow Animations ─── */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.05em; /* +5% tracking */
+  margin: 0;
 }
 
-@keyframes glowPulse {
-  0%, 100% { text-shadow: 0 0 8px var(--glow-color), 0 0 20px var(--glow-color), 0 0 40px var(--glow-color); }
-  50%       { text-shadow: 0 0 4px var(--glow-color), 0 0 12px var(--glow-color), 0 0 24px var(--glow-color); }
-}
-
-@keyframes borderGlow {
-  0%, 100% { box-shadow: 0 0 8px rgba(201,168,76,0.4), inset 0 0 8px rgba(201,168,76,0.05); }
-  50%       { box-shadow: 0 0 20px rgba(201,168,76,0.7), inset 0 0 14px rgba(201,168,76,0.08); }
-}
-
-@keyframes particleDrift {
-  0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0.7; }
-  50%  { transform: translateY(-18px) translateX(6px) scale(1.15); opacity: 1; }
-  100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.7; }
-}
-
-@keyframes scanline {
-  0%   { transform: translateY(-100%); }
-  100% { transform: translateY(100vh); }
-}
-
-@keyframes revealUp {
-  from { opacity: 0; transform: translateY(32px); clip-path: inset(100% 0 0 0); }
-  to   { opacity: 1; transform: translateY(0); clip-path: inset(0% 0 0 0); }
-}
-
-/* ─── Global Selections ─── */
 ::selection {
-  background: rgba(201,168,76,0.3);
-  color: #fff;
+  background: var(--primary);
+  color: var(--on-primary);
 }
 
-/* ─── Section entry animations ─── */
-main > * {
-  animation: fadeIn 500ms ease-out both;
+/* Industrial Motion */
+.transition-industrial {
+  transition: all 500ms cubic-bezier(0.2, 1, 0.3, 1);
 }
 
-/* ─── Glow text utility ─── */
-.text-glow {
-  animation: glowPulse 3s ease-in-out infinite;
+/* Reset scrollbar to technical look */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--surface-dim); border-left: 1px solid var(--outline-variant); }
+::-webkit-scrollbar-thumb { background: var(--primary); }
+::-webkit-scrollbar-thumb:hover { background: #3b3b3b; }
+
+/* Chrome Material Aesthetic Utilities */
+.chrome-bg {
+  position: relative;
+  overflow: hidden;
 }
 
-.text-glow-static {
-  text-shadow: 0 0 10px var(--glow-color), 0 0 24px rgba(201,168,76,0.5);
+.chrome-bg::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at 50% -20%, rgba(128, 128, 128, 0.1) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
 }
 
-/* ─── Gold border utility ─── */
-.border-glow {
-  animation: borderGlow 3s ease-in-out infinite;
+.chrome-bg::after {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%; right: -50%; bottom: -50%;
+  background: linear-gradient(105deg, transparent 35%, rgba(200, 200, 200, 0.08) 50%, transparent 65%);
+  background-size: 200% 200%;
+  animation: chromeSweep 12s infinite linear;
+  pointer-events: none;
+  z-index: 0;
 }
 
-/* ─── Scrollbar ─── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #0a0a0f; }
-::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.4); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(201,168,76,0.7); }
+@keyframes chromeSweep {
+  0% { transform: translateY(-30%) translateX(-30%); }
+  50% { transform: translateY(10%) translateX(10%); }
+  100% { transform: translateY(-30%) translateX(-30%); }
+}
+
+.chrome-surface {
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), inset 0 -1px 1px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(8px);
+}
+
+.chrome-surface::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, transparent 40%, rgba(0, 0, 0, 0.05) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.chrome-button {
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3), inset 0 -1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.chrome-button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 0%, transparent 50%, rgba(0, 0, 0, 0.1) 100%);
+  opacity: 0;
+  transition: opacity 500ms cubic-bezier(0.2, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.chrome-button:hover::after {
+  opacity: 1;
+}
+
+.chrome-divider {
+  border: none !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, transparent, rgba(120, 120, 120, 0.4), transparent) !important;
+}
+
+.chrome-border-top {
+  border-top: 1px solid transparent !important;
+  border-image: linear-gradient(90deg, transparent, rgba(120, 120, 120, 0.4), transparent) 1 !important;
+}
+
+.chrome-border-bottom {
+  border-bottom: 1px solid transparent !important;
+  border-image: linear-gradient(90deg, transparent, rgba(120, 120, 120, 0.4), transparent) 1 !important;
+}
+
+.chrome-text-protect {
+  position: relative;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(2px);
+  padding: 0 4px;
+}
 

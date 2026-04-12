@@ -12,7 +12,10 @@ export const updateThemeAction = async (formData: FormData) => {
 
   const primaryColor = String(formData.get("primary_color") ?? "").trim();
   const secondaryColor = String(formData.get("secondary_color") ?? "").trim();
+  const tertiaryColor = String(formData.get("tertiary_color") ?? "").trim();
   const fontFamily = String(formData.get("font_family") ?? "").trim();
+  const heroVideoUrl = String(formData.get("hero_video_url") ?? "").trim() || null;
+  const heroVideoOpacity = parseFloat(String(formData.get("hero_video_opacity") ?? "0.5"));
 
   if (!isHexColor(primaryColor)) {
     throw new Error("Primary color must be a valid hex value.");
@@ -20,6 +23,10 @@ export const updateThemeAction = async (formData: FormData) => {
 
   if (!isHexColor(secondaryColor)) {
     throw new Error("Secondary color must be a valid hex value.");
+  }
+
+  if (!isHexColor(tertiaryColor)) {
+    throw new Error("Tertiary color must be a valid hex value.");
   }
 
   if (!fontFamily) {
@@ -30,7 +37,10 @@ export const updateThemeAction = async (formData: FormData) => {
     id: 1,
     primary_color: primaryColor,
     secondary_color: secondaryColor,
+    tertiary_color: tertiaryColor,
     font_family: fontFamily,
+    hero_video_url: heroVideoUrl,
+    hero_video_opacity: isNaN(heroVideoOpacity) ? 0.5 : heroVideoOpacity,
   });
 
   if (error) {

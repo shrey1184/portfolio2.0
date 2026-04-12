@@ -152,21 +152,30 @@ export type Database = {
           id: number;
           primary_color: string;
           secondary_color: string;
+          tertiary_color: string;
           font_family: string;
+          hero_video_url: string | null;
+          hero_video_opacity: number;
           updated_at: string;
         };
         Insert: {
           id?: number;
           primary_color: string;
           secondary_color: string;
+          tertiary_color?: string;
           font_family: string;
+          hero_video_url?: string | null;
+          hero_video_opacity?: number;
           updated_at?: string;
         };
         Update: {
           id?: number;
           primary_color?: string;
           secondary_color?: string;
+          tertiary_color?: string;
           font_family?: string;
+          hero_video_url?: string | null;
+          hero_video_opacity?: number;
           updated_at?: string;
         };
         Relationships: [];

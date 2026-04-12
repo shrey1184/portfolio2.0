@@ -4,7 +4,7 @@ import { requireAdmin } from "@/lib/auth";
 import { getSupabasePublicEnv } from "@/lib/env";
 import { toSlugSafeFilename } from "@/lib/utils";
 
-const allowedFolders = ["projects", "achievements", "experience"] as const;
+const allowedFolders = ["projects", "achievements", "experience", "theme"] as const;
 
 type AllowedFolder = (typeof allowedFolders)[number];
 
@@ -13,9 +13,13 @@ const isAllowedFolder = (value: string): value is AllowedFolder =>
 
 export const runtime = "nodejs";
 
+export const maxDuration = 60; // Allow 60 seconds for video uploads
+
 export async function POST(request: Request) {
   try {
     const { supabase, user } = await requireAdmin();
+    
+    // Auth succeeded, proceed to consume body
     const formData = await request.formData();
 
     const file = formData.get("file");
@@ -29,7 +33,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid folder." }, { status: 400 });
     }
 
-    const safeFilename = toSlugSafeFilename(file.name || "upload.png");
+    const safeFilename = toSlugSafeFilename(file.name || "upload.mp4");
     const path = `${folder}/${user.id}/${Date.now()}-${safeFilename}`;
 
     const { storageBucket } = getSupabasePublicEnv();
@@ -39,6 +43,7 @@ export async function POST(request: Request) {
     });
 
     if (uploadError) {
+      console.error("Storage Error:", uploadError.message);
       return NextResponse.json({ error: uploadError.message }, { status: 500 });
     }
 
@@ -48,13 +53,15 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ path, url: publicUrl });
   } catch (error) {
+    console.error("Upload API Fault:", error);
+    
     if (error instanceof Error && error.message === "UNAUTHORIZED") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized (Admin Access Required)" }, { status: 401 });
     }
 
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "Upload failed",
+        error: error instanceof Error ? error.message : "Upload failed unexpectedly",
       },
       { status: 500 },
     );

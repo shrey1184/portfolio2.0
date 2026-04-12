@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import type { Achievement } from "@/types/domain";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
@@ -8,14 +7,6 @@ import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Pencil, Plus } from "lucide-react";
 import { persistReorderAction } from "@/app/admin/actions/reorder";
 import Link from "next/link";
-
-const formatRange = (startDate: string, endDate: string | null) => {
-  const formatter = new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" });
-  const start = startDate ? formatter.format(new Date(startDate)) : "";
-  const end = endDate ? formatter.format(new Date(endDate)) : "Present";
-  return end ? `${start} - ${end}` : start;
-};
-const formatDate = (date: string) => new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" }).format(new Date(date));
 
 
 function SortableAchievement({ achievement }: { achievement: Achievement }) {
@@ -28,32 +19,28 @@ function SortableAchievement({ achievement }: { achievement: Achievement }) {
   };
 
   return (
-    <div ref={setNodeRef} style={style} className={`group relative flex flex-col gap-6 rounded-xl border border-white/10 bg-white/5 p-6 transition-all sm:flex-row sm:items-center sm:p-8 ${isDragging ? "opacity-80 scale-[1.02]" : "hover:bg-white/10"}`}>
+    <div ref={setNodeRef} style={style} className={`group relative grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-12 py-8 border-b border-[var(--outline-variant)] bg-[var(--surface)] transition-all ${isDragging ? "opacity-50 inline-block" : ""}`}>
       <div className="absolute top-2 right-2 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button {...attributes} {...listeners} className="p-2 bg-slate-900/80 rounded-md text-white hover:bg-slate-800 cursor-grab active:cursor-grabbing">
+        <button {...attributes} {...listeners} className="p-2 bg-[var(--outline)] rounded-md text-[var(--surface)] hover:opacity-80 cursor-grab active:cursor-grabbing">
           <GripVertical className="h-4 w-4" />
         </button>
-        <Link href="/admin/achievements" className="p-2 bg-slate-900/80 rounded-md text-white hover:bg-slate-800">
+        <Link href="/admin/achievements" className="p-2 bg-[var(--outline)] rounded-md text-[var(--surface)] hover:opacity-80">
           <Pencil className="h-4 w-4" />
         </Link>
       </div>
 
-      {achievement.image_url ? (
-        <div className="relative h-24 w-48 shrink-0 overflow-hidden rounded-lg border border-white/20 bg-white/5">
-          <Image src={achievement.image_url} alt={achievement.title} fill className="object-contain p-2" />
-        </div>
-      ) : null}
-      <div className="flex-1 space-y-3">
-        <div className="flex flex-wrap items-baseline justify-between gap-4">
-          <h3 className="text-xl font-bold tracking-wide text-[#e2d5b0] text-glow-static">{achievement.title}</h3>
-          {achievement.achieved_at && (
-            <span className="font-mono text-sm tracking-widest text-[#c9a84c]">
-              {formatDate(achievement.achieved_at)}
-            </span>
-          )}
-        </div>
-        <p className="text-sm font-semibold uppercase tracking-wider text-[#c9a84c] mb-2">{achievement.issuer}</p>
-        <p className="text-md font-sans leading-relaxed text-slate-300">{achievement.description}</p>
+      <div className="md:col-span-1">
+        <p className="font-[family-name:var(--font-body)] text-[10px] font-bold tracking-widest text-[var(--primary)] uppercase mt-2">
+           {achievement.issuer}
+        </p>
+      </div>
+      <div className="md:col-span-3 lg:col-span-2">
+        <h3 className="font-[family-name:var(--font-display)] text-xl md:text-2xl font-bold uppercase mb-4 tracking-[0.02em] pr-20">
+          {achievement.title}
+        </h3>
+        <p className="font-[family-name:var(--font-body)] text-sm leading-relaxed text-[var(--outline)]">
+          {achievement.description}
+        </p>
       </div>
     </div>
   );
@@ -78,16 +65,16 @@ export function AdminAchievementList({ achievements, setAchievements }: { achiev
 
   return (
     <div>
-      <div className="mb-4 flex justify-between items-center">
-        <p className="text-sm text-[var(--primary-color)]">Drag to reorder achievements.</p>
-        <Link href="/admin/achievements" className="flex items-center gap-2 text-sm bg-slate-800 text-white px-3 py-1.5 rounded-md hover:bg-slate-700 transition">
-          <Plus className="w-4 h-4" /> Add Achievement
+      <div className="mb-12 flex justify-between items-center border-b border-[var(--outline-variant)] pb-4">
+        <p className="font-[family-name:var(--font-body)] text-xs text-[var(--outline)] tracking-widest uppercase font-bold">Drag to reorder achievements.</p>
+        <Link href="/admin/achievements" className="chrome-button flex items-center gap-2 text-xs bg-transparent border border-[var(--outline)] text-[var(--outline)] px-4 py-2 font-bold tracking-widest uppercase hover:bg-[var(--outline)] hover:text-[var(--primary)] transition-industrial">
+          <Plus className="w-4 h-4" /> Instantiate
         </Link>
       </div>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={achievements.map(a => a.id)} strategy={verticalListSortingStrategy}>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col border-t-2 border-[var(--primary)]">
             {achievements.map(achievement => (
               <SortableAchievement key={achievement.id} achievement={achievement} />
             ))}

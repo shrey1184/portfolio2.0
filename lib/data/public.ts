@@ -97,7 +97,10 @@ const FALLBACK_THEME: ThemeConfig = {
   id: 1,
   primary_color: "#0F766E",
   secondary_color: "#0F172A",
+  tertiary_color: "#777777",
   font_family: "'Manrope', 'Segoe UI', sans-serif",
+  hero_video_url: "/globe.mp4",
+  hero_video_opacity: 0.5,
   updated_at: new Date().toISOString(),
 };
 
@@ -128,11 +131,12 @@ export const getThemeConfig = async (): Promise<ThemeConfig> => {
 
 export const getPublicPortfolioData = async () => {
   return withSupabaseFallback(async () => {
-    const [projects, achievements, experience, sectionOrder] = await Promise.all([
+    const [projects, achievements, experience, sectionOrder, theme] = await Promise.all([
       getPublishedProjects(),
       getPublishedAchievements(),
       getPublishedExperience(),
       getHomepageSectionOrder(),
+      getThemeConfig(),
     ]);
 
     return {
@@ -140,12 +144,14 @@ export const getPublicPortfolioData = async () => {
       achievements,
       experience,
       sectionOrder,
+      theme,
     };
   }, {
     projects: [] as Project[],
     achievements: [] as Achievement[],
     experience: [] as ExperienceItem[],
     sectionOrder: [...HOMEPAGE_SECTIONS],
+    theme: FALLBACK_THEME,
   });
 };
 

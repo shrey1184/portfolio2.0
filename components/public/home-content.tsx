@@ -2,7 +2,6 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-
 import { AchievementList } from "@/components/public/achievement-list";
 import { ExperienceList } from "@/components/public/experience-list";
 import { ProjectGrid } from "@/components/public/project-grid";
@@ -14,290 +13,119 @@ interface HomeContentProps {
   achievements: Achievement[];
   experience: ExperienceItem[];
   sectionOrder: HomeSectionId[];
+  theme: any;
 }
 
-/* ─── Decorative divider ─── */
-const GoldDivider = () => (
-  <div style={{ display: "flex", alignItems: "center", gap: "12px", margin: "24px 0 0" }}>
-    <div style={{ height: "1px", flex: 1, background: "linear-gradient(to right, transparent, #c9a84c)" }} />
-    <div style={{ width: "6px", height: "6px", background: "#c9a84c", transform: "rotate(45deg)", boxShadow: "0 0 8px #c9a84c" }} />
-    <div style={{ height: "1px", flex: 1, background: "linear-gradient(to left, transparent, #c9a84c)" }} />
-  </div>
-);
-
-/* ─── Section heading ─── */
-const SectionHeading = ({ children }: { children: ReactNode }) => (
-  <div style={{ marginBottom: "2rem" }}>
-    <h2 style={{
-      fontFamily: "'Cinzel', serif",
-      fontSize: "clamp(1.4rem, 3vw, 2rem)",
-      fontWeight: 700,
-      color: "#c9a84c",
-      letterSpacing: "0.1em",
-      textTransform: "uppercase",
-      textShadow: "0 0 10px rgba(201,168,76,0.5), 0 0 24px rgba(201,168,76,0.3)",
-      margin: 0,
-    }}>
-      {children}
-    </h2>
-    <GoldDivider />
-  </div>
-);
-
-/* ─── Glass card ─── */
-const glassCard: React.CSSProperties = {
-  background: "rgba(10,10,15,0.75)",
-  border: "1px solid rgba(201,168,76,0.25)",
-  borderRadius: "16px",
-  backdropFilter: "blur(16px)",
-  WebkitBackdropFilter: "blur(16px)",
-  padding: "2rem",
-  position: "relative",
-  overflow: "hidden",
-};
-
-/* ─── Hero Section ─── */
-const HeroSection = () => (
-  <section style={{ position: "relative", minHeight: "92vh", display: "flex", flexDirection: "column" }}>
-    {/* Wallpaper */}
-    <div style={{
-      position: "absolute", inset: 0,
-      backgroundImage: "url('/new-bg.jpg')",
-      backgroundSize: "cover",
-      backgroundPosition: "center top",
-      backgroundRepeat: "no-repeat",
-    }} />
-
-    {/* Dark vignette overlays */}
-    <div style={{
-      position: "absolute", inset: 0,
-      background: "linear-gradient(to bottom, rgba(5,5,10,0.45) 0%, rgba(5,5,10,0.65) 55%, rgba(5,5,10,0.97) 100%)",
-    }} />
-    <div style={{
-      position: "absolute", inset: 0,
-      background: "radial-gradient(ellipse at 70% 40%, rgba(201,168,76,0.07) 0%, transparent 60%)",
-    }} />
-
-    {/* Scanline shimmer */}
-    <div style={{
-      position: "absolute", inset: 0, pointerEvents: "none",
-      background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px)",
-    }} />
-
-    {/* Content */}
-    <div style={{
-      position: "relative", zIndex: 10,
-      flex: 1,
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "flex-end",
-      padding: "clamp(2rem, 6vw, 5rem) clamp(1.5rem, 5vw, 4rem)",
-      maxWidth: "860px",
-    }}>
-      {/* Eyebrow */}
-      <div style={{
-        display: "inline-flex", alignItems: "center", gap: "10px",
-        marginBottom: "1.25rem",
-        animation: "fadeIn 600ms ease-out both",
-      }}>
-        <div style={{ width: "28px", height: "1px", background: "#c9a84c", boxShadow: "0 0 6px #c9a84c" }} />
-        <span style={{
-          fontFamily: "'Orbitron', monospace",
-          fontSize: "0.7rem",
-          fontWeight: 700,
-          letterSpacing: "0.25em",
-          color: "#c9a84c",
-          textTransform: "uppercase",
-          textShadow: "0 0 8px rgba(201,168,76,0.6)",
-        }}>
-          Full-Stack Engineer
-        </span>
-        <div style={{ width: "28px", height: "1px", background: "#c9a84c", boxShadow: "0 0 6px #c9a84c" }} />
+const IndustrialSection = ({ id, number, title, children }: { id: string; number: string; title: string; children: ReactNode }) => (
+  <section id={id} className="chrome-border-top py-24">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 max-w-[1400px] mx-auto px-6">
+      <div className="lg:col-span-3">
+        <p className="font-[family-name:var(--font-body)] text-xs font-semibold text-[var(--outline)] tracking-widest uppercase chrome-text-protect inline-block">
+          {number} / {title}
+        </p>
       </div>
-
-      {/* Main title */}
-      <h1
-        className="text-glow"
-        style={{
-          fontFamily: "'Cinzel', serif",
-          fontSize: "clamp(2.4rem, 6vw, 4.5rem)",
-          fontWeight: 900,
-          lineHeight: 1.12,
-          letterSpacing: "0.02em",
-          color: "#e8c97a",
-          margin: "0 0 1.5rem",
-          animation: "fadeIn 700ms 100ms ease-out both",
-        }}
-      >
-        Designing Reliable<br />
-        <span style={{ color: "#fff", textShadow: "0 0 30px rgba(255,255,255,0.2)" }}>
-          Products with Clean
-        </span>
-        <br />Architecture.
-      </h1>
-
-      {/* Sub text */}
-      <p style={{
-        fontFamily: "'Rajdhani', sans-serif",
-        fontSize: "clamp(1rem, 2vw, 1.2rem)",
-        fontWeight: 400,
-        color: "rgba(226,213,176,0.75)",
-        lineHeight: 1.7,
-        maxWidth: "560px",
-        margin: "0 0 2.5rem",
-        animation: "fadeIn 700ms 200ms ease-out both",
-      }}>
-        This portfolio is fully data-driven — projects, achievements, experience,
-        section order, and theme all flow from the admin CMS.
-      </p>
-
-      {/* CTA buttons */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "14px", animation: "fadeIn 700ms 350ms ease-out both" }}>
-        <Link
-          href="/projects"
-          style={{
-            fontFamily: "'Orbitron', monospace",
-            fontSize: "0.75rem",
-            fontWeight: 700,
-            letterSpacing: "0.15em",
-            textTransform: "uppercase",
-            padding: "14px 32px",
-            background: "linear-gradient(135deg, #c9a84c, #e8c97a)",
-            color: "#0a0a0f",
-            borderRadius: "4px",
-            textDecoration: "none",
-            boxShadow: "0 0 18px rgba(201,168,76,0.45), 0 4px 15px rgba(0,0,0,0.4)",
-            transition: "all 0.25s ease",
-          }}
-          onMouseEnter={e => {
-            (e.currentTarget as HTMLElement).style.boxShadow = "0 0 32px rgba(201,168,76,0.8), 0 4px 20px rgba(0,0,0,0.5)";
-            (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
-          }}
-          onMouseLeave={e => {
-            (e.currentTarget as HTMLElement).style.boxShadow = "0 0 18px rgba(201,168,76,0.45), 0 4px 15px rgba(0,0,0,0.4)";
-            (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-          }}
-        >
-          View Projects
-        </Link>
-        <Link
-          href="/contact"
-          style={{
-            fontFamily: "'Orbitron', monospace",
-            fontSize: "0.75rem",
-            fontWeight: 700,
-            letterSpacing: "0.15em",
-            textTransform: "uppercase",
-            padding: "13px 32px",
-            background: "transparent",
-            color: "#c9a84c",
-            border: "1px solid rgba(201,168,76,0.5)",
-            borderRadius: "4px",
-            textDecoration: "none",
-            boxShadow: "0 0 10px rgba(201,168,76,0.15)",
-            transition: "all 0.25s ease",
-          }}
-          onMouseEnter={e => {
-            (e.currentTarget as HTMLElement).style.background = "rgba(201,168,76,0.1)";
-            (e.currentTarget as HTMLElement).style.borderColor = "#c9a84c";
-            (e.currentTarget as HTMLElement).style.boxShadow = "0 0 18px rgba(201,168,76,0.35)";
-            (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
-          }}
-          onMouseLeave={e => {
-            (e.currentTarget as HTMLElement).style.background = "transparent";
-            (e.currentTarget as HTMLElement).style.borderColor = "rgba(201,168,76,0.5)";
-            (e.currentTarget as HTMLElement).style.boxShadow = "0 0 10px rgba(201,168,76,0.15)";
-            (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-          }}
-        >
-          Contact
-        </Link>
+      <div className="lg:col-span-9">
+        {children}
       </div>
     </div>
-
-    {/* Bottom fade into site bg */}
-    <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "120px",
-      background: "linear-gradient(to bottom, transparent, #0a0a0f)" }} />
   </section>
 );
 
-/* ─── Main export ─── */
-export const HomeContent = ({ projects, achievements, experience, sectionOrder }: HomeContentProps) => {
-  const sections: Record<HomeSectionId, ReactNode> = {
-    hero: <HeroSection />,
-
-    projects: (
-      <section id="projects" style={{ ...glassCard, marginTop: "4px" }} className="border-glow">
-        <SectionHeading>Projects</SectionHeading>
-        <ProjectGrid projects={projects} />
-      </section>
-    ),
-
-    achievements: (
-      <section id="achievements" style={glassCard} className="border-glow">
-        <SectionHeading>Achievements</SectionHeading>
-        <AchievementList achievements={achievements} />
-      </section>
-    ),
-
-    experience: (
-      <section id="experience" style={glassCard} className="border-glow">
-        <SectionHeading>Experience</SectionHeading>
-        <ExperienceList items={experience} />
-      </section>
-    ),
-
-    contact: (
-      <section id="contact" style={glassCard} className="border-glow">
-        <SectionHeading>Contact</SectionHeading>
-        <p style={{
-          fontFamily: "'Rajdhani', sans-serif",
-          fontSize: "1.1rem",
-          color: "rgba(226,213,176,0.75)",
-          lineHeight: 1.7,
-          maxWidth: "520px",
-          marginBottom: "1.75rem",
-        }}>
-          For collaborations, consulting, or full-time opportunities, use the dedicated contact page.
-        </p>
-        <Link
-          href="/contact"
-          style={{
-            fontFamily: "'Orbitron', monospace",
-            fontSize: "0.72rem",
-            fontWeight: 700,
-            letterSpacing: "0.15em",
-            textTransform: "uppercase",
-            padding: "13px 28px",
-            background: "linear-gradient(135deg, #c9a84c, #e8c97a)",
-            color: "#0a0a0f",
-            borderRadius: "4px",
-            textDecoration: "none",
-            display: "inline-block",
-            boxShadow: "0 0 14px rgba(201,168,76,0.4)",
-          }}
+const HeroSection = ({ videoUrl, opacity }: { videoUrl: string | null, opacity: number }) => (
+  <section className="min-h-[85vh] flex flex-col justify-center relative z-10 pt-16 mt-[-64px]">
+    <div className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none bg-black">
+      {videoUrl && (
+        <video 
+          key={videoUrl}
+          autoPlay 
+          loop 
+          muted 
+          playsInline 
+          style={{ opacity }}
+          className="w-full h-full object-cover mix-blend-screen grayscale"
         >
-          Go To Contact Page
-        </Link>
-      </section>
+          <source src={videoUrl} type="video/mp4" />
+        </video>
+      )}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[transparent] to-[var(--surface)] opacity-100" />
+    </div>
+    <div className="max-w-[1400px] mx-auto w-full px-6 flex flex-col h-full mt-auto relative z-10 pt-16">
+      <div className="max-w-[1100px] mt-auto">
+        <h1 className="font-[family-name:var(--font-display)] text-5xl md:text-8xl leading-[0.9] tracking-[0.02em] font-bold uppercase mb-16 chrome-text-protect inline-block">
+          Engineering<br />
+          Systems that<br />
+          Operate under<br />
+          Real constraints.
+        </h1>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between chrome-border-top pt-4 pb-16 gap-6">
+          <p className="font-[family-name:var(--font-body)] text-[10px] font-bold tracking-widest text-[var(--outline)] uppercase border-b border-[var(--outline)] border-dotted pb-1 w-max chrome-text-protect">
+            01 . INFRASTRUCTURE . EXECUTION .
+          </p>
+          <Link
+            href="/projects"
+            className="chrome-button bg-[var(--primary)] text-[var(--surface)] font-[family-name:var(--font-display)] font-bold text-sm tracking-widest uppercase px-12 py-4 transition-industrial hover:opacity-80"
+          >
+            Enter
+          </Link>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+export const HomeContent = ({ projects, achievements, experience, sectionOrder, theme }: HomeContentProps) => {
+  const sections: Record<HomeSectionId, ReactNode> = {
+    hero: <HeroSection videoUrl={theme.hero_video_url} opacity={theme.hero_video_opacity ?? 0.5} />,
+    experience: (
+      <IndustrialSection id="experience" number="01" title="Impact">
+        <ExperienceList items={experience} />
+      </IndustrialSection>
+    ),
+    projects: (
+      <IndustrialSection id="projects" number="02" title="Repository">
+        <ProjectGrid projects={projects} />
+      </IndustrialSection>
+    ),
+    achievements: (
+      <IndustrialSection id="achievements" number="03" title="Recognition">
+        <AchievementList achievements={achievements} />
+      </IndustrialSection>
+    ),
+    contact: (
+      null 
     ),
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a0a0f" }}>
+    <div className="min-h-screen bg-[var(--surface)] text-[var(--primary)] selection:bg-[var(--primary)] selection:text-[var(--surface)]">
       <SiteHeader />
-      <main style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-        {sectionOrder.map((sectionId) =>
-          sectionId === "hero" ? (
-            <div key={sectionId}>{sections[sectionId]}</div>
-          ) : (
-            <div key={sectionId} style={{ maxWidth: "1152px", width: "100%", margin: "0 auto", padding: "0 1.5rem" }}>
-              {sections[sectionId]}
+      <main className="flex flex-col relative z-10">
+        {sectionOrder.map((sectionId) => (
+          <div key={sectionId}>{sections[sectionId]}</div>
+        ))}
+        {/* Contact block added at the bottom as standard module */}
+        <section className="bg-[var(--primary)] text-[var(--surface)] py-32 border-t-[12px] border-[var(--primary)] mt-12 chrome-surface">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 max-w-[1400px] mx-auto px-6">
+            <div className="lg:col-span-8 chrome-border-bottom pb-12 mb-8">
+              <h2 className="font-[family-name:var(--font-display)] text-4xl md:text-6xl font-bold uppercase leading-[1.1] mb-2 tracking-[0.02em] chrome-text-protect">
+                Let's build systems<br />
+                that matter.
+              </h2>
             </div>
-          )
-        )}
+            <div className="lg:col-span-4 flex flex-col justify-end pb-20">
+              <Link
+                href="/contact"
+                className="chrome-button inline-block border border-[var(--outline)] text-[var(--outline)] font-[family-name:var(--font-display)] font-bold text-xs tracking-widest uppercase px-8 py-3 w-max transition-industrial hover:bg-[var(--outline)] hover:text-[var(--primary)] mb-4"
+              >
+                Initiate Sequence
+              </Link>
+              <p className="font-[family-name:var(--font-body)] text-[10px] text-[var(--outline)] tracking-widest uppercase opacity-80">
+                <span className="chrome-text-protect">A system optimized for latency is inherently robust.</span>
+              </p>
+            </div>
+          </div>
+        </section>
       </main>
-      <div style={{ height: "5rem" }} />
     </div>
   );
 };

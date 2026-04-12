@@ -22,105 +22,82 @@ interface AdminHomeContentProps {
   setExperience: (e: ExperienceItem[]) => void;
   sectionOrder: HomeSectionId[];
   setSectionOrder: (s: HomeSectionId[]) => void;
+  theme: any;
 }
 
-/* ─── Decorative divider ─── */
-const GoldDivider = () => (
-  <div style={{ display: "flex", alignItems: "center", gap: "12px", margin: "24px 0 0" }}>
-    <div style={{ height: "1px", flex: 1, background: "linear-gradient(to right, transparent, #c9a84c)" }} />
-    <div style={{ width: "6px", height: "6px", background: "#c9a84c", transform: "rotate(45deg)", boxShadow: "0 0 8px #c9a84c" }} />
-    <div style={{ height: "1px", flex: 1, background: "linear-gradient(to left, transparent, #c9a84c)" }} />
-  </div>
-);
-
-/* ─── Section heading ─── */
-const SectionHeading = ({ children, dragHandleProps, dragListeners }: any) => (
-  <div style={{ marginBottom: "2rem" }} className="group relative flex items-center justify-between">
-    <div className="flex-1">
-      <h2 style={{
-        fontFamily: "'Cinzel', serif",
-        fontSize: "clamp(1.4rem, 3vw, 2rem)",
-        fontWeight: 700,
-        color: "#c9a84c",
-        letterSpacing: "0.1em",
-        textTransform: "uppercase",
-        textShadow: "0 0 10px rgba(201,168,76,0.5), 0 0 24px rgba(201,168,76,0.3)",
-        margin: 0,
-      }}>
-        {children}
-      </h2>
-    </div>
+const IndustrialSection = ({ id, number, title, dragHandleProps, dragListeners, children }: { id: string; number: string; title: string; dragHandleProps: any; dragListeners: any; children: ReactNode }) => (
+  <section id={id} className="border-t border-[var(--outline-variant)] py-24 group relative bg-[var(--surface)]">
     <button 
       {...dragHandleProps} 
       {...dragListeners} 
-      className="p-2 bg-slate-900/80 rounded-md text-white hover:bg-slate-800 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity absolute right-0 top-0 mt-[-10px]"
+      className="absolute right-6 top-6 z-50 p-2 bg-[var(--outline)] rounded-md text-[var(--surface)] hover:opacity-80 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
       title="Drag to reorder section"
     >
       <GripVertical className="w-5 h-5" />
     </button>
-    <div className="absolute w-full top-[100%]"><GoldDivider /></div>
-  </div>
-);
-
-/* ─── Glass card ─── */
-const glassCard: React.CSSProperties = {
-  background: "rgba(10,10,15,0.75)",
-  border: "1px solid rgba(201,168,76,0.25)",
-  borderRadius: "16px",
-  backdropFilter: "blur(16px)",
-  WebkitBackdropFilter: "blur(16px)",
-  padding: "2rem",
-  position: "relative",
-  overflow: "hidden",
-};
-
-/* ─── Hero Section ─── */
-const HeroSection = ({ dragHandleProps, dragListeners }: any) => (
-  <section style={{ position: "relative", minHeight: "92vh", display: "flex", flexDirection: "column" }} className="group">
-    {/* Wallpaper */}
-    <div style={{
-      position: "absolute", inset: 0,
-      backgroundImage: "url('/new-bg.jpg')",
-      backgroundSize: "cover",
-      backgroundPosition: "center top",
-      backgroundRepeat: "no-repeat",
-    }} />
-    
-    <button 
-      {...dragHandleProps} 
-      {...dragListeners} 
-      className="absolute top-24 right-4 z-50 p-2 bg-slate-900/80 rounded-md text-white hover:bg-slate-800 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
-      title="Drag to reorder Hero"
-    >
-      <GripVertical className="h-6 w-6" />
-    </button>
-
-    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(5,5,10,0.45) 0%, rgba(5,5,10,0.65) 55%, rgba(5,5,10,0.97) 100%)" }} />
-    <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 70% 40%, rgba(201,168,76,0.07) 0%, transparent 60%)" }} />
-    <div style={{ position: "absolute", inset: 0, pointerEvents: "none", background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px)" }} />
-
-    <div style={{ position: "relative", zIndex: 10, flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: "clamp(2rem, 6vw, 5rem) clamp(1.5rem, 5vw, 4rem)", maxWidth: "860px" }}>
-      <div style={{ display: "inline-flex", alignItems: "center", gap: "10px", marginBottom: "1.25rem", animation: "fadeIn 600ms ease-out both" }}>
-        <div style={{ width: "28px", height: "1px", background: "#c9a84c", boxShadow: "0 0 6px #c9a84c" }} />
-        <span style={{ fontFamily: "'Orbitron', monospace", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.25em", color: "#c9a84c", textTransform: "uppercase", textShadow: "0 0 8px rgba(201,168,76,0.6)" }}>Full-Stack Engineer</span>
-        <div style={{ width: "28px", height: "1px", background: "#c9a84c", boxShadow: "0 0 6px #c9a84c" }} />
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 max-w-[1400px] mx-auto px-6">
+      <div className="lg:col-span-3">
+        <p className="font-[family-name:var(--font-body)] text-xs font-semibold text-[var(--outline)] tracking-widest uppercase">
+          {number} / {title}
+        </p>
       </div>
-
-      <h1 className="text-glow" style={{ fontFamily: "'Cinzel', serif", fontSize: "clamp(2.4rem, 6vw, 4.5rem)", fontWeight: 900, lineHeight: 1.12, letterSpacing: "0.02em", color: "#e8c97a", margin: "0 0 1.5rem", animation: "fadeIn 700ms 100ms ease-out both" }}>
-        Designing Reliable<br />
-        <span style={{ color: "#fff", textShadow: "0 0 30px rgba(255,255,255,0.2)" }}>Products with Clean</span>
-        <br />Architecture.
-      </h1>
-
-      <p style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: "clamp(1rem, 2vw, 1.2rem)", fontWeight: 400, color: "rgba(226,213,176,0.75)", lineHeight: 1.7, maxWidth: "560px", margin: "0 0 2.5rem", animation: "fadeIn 700ms 200ms ease-out both" }}>
-        This portfolio is fully data-driven — projects, achievements, experience, section order, and theme all flow from the admin CMS.
-      </p>
+      <div className="lg:col-span-9">
+        {children}
+      </div>
     </div>
-
-    <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "120px", background: "linear-gradient(to bottom, transparent, #0a0a0f)" }} />
   </section>
 );
 
+const HeroSection = ({ dragHandleProps, dragListeners, videoUrl, opacity }: any) => (
+  <section className="min-h-[85vh] flex flex-col justify-center relative z-10 pt-16 group bg-[var(--surface)] text-[var(--primary)] mt-[-64px]">
+    <div className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none bg-black">
+      {videoUrl && (
+        <video 
+          key={videoUrl}
+          autoPlay 
+          loop 
+          muted 
+          playsInline 
+          style={{ opacity }}
+          className="w-full h-full object-cover mix-blend-screen grayscale"
+        >
+          <source src={videoUrl} type="video/mp4" />
+        </video>
+      )}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[transparent] to-[var(--surface)] opacity-100" />
+    </div>
+    <div className="max-w-[1400px] mx-auto w-full px-6 flex flex-col h-full mt-auto relative z-10 pt-16">
+      <button 
+        {...dragHandleProps} 
+        {...dragListeners} 
+        className="absolute top-6 right-6 z-50 p-2 bg-[var(--outline)] rounded-md text-[var(--surface)] hover:opacity-80 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
+        title="Drag to reorder Hero"
+      >
+        <GripVertical className="h-5 w-5" />
+      </button>
+      <div className="max-w-[1100px] mt-auto">
+        <h1 className="font-[family-name:var(--font-display)] text-5xl md:text-8xl leading-[0.9] tracking-[0.02em] font-bold uppercase mb-16">
+          Engineering<br />
+          Systems that<br />
+          Operate under<br />
+          Real constraints.
+        </h1>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-t border-[var(--primary)] pt-4 pb-16 gap-6">
+          <p className="font-[family-name:var(--font-body)] text-[10px] font-bold tracking-widest text-[var(--outline)] uppercase border-b border-[var(--outline)] border-dotted pb-1 w-max">
+            01 . INFRASTRUCTURE . EXECUTION .
+          </p>
+          <Link
+            href="/projects"
+            className="bg-[var(--primary)] text-[var(--surface)] font-[family-name:var(--font-display)] font-bold text-sm tracking-widest uppercase px-12 py-4 transition-industrial hover:opacity-80"
+            onClick={(e) => e.preventDefault()}
+          >
+            Enter
+          </Link>
+        </div>
+      </div>
+    </div>
+  </section>
+);
 
 function SortableSection({ id, children }: { id: HomeSectionId, children: (props: any) => React.ReactNode }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
@@ -129,7 +106,7 @@ function SortableSection({ id, children }: { id: HomeSectionId, children: (props
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.8 : 1,
-    scale: isDragging ? "1.02" : "1",
+    scale: isDragging ? "1.01" : "1",
     zIndex: isDragging ? 99 : 1,
     position: "relative" as any,
   };
@@ -141,8 +118,7 @@ function SortableSection({ id, children }: { id: HomeSectionId, children: (props
   );
 }
 
-
-export const AdminHomeContent = ({ projects, setProjects, achievements, setAchievements, experience, setExperience, sectionOrder, setSectionOrder }: AdminHomeContentProps) => {
+export const AdminHomeContent = ({ projects, setProjects, achievements, setAchievements, experience, setExperience, sectionOrder, setSectionOrder, theme }: AdminHomeContentProps) => {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -160,53 +136,71 @@ export const AdminHomeContent = ({ projects, setProjects, achievements, setAchie
   };
 
   const sectionsRender: Record<HomeSectionId, (props: any) => ReactNode> = {
-    hero: (p) => <HeroSection dragHandleProps={p.attributes} dragListeners={p.listeners} />,
-    projects: (p) => (
-      <section id="projects" style={{ ...glassCard, marginTop: "4px" }} className="border-glow">
-        <SectionHeading dragHandleProps={p.attributes} dragListeners={p.listeners}>Projects</SectionHeading>
-        <AdminProjectGrid projects={projects} setProjects={setProjects} />
-      </section>
-    ),
-    achievements: (p) => (
-      <section id="achievements" style={glassCard} className="border-glow">
-        <SectionHeading dragHandleProps={p.attributes} dragListeners={p.listeners}>Achievements</SectionHeading>
-        <AdminAchievementList achievements={achievements} setAchievements={setAchievements} />
-      </section>
+    hero: (p) => (
+      <HeroSection 
+        dragHandleProps={p.attributes} 
+        dragListeners={p.listeners} 
+        videoUrl={theme.hero_video_url}
+        opacity={theme.hero_video_opacity ?? 0.5}
+      />
     ),
     experience: (p) => (
-      <section id="experience" style={glassCard} className="border-glow">
-        <SectionHeading dragHandleProps={p.attributes} dragListeners={p.listeners}>Experience</SectionHeading>
+      <IndustrialSection id="experience" number="01" title="Impact" dragHandleProps={p.attributes} dragListeners={p.listeners}>
         <AdminExperienceList experience={experience} setExperience={setExperience} />
-      </section>
+      </IndustrialSection>
+    ),
+    projects: (p) => (
+      <IndustrialSection id="projects" number="02" title="Repository" dragHandleProps={p.attributes} dragListeners={p.listeners}>
+        <AdminProjectGrid projects={projects} setProjects={setProjects} />
+      </IndustrialSection>
+    ),
+    achievements: (p) => (
+      <IndustrialSection id="achievements" number="03" title="Recognition" dragHandleProps={p.attributes} dragListeners={p.listeners}>
+        <AdminAchievementList achievements={achievements} setAchievements={setAchievements} />
+      </IndustrialSection>
     ),
     contact: (p) => (
-      <section id="contact" style={glassCard} className="border-glow">
-        <SectionHeading dragHandleProps={p.attributes} dragListeners={p.listeners}>Contact</SectionHeading>
-        <p style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: "1.1rem", color: "rgba(226,213,176,0.75)", lineHeight: 1.7, maxWidth: "520px", marginBottom: "1.75rem" }}>
-          For collaborations, consulting, or full-time opportunities, use the dedicated contact page.
-        </p>
-        <Link href="/contact" style={{ fontFamily: "'Orbitron', monospace", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", padding: "13px 28px", background: "linear-gradient(135deg, #c9a84c, #e8c97a)", color: "#0a0a0f", borderRadius: "4px", textDecoration: "none", display: "inline-block", boxShadow: "0 0 14px rgba(201,168,76,0.4)" }}>
-          Go To Contact Page
-        </Link>
-      </section>
+      null 
     ),
   };
 
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <SortableContext items={sectionOrder} strategy={verticalListSortingStrategy}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-          {sectionOrder.map((sectionId) => (
-            <SortableSection key={sectionId} id={sectionId}>
-              {(props) => (
-                <div style={sectionId !== 'hero' ? { maxWidth: "1152px", width: "100%", margin: "0 auto", padding: "0 1.5rem" } : {}}>
-                  {sectionsRender[sectionId](props)}
-                </div>
-              )}
-            </SortableSection>
-          ))}
+    <div className="bg-[var(--surface)] text-[var(--primary)] selection:bg-[var(--primary)] selection:text-[var(--surface)]">
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={sectionOrder} strategy={verticalListSortingStrategy}>
+          <div className="flex flex-col">
+            {sectionOrder.map((sectionId) => (
+              <SortableSection key={sectionId} id={sectionId}>
+                {(props) => sectionsRender[sectionId](props)}
+              </SortableSection>
+            ))}
+          </div>
+        </SortableContext>
+      </DndContext>
+      
+      {/* Contact block added at the bottom as standard module */}
+      <section className="bg-[var(--primary)] text-[var(--surface)] py-32 border-t-[12px] border-[var(--primary)] mt-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 max-w-[1400px] mx-auto px-6">
+          <div className="lg:col-span-8 border-b border-[rgba(255,255,255,0.2)] pb-12 mb-8">
+            <h2 className="font-[family-name:var(--font-display)] text-4xl md:text-6xl font-bold uppercase leading-[1.1] mb-2 tracking-[0.02em]">
+              Let's build systems<br />
+              that matter.
+            </h2>
+          </div>
+          <div className="lg:col-span-4 flex flex-col justify-end pb-20">
+            <Link
+              href="/contact"
+              className="inline-block border border-[var(--outline)] text-[var(--outline)] font-[family-name:var(--font-display)] font-bold text-xs tracking-widest uppercase px-8 py-3 w-max transition-industrial hover:bg-[var(--outline)] hover:text-[var(--primary)] mb-4"
+              onClick={(e) => e.preventDefault()}
+            >
+              Initiate Sequence
+            </Link>
+            <p className="font-[family-name:var(--font-body)] text-[10px] text-[var(--outline)] tracking-widest uppercase opacity-80">
+              A system optimized for latency is inherently robust.
+            </p>
+          </div>
         </div>
-      </SortableContext>
-    </DndContext>
+      </section>
+    </div>
   );
 };

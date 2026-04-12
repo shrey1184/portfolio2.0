@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import type { ExperienceItem } from "@/types/domain";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
@@ -8,14 +7,6 @@ import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Pencil, Plus } from "lucide-react";
 import { persistReorderAction } from "@/app/admin/actions/reorder";
 import Link from "next/link";
-
-const formatRange = (startDate: string, endDate: string | null) => {
-  const formatter = new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" });
-  const start = startDate ? formatter.format(new Date(startDate)) : "";
-  const end = endDate ? formatter.format(new Date(endDate)) : "Present";
-  return end ? `${start} - ${end}` : start;
-};
-const formatDate = (date: string) => new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" }).format(new Date(date));
 
 
 function SortableExperienceItem({ item }: { item: ExperienceItem }) {
@@ -28,43 +19,27 @@ function SortableExperienceItem({ item }: { item: ExperienceItem }) {
   };
 
   return (
-    <div ref={setNodeRef} style={style} className={`group relative ml-4 border-l-2 border-[#c9a84c]/30 pl-8 pb-12 last:pb-0 transition-opacity ${isDragging ? "opacity-80" : ""}`}>
-      {/* Edit Overlay */}
-      <div className="absolute top-0 right-2 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button {...attributes} {...listeners} className="p-2 bg-slate-900/80 rounded-md text-white hover:bg-slate-800 cursor-grab active:cursor-grabbing">
+    <div ref={setNodeRef} style={style} className={`group relative flex flex-col gap-4 border-b border-[var(--outline-variant)] pb-16 last:border-0 last:pb-0 bg-[var(--surface)] transition-opacity ${isDragging ? "opacity-50" : ""}`}>
+      <div className="absolute top-2 right-2 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button {...attributes} {...listeners} className="p-2 bg-[var(--outline)] rounded-md text-[var(--surface)] hover:opacity-80 cursor-grab active:cursor-grabbing">
           <GripVertical className="h-4 w-4" />
         </button>
-        <Link href="/admin/experience" className="p-2 bg-slate-900/80 rounded-md text-white hover:bg-slate-800">
+        <Link href="/admin/experience" className="p-2 bg-[var(--outline)] rounded-md text-[var(--surface)] hover:opacity-80">
           <Pencil className="h-4 w-4" />
         </Link>
       </div>
 
-      <div className="absolute -left-[11px] top-0 h-5 w-5 rounded-full border-4 border-[#0a0a0f] bg-[#c9a84c] shadow-[0_0_10px_#c9a84c]" />
-      
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-start group-hover:bg-white/5 p-4 -mt-4 rounded-lg transition-colors">
-        {item.image_url ? (
-          <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md border border-white/20 bg-white/10 mt-1">
-            <Image src={item.image_url} alt={item.company} fill className="object-contain p-1" />
-          </div>
-        ) : null}
-        
-        <div className="flex-1 space-y-2">
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h3 className="text-xl font-bold tracking-wide text-[#e2d5b0]">{item.role}</h3>
-            <span className="font-mono text-sm tracking-widest text-[#c9a84c]">
-              {formatDate(item.start_date)} — {item.end_date ? formatDate(item.end_date) : "Present"}
-            </span>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <span className="text-sm font-semibold uppercase tracking-wider text-[#c9a84c]">{item.company}</span>
-            <span className="h-1 w-1 rounded-full bg-slate-600" />
-            <span className="text-sm text-slate-400">{item.location}</span>
-          </div>
-          
-          <p className="pt-2 font-sans text-md leading-relaxed text-slate-300">{item.summary}</p>
-        </div>
+      <h3 className="font-[family-name:var(--font-display)] text-3xl md:text-5xl font-bold uppercase leading-[1.1] tracking-[0.02em] max-w-3xl pr-20">
+        {item.role}
+      </h3>
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-[10px] font-[family-name:var(--font-body)] font-bold tracking-widest text-[var(--outline)] uppercase mt-2">
+        <span>{item.company}</span>
+        <span className="hidden sm:inline">//</span>
+        <span>{item.location}</span>
       </div>
+      <p className="font-[family-name:var(--font-body)] text-sm leading-relaxed max-w-2xl mt-6">
+        {item.summary}
+      </p>
     </div>
   );
 }
@@ -88,16 +63,16 @@ export function AdminExperienceList({ experience, setExperience }: { experience:
 
   return (
     <div>
-      <div className="mb-4 flex justify-between items-center">
-        <p className="text-sm text-[var(--primary-color)]">Drag items to reorder chronological timeline.</p>
-        <Link href="/admin/experience" className="flex items-center gap-2 text-sm bg-slate-800 text-white px-3 py-1.5 rounded-md hover:bg-slate-700 transition">
-          <Plus className="w-4 h-4" /> Add Experience
+      <div className="mb-12 flex justify-between items-center border-b border-[var(--outline-variant)] pb-4">
+        <p className="font-[family-name:var(--font-body)] text-xs text-[var(--outline)] tracking-widest uppercase font-bold">Drag items to reorder chronological timeline.</p>
+        <Link href="/admin/experience" className="chrome-button flex items-center gap-2 text-xs bg-transparent border border-[var(--outline)] text-[var(--outline)] px-4 py-2 font-bold tracking-widest uppercase hover:bg-[var(--outline)] hover:text-[var(--primary)] transition-industrial">
+          <Plus className="w-4 h-4" /> Instantiate
         </Link>
       </div>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={experience.map(e => e.id)} strategy={verticalListSortingStrategy}>
-          <div className="py-4">
+          <div className="flex flex-col gap-16">
             {experience.map(item => (
               <SortableExperienceItem key={item.id} item={item} />
             ))}

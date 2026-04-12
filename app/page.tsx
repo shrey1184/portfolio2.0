@@ -17,6 +17,7 @@ export default async function HomePage() {
       achievements={data.achievements}
       experience={data.experience}
       sectionOrder={data.sectionOrder}
+      theme={data.theme}
     />
   );
 }
