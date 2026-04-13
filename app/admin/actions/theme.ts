@@ -24,6 +24,9 @@ export const updateThemeAction = async (formData: FormData) => {
 
   const achievementBorderColor = String(formData.get("achievement_border_color") ?? "#FFFFFF").trim();
 
+  const filledBlobColor = String(formData.get("filled_blob_color") ?? "#FFFFFF").trim();
+  const heroVideoGrayscale = formData.get("hero_video_grayscale") === "true";
+
   if (!isHexColor(primaryColor)) {
     throw new Error("Primary color must be a valid hex value.");
   }
@@ -40,6 +43,10 @@ export const updateThemeAction = async (formData: FormData) => {
     throw new Error("Achievement border color must be a valid hex value.");
   }
 
+  if (!isHexColor(filledBlobColor)) {
+    throw new Error("Filled blob color must be a valid hex value.");
+  }
+
   if (!fontFamily) {
     throw new Error("Font family is required.");
   }
@@ -52,10 +59,12 @@ export const updateThemeAction = async (formData: FormData) => {
     font_family: fontFamily,
     hero_video_url: heroVideoUrl,
     hero_video_opacity: isNaN(heroVideoOpacity) ? 0.5 : heroVideoOpacity,
+    hero_video_grayscale: heroVideoGrayscale,
     blob_count: isNaN(blobCount) ? 10 : blobCount,
     blob_thickness: isNaN(blobThickness) ? 1 : blobThickness,
     blob_size: isNaN(blobSize) ? 80 : blobSize,
     blob_color: blobColor,
+    filled_blob_color: filledBlobColor,
     blob_speed: isNaN(blobSpeed) ? 4 : blobSpeed,
     achievement_border_color: achievementBorderColor,
   });

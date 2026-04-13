@@ -84,6 +84,16 @@ export function ThemeEditor({ theme, onChange }: { theme: any, onChange: (t: any
             className="w-full accent-[var(--primary)] h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer"
           />
         </div>
+        <div className="flex justify-between items-center text-sm gap-2">
+          <label className="text-slate-300">Grayscale Video</label>
+          <input 
+            type="checkbox" 
+            checked={theme.hero_video_grayscale ?? true} 
+            onChange={(e) => onChange({ ...theme, hero_video_grayscale: e.target.checked })}
+            className="w-4 h-4 rounded accent-[var(--primary)]"
+          />
+          <input type="hidden" name="hero_video_grayscale" value={String(theme.hero_video_grayscale ?? true)} />
+        </div>
       </div>
 
       <div className="space-y-3">
@@ -95,6 +105,16 @@ export function ThemeEditor({ theme, onChange }: { theme: any, onChange: (t: any
             name="blob_color" 
             value={theme.blob_color || "#FFFFFF"} 
             onChange={(e) => onChange({ ...theme, blob_color: e.target.value })}
+            className="h-8 w-12 rounded cursor-pointer bg-transparent border-0 p-0"
+          />
+        </div>
+        <div className="flex justify-between items-center text-sm gap-2">
+          <label className="text-slate-300">Filled Blob Color</label>
+          <input 
+            type="color" 
+            name="filled_blob_color" 
+            value={theme.filled_blob_color || "#FFFFFF"} 
+            onChange={(e) => onChange({ ...theme, filled_blob_color: e.target.value })}
             className="h-8 w-12 rounded cursor-pointer bg-transparent border-0 p-0"
           />
         </div>

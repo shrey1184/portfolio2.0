@@ -8,10 +8,11 @@ interface BlobTracerProps {
   thickness: number;
   size: number;
   color: string;
+  filledColor?: string;
   speed: number;
 }
 
-export const BlobTracer = ({ count, thickness, size, color, speed }: BlobTracerProps) => {
+export const BlobTracer = ({ count, thickness, size, color, filledColor, speed }: BlobTracerProps) => {
   const [blobs, setBlobs] = useState<any[]>([]);
   const prevFrameRef = useRef<Uint8ClampedArray | null>(null);
 
@@ -73,7 +74,8 @@ export const BlobTracer = ({ count, thickness, size, color, speed }: BlobTracerP
                   y: p.y + (Math.random() - 0.5) * 4,
                   label: Math.floor(11111111 + Math.random() * 88888888).toString(),
                   scale: 0.8 + Math.random() * 0.4,
-                  visible: true
+                  visible: true,
+                  filled: Math.random() > 0.7
                 })));
               } else {
                 // Decay visibility if no motion
@@ -93,7 +95,8 @@ export const BlobTracer = ({ count, thickness, size, color, speed }: BlobTracerP
                 y: 20 + Math.random() * 60,
                 label: Math.floor(11111111 + Math.random() * 88888888).toString(),
                 scale: 0.7 + Math.random() * 0.5,
-                visible: true
+                visible: true,
+                filled: Math.random() > 0.7
               })));
             }
           }
@@ -106,7 +109,8 @@ export const BlobTracer = ({ count, thickness, size, color, speed }: BlobTracerP
               y: 20 + Math.random() * 60,
               label: Math.floor(11111111 + Math.random() * 88888888).toString(),
               scale: 0.5 + Math.random() * 0.5,
-              visible: true
+              visible: true,
+              filled: Math.random() > 0.7
             })));
           }
         }
@@ -151,6 +155,8 @@ export const BlobTracer = ({ count, thickness, size, color, speed }: BlobTracerP
                 height: `${size}px`,
                 borderColor: color,
                 borderWidth: `${thickness}px`,
+                backgroundColor: blob.filled ? (filledColor || color) : "transparent",
+                mixBlendMode: blob.filled ? "difference" : "normal",
               }}
             >
               <div className="absolute inset-0 flex items-center justify-center">

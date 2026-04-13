@@ -32,7 +32,7 @@ const IndustrialSection = ({ id, number, title, children, center = false }: { id
   </section>
 );
 
-const HeroSection = ({ videoUrl, opacity, blobs }: { videoUrl: string | null, opacity: number, blobs: any }) => (
+const HeroSection = ({ videoUrl, opacity, grayscale, blobs }: { videoUrl: string | null, opacity: number, grayscale: boolean, blobs: any }) => (
   <section className="min-h-[85vh] flex flex-col justify-center relative z-10 pt-16 mt-[-64px]">
     <div className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none bg-black">
       {videoUrl && (
@@ -44,7 +44,7 @@ const HeroSection = ({ videoUrl, opacity, blobs }: { videoUrl: string | null, op
           playsInline 
           crossOrigin="anonymous"
           style={{ opacity }}
-          className="w-full h-full object-cover mix-blend-screen grayscale"
+          className={`w-full h-full object-cover mix-blend-screen ${grayscale ? 'grayscale' : ''}`}
         >
           <source src={videoUrl} type="video/mp4" />
         </video>
@@ -54,6 +54,7 @@ const HeroSection = ({ videoUrl, opacity, blobs }: { videoUrl: string | null, op
         thickness={blobs.thickness} 
         size={blobs.size} 
         color={blobs.color} 
+        filledColor={blobs.filledColor}
         speed={blobs.speed} 
       />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[transparent] to-[var(--surface)] opacity-100" />
@@ -88,11 +89,13 @@ export const HomeContent = ({ projects, achievements, experience, sectionOrder, 
       <HeroSection 
         videoUrl={theme.hero_video_url} 
         opacity={theme.hero_video_opacity ?? 0.5} 
+        grayscale={theme.hero_video_grayscale ?? true}
         blobs={{
           count: theme.blob_count ?? 10,
           thickness: theme.blob_thickness ?? 1,
           size: theme.blob_size ?? 80,
           color: theme.blob_color ?? "#FFFFFF",
+          filledColor: theme.filled_blob_color ?? "#FFFFFF",
           speed: theme.blob_speed ?? 4
         }}
       />
