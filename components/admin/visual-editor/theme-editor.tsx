@@ -164,6 +164,20 @@ export function ThemeEditor({ theme, onChange }: { theme: any, onChange: (t: any
         </div>
       </div>
 
+      <div className="space-y-3">
+        <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-500 border-b border-slate-700 pb-1">Achievements</h3>
+        <div className="flex justify-between items-center text-sm gap-2">
+          <label className="text-slate-300">Border Color</label>
+          <input 
+            type="color" 
+            name="achievement_border_color" 
+            value={theme.achievement_border_color || "#FFFFFF"} 
+            onChange={(e) => onChange({ ...theme, achievement_border_color: e.target.value })}
+            className="h-8 w-12 rounded cursor-pointer bg-transparent border-0 p-0"
+          />
+        </div>
+      </div>
+
       <div className="pt-2 sticky bottom-0 bg-slate-900/80 backdrop-blur-sm py-2">
         <SubmitButton label="Save Theme" pendingLabel="Saving..." className="w-full text-xs py-1" />
       </div>

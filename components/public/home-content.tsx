@@ -17,15 +17,15 @@ interface HomeContentProps {
   theme: any;
 }
 
-const IndustrialSection = ({ id, number, title, children }: { id: string; number: string; title: string; children: ReactNode }) => (
-  <section id={id} className="chrome-border-top py-24">
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 max-w-[1400px] mx-auto px-6">
-      <div className="lg:col-span-3">
+const IndustrialSection = ({ id, number, title, children, center = false }: { id: string; number: string; title: string; children: ReactNode; center?: boolean }) => (
+  <section id={id} className={`chrome-border-top ${center ? 'py-16' : 'py-24'}`}>
+    <div className={`grid grid-cols-1 ${center ? 'flex flex-col items-center gap-6' : 'lg:grid-cols-12 gap-12'} max-w-[1400px] mx-auto px-6`}>
+      <div className={center ? 'text-center' : 'lg:col-span-3'}>
         <p className="font-[family-name:var(--font-body)] text-xs font-semibold text-[var(--outline)] tracking-widest uppercase chrome-text-protect inline-block">
           {number} / {title}
         </p>
       </div>
-      <div className="lg:col-span-9">
+      <div className={center ? 'w-full flex flex-col items-center' : 'lg:col-span-9'}>
         {children}
       </div>
     </div>
@@ -108,8 +108,11 @@ export const HomeContent = ({ projects, achievements, experience, sectionOrder, 
       </IndustrialSection>
     ),
     achievements: (
-      <IndustrialSection id="achievements" number="03" title="Recognition">
-        <AchievementList achievements={achievements} />
+      <IndustrialSection id="achievements" number="03" title="Recognition" center={true}>
+        <AchievementList 
+          achievements={achievements} 
+          borderColor={theme.achievement_border_color} 
+        />
       </IndustrialSection>
     ),
     contact: (

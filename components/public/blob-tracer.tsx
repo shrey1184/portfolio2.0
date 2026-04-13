@@ -124,10 +124,10 @@ export const BlobTracer = ({ count, thickness, size, color, speed }: BlobTracerP
         {blobs.filter(b => b.visible).map((blob) => (
           <motion.div
             key={blob.id}
-            initial={{ opacity: 0, scale: 0.5 }}
+            initial={{ opacity: 0.6, scale: 1 }}
             animate={{ opacity: 0.6, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0 }}
             className="absolute flex flex-col items-start"
             style={{
               left: `${blob.x}%`,

@@ -22,6 +22,8 @@ export const updateThemeAction = async (formData: FormData) => {
   const blobColor = String(formData.get("blob_color") ?? "#FFFFFF").trim();
   const blobSpeed = parseInt(String(formData.get("blob_speed") ?? "4"));
 
+  const achievementBorderColor = String(formData.get("achievement_border_color") ?? "#FFFFFF").trim();
+
   if (!isHexColor(primaryColor)) {
     throw new Error("Primary color must be a valid hex value.");
   }
@@ -32,6 +34,10 @@ export const updateThemeAction = async (formData: FormData) => {
 
   if (!isHexColor(tertiaryColor)) {
     throw new Error("Tertiary color must be a valid hex value.");
+  }
+
+  if (!isHexColor(achievementBorderColor)) {
+    throw new Error("Achievement border color must be a valid hex value.");
   }
 
   if (!fontFamily) {
@@ -51,6 +57,7 @@ export const updateThemeAction = async (formData: FormData) => {
     blob_size: isNaN(blobSize) ? 80 : blobSize,
     blob_color: blobColor,
     blob_speed: isNaN(blobSpeed) ? 4 : blobSpeed,
+    achievement_border_color: achievementBorderColor,
   });
 
   if (error) {

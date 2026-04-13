@@ -171,7 +171,11 @@ export const AdminHomeContent = ({ projects, setProjects, achievements, setAchie
     ),
     achievements: (p) => (
       <IndustrialSection id="achievements" number="03" title="Recognition" dragHandleProps={p.attributes} dragListeners={p.listeners}>
-        <AdminAchievementList achievements={achievements} setAchievements={setAchievements} />
+        <AdminAchievementList 
+          achievements={achievements} 
+          setAchievements={setAchievements} 
+          borderColor={theme.achievement_border_color}
+        />
       </IndustrialSection>
     ),
     contact: (p) => (

@@ -19,7 +19,7 @@ function SortableAchievement({ achievement }: { achievement: Achievement }) {
   };
 
   return (
-    <div ref={setNodeRef} style={style} className={`group relative grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-12 py-8 border-b border-[var(--outline-variant)] bg-[var(--surface)] transition-all ${isDragging ? "opacity-50 inline-block" : ""}`}>
+    <div ref={setNodeRef} style={style} className={`group relative flex flex-col items-center py-6 border-b border-[var(--outline-variant)] bg-[var(--surface)] transition-all ${isDragging ? "opacity-50" : ""} text-center`}>
       <div className="absolute top-2 right-2 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
         <button {...attributes} {...listeners} className="p-2 bg-[var(--outline)] rounded-md text-[var(--surface)] hover:opacity-80 cursor-grab active:cursor-grabbing">
           <GripVertical className="h-4 w-4" />
@@ -29,16 +29,14 @@ function SortableAchievement({ achievement }: { achievement: Achievement }) {
         </Link>
       </div>
 
-      <div className="md:col-span-1">
-        <p className="font-[family-name:var(--font-body)] text-[10px] font-bold tracking-widest text-[var(--primary)] uppercase mt-2">
+      <div className="flex flex-col items-center gap-1">
+        <p className="font-[family-name:var(--font-body)] text-[9px] font-bold tracking-[0.2em] text-[var(--outline)] uppercase mb-2">
            {achievement.issuer}
         </p>
-      </div>
-      <div className="md:col-span-3 lg:col-span-2">
-        <h3 className="font-[family-name:var(--font-display)] text-xl md:text-2xl font-bold uppercase mb-4 tracking-[0.02em] pr-20">
+        <h3 className="font-[family-name:var(--font-display)] text-lg md:text-xl font-bold uppercase tracking-[0.02em]">
           {achievement.title}
         </h3>
-        <p className="font-[family-name:var(--font-body)] text-sm leading-relaxed text-[var(--outline)]">
+        <p className="font-[family-name:var(--font-body)] text-xs leading-relaxed text-[var(--outline)] max-w-md mx-auto">
           {achievement.description}
         </p>
       </div>
@@ -46,7 +44,7 @@ function SortableAchievement({ achievement }: { achievement: Achievement }) {
   );
 }
 
-export function AdminAchievementList({ achievements, setAchievements }: { achievements: Achievement[], setAchievements: (a: Achievement[]) => void }) {
+export function AdminAchievementList({ achievements, setAchievements, borderColor }: { achievements: Achievement[], setAchievements: (a: Achievement[]) => void, borderColor?: string }) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -74,7 +72,10 @@ export function AdminAchievementList({ achievements, setAchievements }: { achiev
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={achievements.map(a => a.id)} strategy={verticalListSortingStrategy}>
-          <div className="flex flex-col border-t-2 border-[var(--primary)]">
+          <div 
+            className="flex flex-col border p-6"
+            style={{ borderColor: borderColor || 'rgba(0,0,0,0.1)', background: 'transparent' }}
+          >
             {achievements.map(achievement => (
               <SortableAchievement key={achievement.id} achievement={achievement} />
             ))}
