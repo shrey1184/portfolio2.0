@@ -16,6 +16,11 @@ export const updateThemeAction = async (formData: FormData) => {
   const fontFamily = String(formData.get("font_family") ?? "").trim();
   const heroVideoUrl = String(formData.get("hero_video_url") ?? "").trim() || null;
   const heroVideoOpacity = parseFloat(String(formData.get("hero_video_opacity") ?? "0.5"));
+  const blobCount = parseInt(String(formData.get("blob_count") ?? "10"));
+  const blobThickness = parseInt(String(formData.get("blob_thickness") ?? "1"));
+  const blobSize = parseInt(String(formData.get("blob_size") ?? "80"));
+  const blobColor = String(formData.get("blob_color") ?? "#FFFFFF").trim();
+  const blobSpeed = parseInt(String(formData.get("blob_speed") ?? "4"));
 
   if (!isHexColor(primaryColor)) {
     throw new Error("Primary color must be a valid hex value.");
@@ -41,6 +46,11 @@ export const updateThemeAction = async (formData: FormData) => {
     font_family: fontFamily,
     hero_video_url: heroVideoUrl,
     hero_video_opacity: isNaN(heroVideoOpacity) ? 0.5 : heroVideoOpacity,
+    blob_count: isNaN(blobCount) ? 10 : blobCount,
+    blob_thickness: isNaN(blobThickness) ? 1 : blobThickness,
+    blob_size: isNaN(blobSize) ? 80 : blobSize,
+    blob_color: blobColor,
+    blob_speed: isNaN(blobSpeed) ? 4 : blobSpeed,
   });
 
   if (error) {

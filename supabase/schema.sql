@@ -64,6 +64,11 @@ create table if not exists public.theme_config (
   font_family text not null,
   hero_video_url text default '/globe.mp4',
   hero_video_opacity numeric default 0.5,
+  blob_count integer not null default 10,
+  blob_thickness integer not null default 1,
+  blob_size integer not null default 80,
+  blob_color text not null default '#FFFFFF',
+  blob_speed integer not null default 4,
   updated_at timestamptz not null default now()
 );
 
@@ -308,8 +313,8 @@ insert into public.layout_config (id, sections)
 values (1, '["hero", "projects", "achievements", "experience", "contact"]'::jsonb)
 on conflict (id) do nothing;
 
-insert into public.theme_config (id, primary_color, secondary_color, tertiary_color, font_family, hero_video_url, hero_video_opacity)
-values (1, '#0F766E', '#0F172A', '#777777', '''Manrope'', ''Segoe UI'', sans-serif', '/globe.mp4', 0.5)
+insert into public.theme_config (id, primary_color, secondary_color, tertiary_color, font_family, hero_video_url, hero_video_opacity, blob_count, blob_thickness, blob_size, blob_color, blob_speed)
+values (1, '#0F766E', '#0F172A', '#777777', '''Manrope'', ''Segoe UI'', sans-serif', '/globe.mp4', 0.5, 10, 1, 80, '#FFFFFF', 4)
 on conflict (id) do nothing;
 
 -- REQUIRED: Set this to the same email as ADMIN_EMAIL in your app environment.

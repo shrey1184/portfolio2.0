@@ -101,6 +101,11 @@ const FALLBACK_THEME: ThemeConfig = {
   font_family: "'Manrope', 'Segoe UI', sans-serif",
   hero_video_url: "/globe.mp4",
   hero_video_opacity: 0.5,
+  blob_count: 10,
+  blob_thickness: 1,
+  blob_size: 80,
+  blob_color: "#FFFFFF",
+  blob_speed: 4,
   updated_at: new Date().toISOString(),
 };
 

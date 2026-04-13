@@ -7,6 +7,7 @@ import { ExperienceList } from "@/components/public/experience-list";
 import { ProjectGrid } from "@/components/public/project-grid";
 import { SiteHeader } from "@/components/public/site-header";
 import type { Achievement, ExperienceItem, HomeSectionId, Project } from "@/types/domain";
+import { BlobTracer } from "@/components/public/blob-tracer";
 
 interface HomeContentProps {
   projects: Project[];
@@ -31,7 +32,7 @@ const IndustrialSection = ({ id, number, title, children }: { id: string; number
   </section>
 );
 
-const HeroSection = ({ videoUrl, opacity }: { videoUrl: string | null, opacity: number }) => (
+const HeroSection = ({ videoUrl, opacity, blobs }: { videoUrl: string | null, opacity: number, blobs: any }) => (
   <section className="min-h-[85vh] flex flex-col justify-center relative z-10 pt-16 mt-[-64px]">
     <div className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none bg-black">
       {videoUrl && (
@@ -41,12 +42,20 @@ const HeroSection = ({ videoUrl, opacity }: { videoUrl: string | null, opacity: 
           loop 
           muted 
           playsInline 
+          crossOrigin="anonymous"
           style={{ opacity }}
           className="w-full h-full object-cover mix-blend-screen grayscale"
         >
           <source src={videoUrl} type="video/mp4" />
         </video>
       )}
+      <BlobTracer 
+        count={blobs.count} 
+        thickness={blobs.thickness} 
+        size={blobs.size} 
+        color={blobs.color} 
+        speed={blobs.speed} 
+      />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[transparent] to-[var(--surface)] opacity-100" />
     </div>
     <div className="max-w-[1400px] mx-auto w-full px-6 flex flex-col h-full mt-auto relative z-10 pt-16">
@@ -75,7 +84,19 @@ const HeroSection = ({ videoUrl, opacity }: { videoUrl: string | null, opacity: 
 
 export const HomeContent = ({ projects, achievements, experience, sectionOrder, theme }: HomeContentProps) => {
   const sections: Record<HomeSectionId, ReactNode> = {
-    hero: <HeroSection videoUrl={theme.hero_video_url} opacity={theme.hero_video_opacity ?? 0.5} />,
+    hero: (
+      <HeroSection 
+        videoUrl={theme.hero_video_url} 
+        opacity={theme.hero_video_opacity ?? 0.5} 
+        blobs={{
+          count: theme.blob_count ?? 10,
+          thickness: theme.blob_thickness ?? 1,
+          size: theme.blob_size ?? 80,
+          color: theme.blob_color ?? "#FFFFFF",
+          speed: theme.blob_speed ?? 4
+        }}
+      />
+    ),
     experience: (
       <IndustrialSection id="experience" number="01" title="Impact">
         <ExperienceList items={experience} />

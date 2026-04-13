@@ -25,7 +25,7 @@ export const SiteHeader = ({ compact = false }: SiteHeaderProps) => {
           href="/"
           className="font-[family-name:var(--font-display)] font-bold text-sm tracking-[0.05em] uppercase text-[var(--primary)]"
         >
-          SYSTEMS.ENG
+          SHREY.DEV
         </Link>
         <nav className="flex items-center gap-8">
           {NAV_LINKS.map((link) => {
@@ -34,9 +34,8 @@ export const SiteHeader = ({ compact = false }: SiteHeaderProps) => {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`font-[family-name:var(--font-body)] text-[11px] font-semibold tracking-widest uppercase transition-industrial hover:opacity-100 ${
-                  active ? "text-[var(--primary)] opacity-100 border-b-[3px] border-[var(--primary)] pb-1" : "text-[var(--outline)] opacity-80"
-                }`}
+                className={`font-[family-name:var(--font-body)] text-[11px] font-semibold tracking-widest uppercase transition-industrial hover:opacity-100 ${active ? "text-[var(--primary)] opacity-100 border-b-[3px] border-[var(--primary)] pb-1" : "text-[var(--outline)] opacity-80"
+                  }`}
               >
                 {link.label}
               </Link>

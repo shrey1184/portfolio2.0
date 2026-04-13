@@ -156,6 +156,11 @@ export type Database = {
           font_family: string;
           hero_video_url: string | null;
           hero_video_opacity: number;
+          blob_count: number;
+          blob_thickness: number;
+          blob_size: number;
+          blob_color: string;
+          blob_speed: number;
           updated_at: string;
         };
         Insert: {
@@ -166,6 +171,11 @@ export type Database = {
           font_family: string;
           hero_video_url?: string | null;
           hero_video_opacity?: number;
+          blob_count?: number;
+          blob_thickness?: number;
+          blob_size?: number;
+          blob_color?: string;
+          blob_speed?: number;
           updated_at?: string;
         };
         Update: {
@@ -176,6 +186,11 @@ export type Database = {
           font_family?: string;
           hero_video_url?: string | null;
           hero_video_opacity?: number;
+          blob_count?: number;
+          blob_thickness?: number;
+          blob_size?: number;
+          blob_color?: string;
+          blob_speed?: number;
           updated_at?: string;
         };
         Relationships: [];

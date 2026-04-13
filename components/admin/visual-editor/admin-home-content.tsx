@@ -12,6 +12,7 @@ import { AdminAchievementList } from "./admin-achievement-list";
 import { AdminExperienceList } from "./admin-experience-list";
 import type { Achievement, ExperienceItem, HomeSectionId, Project } from "@/types/domain";
 import { saveLayoutAction } from "@/app/admin/actions/layout-config";
+import { BlobTracer } from "@/components/public/blob-tracer";
 
 interface AdminHomeContentProps {
   projects: Project[];
@@ -48,7 +49,7 @@ const IndustrialSection = ({ id, number, title, dragHandleProps, dragListeners, 
   </section>
 );
 
-const HeroSection = ({ dragHandleProps, dragListeners, videoUrl, opacity }: any) => (
+const HeroSection = ({ dragHandleProps, dragListeners, videoUrl, opacity, blobs }: any) => (
   <section className="min-h-[85vh] flex flex-col justify-center relative z-10 pt-16 group bg-[var(--surface)] text-[var(--primary)] mt-[-64px]">
     <div className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none bg-black">
       {videoUrl && (
@@ -64,6 +65,13 @@ const HeroSection = ({ dragHandleProps, dragListeners, videoUrl, opacity }: any)
           <source src={videoUrl} type="video/mp4" />
         </video>
       )}
+      <BlobTracer 
+        count={blobs.count} 
+        thickness={blobs.thickness} 
+        size={blobs.size} 
+        color={blobs.color} 
+        speed={blobs.speed} 
+      />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[transparent] to-[var(--surface)] opacity-100" />
     </div>
     <div className="max-w-[1400px] mx-auto w-full px-6 flex flex-col h-full mt-auto relative z-10 pt-16">
@@ -142,6 +150,13 @@ export const AdminHomeContent = ({ projects, setProjects, achievements, setAchie
         dragListeners={p.listeners} 
         videoUrl={theme.hero_video_url}
         opacity={theme.hero_video_opacity ?? 0.5}
+        blobs={{
+          count: theme.blob_count ?? 10,
+          thickness: theme.blob_thickness ?? 1,
+          size: theme.blob_size ?? 80,
+          color: theme.blob_color ?? "#FFFFFF",
+          speed: theme.blob_speed ?? 4
+        }}
       />
     ),
     experience: (p) => (

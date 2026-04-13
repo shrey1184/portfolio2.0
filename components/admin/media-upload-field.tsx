@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { uploadMediaAction } from "@/app/admin/actions/upload";
 
 interface MediaUploadFieldProps {
   name: string;
@@ -33,18 +34,13 @@ export const MediaUploadField = ({
       formData.set("file", file);
       formData.set("folder", folder);
 
-      const response = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const result = await uploadMediaAction(formData);
 
-      const payload = (await response.json()) as { error?: string; url?: string };
-
-      if (!response.ok || !payload.url) {
-        throw new Error(payload.error ?? "Failed to upload media.");
+      if (!result.success || !result.url) {
+        throw new Error(result.error ?? "Failed to upload media.");
       }
 
-      setValue(payload.url);
+      setValue(result.url);
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : "Upload failed.");
     } finally {
