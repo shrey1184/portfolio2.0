@@ -8,6 +8,7 @@ import { ProjectGrid } from "@/components/public/project-grid";
 import { SiteHeader } from "@/components/public/site-header";
 import type { Achievement, ExperienceItem, HomeSectionId, Project } from "@/types/domain";
 import { BlobTracer } from "@/components/public/blob-tracer";
+import { TechStack } from "@/components/public/tech-stack";
 
 interface HomeContentProps {
   projects: Project[];
@@ -100,18 +101,23 @@ export const HomeContent = ({ projects, achievements, experience, sectionOrder, 
         }}
       />
     ),
+    stack: (
+      <IndustrialSection id="stack" number="01" title="Stack">
+        <TechStack />
+      </IndustrialSection>
+    ),
     experience: (
-      <IndustrialSection id="experience" number="01" title="Impact">
+      <IndustrialSection id="experience" number="02" title="Impact">
         <ExperienceList items={experience} />
       </IndustrialSection>
     ),
     projects: (
-      <IndustrialSection id="projects" number="02" title="Repository">
+      <IndustrialSection id="projects" number="03" title="Repository">
         <ProjectGrid projects={projects} />
       </IndustrialSection>
     ),
     achievements: (
-      <IndustrialSection id="achievements" number="03" title="Recognition" center={true}>
+      <IndustrialSection id="achievements" number="04" title="Recognition" center={true}>
         <AchievementList 
           achievements={achievements} 
           borderColor={theme.achievement_border_color} 

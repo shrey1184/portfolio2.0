@@ -2,6 +2,7 @@ import type { Database } from "@/types/database";
 
 export const HOMEPAGE_SECTIONS = [
   "hero",
+  "stack",
   "projects",
   "achievements",
   "experience",
