@@ -26,8 +26,7 @@ const labels: Record<HomeSectionId, string> = {
   hero: "Hero",
   projects: "Projects",
   achievements: "Achievements",
-  experience: "Experience",
-  contact: "Contact",
+  experience: "Experience",  stack: "Stack",  contact: "Contact",
 };
 
 interface SortableItemProps {

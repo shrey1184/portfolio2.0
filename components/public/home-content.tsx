@@ -224,11 +224,24 @@ export const HomeContent = ({ projects, achievements, experience, sectionOrder, 
         }}
       />
     ),
-    stack: (
-      <IndustrialSection id="stack" number="01" title="Stack">
-        <TechStack />
-      </IndustrialSection>
-    ),
+    // BEFORE — TechStack gets shoved into col-span-9
+stack: (
+  <IndustrialSection id="stack" number="01" title="Stack">
+    <TechStack />
+  </IndustrialSection>
+),
+
+// AFTER — give stack its own full-width wrapper
+stack: (
+  <section id="stack" className="chrome-border-top py-24">
+    <div className="max-w-[1400px] mx-auto px-6">
+      <p className="font-[family-name:var(--font-body)] text-xs font-semibold text-[var(--outline)] tracking-widest uppercase chrome-text-protect inline-block mb-12">
+        01 / Stack
+      </p>
+      <TechStack />
+    </div>
+  </section>
+),
     experience: (
       <IndustrialSection id="experience" number="02" title="Impact">
         <ExperienceList items={experience} />

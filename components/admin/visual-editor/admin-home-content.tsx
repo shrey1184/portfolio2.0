@@ -181,6 +181,13 @@ export const AdminHomeContent = ({ projects, setProjects, achievements, setAchie
         />
       </IndustrialSection>
     ),
+    stack: (p) => (
+      <IndustrialSection id="stack" number="04" title="Arsenal" dragHandleProps={p.attributes} dragListeners={p.listeners}>
+        <div className="flex items-center justify-center p-12 border-2 border-dashed border-[var(--outline)]/30 rounded-xl bg-black/10">
+          <p className="text-[var(--outline)] uppercase tracking-[0.2em] font-medium text-sm">Stack Section Component Loaded Here</p>
+        </div>
+      </IndustrialSection>
+    ),
     contact: (p) => (
       null 
     ),
