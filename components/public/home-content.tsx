@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import Link from "next/link";
 import { AchievementList } from "@/components/public/achievement-list";
 import { ExperienceList } from "@/components/public/experience-list";
@@ -33,8 +33,41 @@ const IndustrialSection = ({ id, number, title, children, center = false }: { id
   </section>
 );
 
+const AnimatedRoleText = ({ layer }: { layer: 'solid' | 'outline' }) => {
+  const [wordIndex, setWordIndex] = useState(0);
+  const words = ["AI DEVELOPER", "FULL STACK", "SYSTEM ENGINEER"];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setWordIndex((prev) => (prev + 1) % words.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="absolute inset-0 flex items-center justify-center pointer-events-none w-full overflow-hidden">
+      {words.map((word, index) => (
+        <h1 
+          key={`${layer}-${word}`}
+          className={`absolute text-5xl sm:text-7xl md:text-[8rem] lg:text-[11rem] font-[family-name:var(--font-display)] font-bold uppercase tracking-[0.05em] whitespace-nowrap transition-all duration-1000 ${
+            index === wordIndex ? "opacity-100 scale-100 filter-none" : "opacity-0 scale-110 blur-xl"
+          } ${layer === 'solid' ? "text-[hidden]" : "text-transparent"}`}
+          style={
+            layer === 'solid' 
+            ? { color: 'var(--primary)', opacity: index === wordIndex ? 1 : 0 }
+            : { WebkitTextStroke: "1px var(--primary)", filter: "drop-shadow(0 0 20px rgba(var(--primary-rgb), 0.2))" }
+          }
+        >
+          {word}
+        </h1>
+      ))}
+    </div>
+  );
+};
+
 const HeroSection = ({ videoUrl, opacity, grayscale, blobs }: { videoUrl: string | null, opacity: number, grayscale: boolean, blobs: any }) => (
-  <section className="min-h-[85vh] flex flex-col justify-center relative z-10 pt-16 mt-[-64px]">
+  <section className="min-h-[100svh] flex flex-col justify-center relative z-10 pt-16 mt-[-64px] bg-[var(--surface)] overflow-hidden">
+    {/* Background video and blobs */}
     <div className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none bg-black">
       {videoUrl && (
         <video 
@@ -44,7 +77,7 @@ const HeroSection = ({ videoUrl, opacity, grayscale, blobs }: { videoUrl: string
           muted 
           playsInline 
           crossOrigin="anonymous"
-          style={{ opacity }}
+          style={{ opacity: opacity * 0.5 }}
           className={`w-full h-full object-cover mix-blend-screen ${grayscale ? 'grayscale' : ''}`}
         >
           <source src={videoUrl} type="video/mp4" />
@@ -58,29 +91,119 @@ const HeroSection = ({ videoUrl, opacity, grayscale, blobs }: { videoUrl: string
         filledColor={blobs.filledColor}
         speed={blobs.speed} 
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[transparent] to-[var(--surface)] opacity-100" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[var(--surface)] opacity-100" />
     </div>
-    <div className="max-w-[1400px] mx-auto w-full px-6 flex flex-col h-full mt-auto relative z-10 pt-16">
-      <div className="max-w-[1100px] mt-auto">
-        <h1 className="font-[family-name:var(--font-display)] text-5xl md:text-8xl leading-[0.9] tracking-[0.02em] font-bold uppercase mb-16 chrome-text-protect inline-block">
-          Engineering<br />
-          Systems that<br />
-          Operate under<br />
-          Real constraints.
-        </h1>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between chrome-border-top pt-4 pb-16 gap-6">
-          <p className="font-[family-name:var(--font-body)] text-[10px] font-bold tracking-widest text-[var(--outline)] uppercase border-b border-[var(--outline)] border-dotted pb-1 w-max chrome-text-protect">
-            01 . INFRASTRUCTURE . EXECUTION .
-          </p>
-          <Link
-            href="/projects"
-            className="chrome-button bg-[var(--primary)] text-[var(--surface)] font-[family-name:var(--font-display)] font-bold text-sm tracking-widest uppercase px-12 py-4 transition-industrial hover:opacity-80"
-          >
-            Enter
-          </Link>
-        </div>
+
+    {/* Frame Graphic Elements */}
+    <div className="absolute inset-6 sm:inset-10 z-10 pointer-events-none border-[0.5px] border-[var(--outline)] opacity-30" />
+
+    {/* Top Center Stars */}
+    <div className="absolute top-16 left-1/2 -translate-x-1/2 flex items-center gap-6 text-[var(--primary)] z-20 opacity-80 text-lg">
+      <span>✦</span>
+      <span>✦</span>
+      <span>✦</span>
+    </div>
+
+    {/* Bottom Center Text */}
+    <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex items-center gap-8 text-[var(--primary)] z-20 opacity-80">
+      <span className="text-[10px] sm:text-xs uppercase tracking-[0.4em] font-[family-name:var(--font-display)]">Constructed</span>
+      <span className="text-sm">⊕</span>
+      <span className="text-[10px] sm:text-xs uppercase tracking-[0.4em] font-[family-name:var(--font-display)]">Systems</span>
+    </div>
+
+    {/* Top Left Corner */}
+    <div className="absolute top-16 left-16 hidden lg:flex flex-col gap-2 max-w-[220px] z-20">
+      <div className="text-[var(--primary)] text-xl mb-1">✧</div>
+      <h3 className="text-[var(--primary)] font-[family-name:var(--font-display)] text-[11px] tracking-[0.3em] uppercase">CLOSE-UP</h3>
+      <p className="text-[var(--outline)] font-[family-name:var(--font-body)] text-[9px] leading-relaxed uppercase tracking-widest mt-1 opacity-70">
+        Capture the raw intensity of code, the structured elegance of systems.
+      </p>
+    </div>
+
+    {/* Top Right Corner */}
+    <div className="absolute top-16 right-16 hidden lg:flex flex-col items-end text-right gap-2 max-w-[220px] z-20">
+      <div className="text-[var(--primary)] text-xl mb-1">✧</div>
+      <h3 className="text-[var(--primary)] font-[family-name:var(--font-display)] text-[11px] tracking-[0.3em] uppercase">MID-SHOT</h3>
+      <p className="text-[var(--outline)] font-[family-name:var(--font-body)] text-[9px] leading-relaxed uppercase tracking-widest mt-1 opacity-70">
+        Frame the system against the backdrop of constraint, a vision of raw capacity.
+      </p>
+    </div>
+
+    {/* Center Left Corner */}
+    <div className="absolute top-1/2 -translate-y-1/2 left-16 hidden xl:flex flex-col gap-2 max-w-[200px] z-20">
+      <div className="text-[var(--primary)] text-2xl mb-4">❋</div>
+      <h3 className="text-[var(--primary)] font-[family-name:var(--font-display)] text-[11px] tracking-[0.3em] uppercase">VOID BOUND</h3>
+      <p className="text-[var(--outline)] font-[family-name:var(--font-body)] text-[9px] leading-relaxed uppercase tracking-widest mt-1 opacity-70">
+        Born in logic, crowned in structure. The design is etched in terminal output.
+      </p>
+    </div>
+
+    {/* Center Right Corner */}
+    <div className="absolute top-1/2 -translate-y-1/2 right-16 hidden xl:flex flex-col items-end text-right gap-2 max-w-[200px] z-20">
+      <div className="text-[var(--primary)] text-2xl mb-4">❋</div>
+      <h3 className="text-[var(--primary)] font-[family-name:var(--font-display)] text-[11px] tracking-[0.3em] uppercase">DARK REIGN</h3>
+      <p className="text-[var(--outline)] font-[family-name:var(--font-body)] text-[9px] leading-relaxed uppercase tracking-widest mt-1 opacity-70">
+        A network forged in fire, feared by all. Constraints of destiny cannot bind it.
+      </p>
+    </div>
+
+    {/* Bottom Left Corner */}
+    <div className="absolute bottom-16 left-16 hidden lg:flex flex-col gap-2 max-w-[280px] z-20">
+      <div className="text-[var(--primary)] text-2xl mb-2 font-light">++</div>
+      <h3 className="text-[var(--primary)] font-[family-name:var(--font-display)] text-[11px] tracking-[0.3em] uppercase">ARCHITECT</h3>
+      <p className="text-[var(--outline)] font-[family-name:var(--font-body)] text-[9px] leading-relaxed uppercase tracking-widest mt-1 opacity-70">
+        She stands at the precipice of complexity, draped in the echoes of data and willed in the structuring of systems long forgotten.
+      </p>
+    </div>
+
+    {/* Bottom Right Corner */}
+    <div className="absolute bottom-16 right-16 hidden lg:flex flex-col items-end text-right gap-2 max-w-[280px] z-20">
+      <div className="text-[var(--primary)] text-2xl mb-2 font-light">++</div>
+      <h3 className="text-[var(--primary)] font-[family-name:var(--font-display)] text-[11px] tracking-[0.3em] uppercase">IRON LOGIC</h3>
+      <p className="text-[var(--outline)] font-[family-name:var(--font-body)] text-[9px] leading-relaxed uppercase tracking-widest mt-1 opacity-70">
+        A system forged in logic, feared by entropy. Her presence alone bends the will of servers.
+      </p>
+    </div>
+
+    {/* Central Focus Area */}
+    <div className="relative w-full h-[75vh] flex flex-col items-center justify-center z-10 mt-8">
+      {/* 1. Underlying Solid Text Layer */}
+      <div className="absolute inset-0 z-[5]">
+        <AnimatedRoleText layer="solid" />
+      </div>
+
+      {/* 2. The Subject Image (Angel) */}
+      <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+        {/* Using standard img with drop-shadow to separate it from the text */}
+        <img 
+          src="/angel1.png" 
+          alt="Subject" 
+          className="h-[100vh] w-auto max-w-none scale-110 md:scale-125 origin-bottom object-contain object-bottom drop-shadow-[0_0_30px_rgba(0,0,0,0.8)] filter brightness-90 contrast-125"
+        />
+      </div>
+
+      {/* 3. Overlaying Outline Text Layer */}
+      <div className="absolute inset-0 z-20 pointer-events-none">
+         <AnimatedRoleText layer="outline" />
+      </div>
+
+      {/* Initialize Button (bottom center above the text) */}
+      <div className="absolute bottom-0 z-30 flex flex-col items-center gap-6 pb-4">
+        <Link
+          href="#stack"
+          className="chrome-button bg-transparent border border-[var(--primary)] text-[var(--primary)] font-[family-name:var(--font-display)] font-bold text-xs tracking-[0.3em] uppercase px-12 py-3 transition-industrial hover:bg-[var(--primary)] hover:text-[var(--surface)] backdrop-blur-sm"
+          onClick={(e) => {
+            e.preventDefault();
+            document.getElementById('stack')?.scrollIntoView({ behavior: 'smooth' });
+          }}
+        >
+          Initialize
+        </Link>
       </div>
     </div>
+    
+    {/* Subtle gradient to mask bottom edge of image */}
+    <div className="absolute bottom-0 w-full h-32 bg-gradient-to-t from-[var(--surface)] to-transparent z-20 pointer-events-none" />
   </section>
 );
 
