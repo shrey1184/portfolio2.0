@@ -190,11 +190,11 @@ const HeroSection = ({ videoUrl, opacity, grayscale, blobs }: { videoUrl: string
       {/* Initialize Button (bottom center above the text) */}
       <div className="absolute bottom-0 z-30 flex flex-col items-center gap-6 pb-4">
         <Link
-          href="#stack"
+          href="#skills"
           className="chrome-button bg-transparent border border-[var(--primary)] text-[var(--primary)] font-[family-name:var(--font-display)] font-bold text-xs tracking-[0.3em] uppercase px-12 py-3 transition-industrial hover:bg-[var(--primary)] hover:text-[var(--surface)] backdrop-blur-sm"
           onClick={(e) => {
             e.preventDefault();
-            document.getElementById('stack')?.scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('skills')?.scrollIntoView({ behavior: 'smooth' });
           }}
         >
           Initialize
@@ -224,24 +224,9 @@ export const HomeContent = ({ projects, achievements, experience, sectionOrder, 
         }}
       />
     ),
-    // BEFORE — TechStack gets shoved into col-span-9
-stack: (
-  <IndustrialSection id="stack" number="01" title="Stack">
-    <TechStack />
-  </IndustrialSection>
-),
-
-// AFTER — give stack its own full-width wrapper
-stack: (
-  <section id="stack" className="chrome-border-top py-24">
-    <div className="max-w-[1400px] mx-auto px-6">
-      <p className="font-[family-name:var(--font-body)] text-xs font-semibold text-[var(--outline)] tracking-widest uppercase chrome-text-protect inline-block mb-12">
-        01 / Stack
-      </p>
+    stack: (
       <TechStack />
-    </div>
-  </section>
-),
+    ),
     experience: (
       <IndustrialSection id="experience" number="02" title="Impact">
         <ExperienceList items={experience} />
