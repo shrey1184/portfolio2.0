@@ -19,7 +19,7 @@ function SortableExperienceItem({ item }: { item: ExperienceItem }) {
   };
 
   return (
-    <div ref={setNodeRef} style={style} className={`group relative flex flex-col gap-4 border-b border-[var(--outline-variant)] pb-16 last:border-0 last:pb-0 bg-[var(--surface)] transition-opacity ${isDragging ? "opacity-50" : ""}`}>
+    <div ref={setNodeRef} style={style} className={`group relative flex flex-col gap-4 chrome-border-bottom pb-16 last:border-0 last:pb-0 bg-[var(--surface)] transition-opacity ${isDragging ? "opacity-50" : ""}`}>
       <div className="absolute top-2 right-2 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
         <button {...attributes} {...listeners} className="p-2 bg-[var(--outline)] rounded-md text-[var(--surface)] hover:opacity-80 cursor-grab active:cursor-grabbing">
           <GripVertical className="h-4 w-4" />
@@ -29,12 +29,12 @@ function SortableExperienceItem({ item }: { item: ExperienceItem }) {
         </Link>
       </div>
 
-      <h3 className="font-[family-name:var(--font-display)] text-3xl md:text-5xl font-bold uppercase leading-[1.1] tracking-[0.02em] max-w-3xl pr-20">
+      <h3 className="font-[family-name:var(--font-display)] text-3xl md:text-5xl font-bold uppercase leading-[1.1] tracking-[0.02em] max-w-3xl pr-20 chrome-text-protect inline-block">
         {item.role}
       </h3>
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-[10px] font-[family-name:var(--font-body)] font-bold tracking-widest text-[var(--outline)] uppercase mt-2">
         <span>{item.company}</span>
-        <span className="hidden sm:inline">//</span>
+        <span className="hidden sm:inline">{"//"}</span>
         <span>{item.location}</span>
       </div>
       <p className="font-[family-name:var(--font-body)] text-sm leading-relaxed max-w-2xl mt-6">
