@@ -92,7 +92,7 @@ const HeroSection = ({ dragHandleProps, dragListeners, videoUrl, opacity, graysc
     >
       <GripVertical className="h-5 w-5" />
     </button>
-    <div className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none bg-black">
+    <div className={`absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none ${videoUrl ? 'bg-black' : 'bg-secondary'}`}>
       {videoUrl && (
         <video 
           key={videoUrl}

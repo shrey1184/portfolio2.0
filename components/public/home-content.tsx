@@ -68,7 +68,7 @@ const AnimatedRoleText = ({ layer }: { layer: 'solid' | 'outline' }) => {
 const HeroSection = ({ videoUrl, opacity, grayscale, blobs }: { videoUrl: string | null, opacity: number, grayscale: boolean, blobs: any }) => (
   <section className="min-h-[100svh] flex flex-col justify-center relative z-10 pt-16 mt-[-64px] bg-[var(--surface)] overflow-hidden">
     {/* Background video and blobs */}
-    <div className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none bg-black">
+    <div className={`absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none ${videoUrl ? 'bg-black' : 'bg-secondary'}`}>
       {videoUrl && (
         <video 
           key={videoUrl}

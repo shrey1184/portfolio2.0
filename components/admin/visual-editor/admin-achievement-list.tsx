@@ -20,7 +20,7 @@ function SortableAchievement({ achievement }: { achievement: Achievement }) {
   };
 
   return (
-    <div ref={setNodeRef} style={style} className={`group relative w-full flex flex-col items-center py-6 border-t border-white/5 last:border-b border-[var(--outline-variant)] bg-[var(--surface)] transition-all ${isDragging ? "opacity-50" : ""} text-center`}>
+    <div ref={setNodeRef} style={style} className={`group relative w-full flex flex-col items-center py-6 border-t border-[var(--primary)] bg-[var(--surface)] transition-all ${isDragging ? "opacity-50" : ""} text-center`}>
       <div className="absolute top-2 right-2 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
         <button {...attributes} {...listeners} className="p-2 bg-[var(--outline)] rounded-md text-[var(--surface)] hover:opacity-80 cursor-grab active:cursor-grabbing">
           <GripVertical className="h-4 w-4" />
@@ -32,10 +32,10 @@ function SortableAchievement({ achievement }: { achievement: Achievement }) {
 
       <div className="flex flex-col gap-2 items-center">
         <div className="flex items-center justify-center gap-3">
-          <h3 className="font-[family-name:var(--font-display)] text-xl md:text-2xl font-bold uppercase tracking-wide text-white group-hover:text-[var(--primary)] transition-colors">
+          <h3 className="font-[family-name:var(--font-display)] text-xl md:text-2xl font-bold uppercase tracking-wide text-[var(--primary)] group-hover:opacity-80 transition-colors">
             {achievement.title}
           </h3>
-          <span className="px-2 py-0.5 rounded-full bg-white/10 text-[8px] font-bold uppercase tracking-wider text-white/50">
+          <span className="px-2 py-0.5 rounded-full bg-[var(--primary)] text-[var(--surface)] text-[8px] font-bold uppercase tracking-wider">
             Verified
           </span>
         </div>
@@ -45,11 +45,11 @@ function SortableAchievement({ achievement }: { achievement: Achievement }) {
       </div>
 
       <div className="flex items-center justify-center gap-4 mt-4">
-        <p className="font-[family-name:var(--font-display)] text-[11px] font-bold uppercase tracking-wider text-white/80">
+        <p className="font-[family-name:var(--font-display)] text-[11px] font-bold uppercase tracking-wider text-[var(--outline)]">
           {achievement.issuer}
         </p>
-        <div className="w-1 h-1 bg-white/20 rounded-full" />
-        <p className="font-[family-name:var(--font-body)] text-[10px] font-bold text-white/20 uppercase">
+        <div className="w-1 h-1 bg-[var(--primary)] opacity-50 rounded-full" />
+        <p className="font-[family-name:var(--font-body)] text-[10px] font-bold text-[var(--outline)] uppercase">
           {year}
         </p>
       </div>
@@ -87,13 +87,13 @@ export function AdminAchievementList({ achievements, setAchievements, borderColo
         <SortableContext items={achievements.map(a => a.id)} strategy={verticalListSortingStrategy}>
           <div 
             className="w-full max-w-4xl mx-auto py-12 px-6 border flex flex-col items-center"
-            style={{ borderColor: borderColor || 'rgba(255,255,255,0.1)', background: 'transparent' }}
+            style={{ borderColor: borderColor || 'var(--primary)', background: 'transparent' }}
           >
             <div className="text-center mb-12">
               <p className="text-[var(--outline)] font-[family-name:var(--font-body)] text-[10px] font-bold tracking-[0.3em] uppercase mb-4">
                 Honors & Awards
               </p>
-              <h2 className="font-[family-name:var(--font-display)] text-3xl md:text-5xl font-black uppercase tracking-tight mb-6 text-white">
+              <h2 className="font-[family-name:var(--font-display)] text-3xl md:text-5xl font-black uppercase tracking-tight mb-6 text-[var(--primary)]">
                 Recognition with actual signal.
               </h2>
               <p className="max-w-2xl mx-auto font-[family-name:var(--font-body)] text-xs md:text-sm text-[var(--outline)] leading-relaxed">
