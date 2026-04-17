@@ -4,6 +4,11 @@ import type { Metadata } from "next";
 import { getThemeConfig } from "@/lib/data/public";
 
 import "./globals.css";
+import { Geist } from "next/font/google";
+import { cn } from "@/lib/utils";
+import { FloatingDockNav } from "@/components/public/floating-dock-nav";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: {
@@ -39,8 +44,11 @@ export default async function RootLayout({
   } as CSSProperties & { [key: string]: any };
 
   return (
-    <html lang="en" className="scroll-smooth">
-      <body style={style}>{children}</body>
+    <html lang="en" className={cn("scroll-smooth", "font-sans", geist.variable)}>
+      <body style={style}>
+        {children}
+        <FloatingDockNav />
+      </body>
     </html>
   );
 }

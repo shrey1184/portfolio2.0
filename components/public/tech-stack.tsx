@@ -222,18 +222,18 @@ export const TechStack = () => {
   };
 
   return (
-    <section id="skills" className="relative bg-[#050505] min-h-screen flex flex-col w-full z-20 overflow-hidden">
+    <section id="skills" className="relative bg-[#050505] py-24 md:py-40 z-20 overflow-hidden min-h-[50vh] flex items-center w-full">
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none" />
 
-      <div className="w-full relative z-10 flex flex-col flex-1 h-full">
+      <div className="w-full relative z-10 max-w-[1920px] mx-auto">
         <motion.div 
           initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
           whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           viewport={{ once: true }}
           transition={{ delay: 0.1, duration: 0.8 }}
-          className="px-6 sm:px-12 lg:pl-32 lg:pr-24 xl:pl-48 xl:pr-32 pt-24 md:pt-32 pb-12 md:pb-16"
+          className="px-6 sm:px-12 lg:px-16"
         >
-          <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-8">
+          <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-8 mb-20 md:mb-32">
             <div className="flex flex-col gap-6">
               <div className="flex items-center gap-4">
                 <span className="flex items-center justify-center w-8 h-8 rounded-full border border-white/10 bg-white/5">
@@ -249,17 +249,17 @@ export const TechStack = () => {
               </h2>
             </div>
             
-            <p className="font-[family-name:var(--font-body)] max-w-lg text-white/40 text-xl md:text-2xl font-light leading-relaxed pb-2 lg:-translate-x-8 xl:-translate-x-12">
+            <p className="font-[family-name:var(--font-body)] max-w-md text-white/40 text-lg md:text-xl font-light leading-relaxed pb-2">
               Transforming complex technical requirements into physical logic. 
               Interactive agent graph—hover to track node flow.
             </p>
           </div>
         </motion.div>
 
-        <div className="flex flex-col-reverse lg:flex-row gap-0 relative w-full items-stretch flex-1 border-y border-white/[0.05] bg-black/40 overflow-hidden backdrop-blur-md shadow-2xl">
+        <div className="flex flex-col-reverse lg:flex-row gap-0 xl:gap-8 relative w-full items-stretch lg:min-h-[650px] border-y border-white/[0.05] bg-black/40 overflow-hidden backdrop-blur-md shadow-2xl">
           
           {/* LEFT: Nav Stack */}
-          <div className="w-full lg:w-[40%] xl:w-[35%] flex flex-row overflow-x-auto lg:overflow-x-visible lg:flex-col justify-start lg:justify-center border-t lg:border-t-0 lg:border-r border-white/[0.05] p-0 lg:p-12 lg:pl-32 xl:p-16 xl:pl-48 relative z-20 bg-[#0A0A0A]/50 backdrop-blur-2xl no-scrollbar">
+          <div className="w-full lg:w-[40%] xl:w-[35%] flex flex-row overflow-x-auto lg:overflow-x-visible lg:flex-col justify-start lg:justify-center border-t lg:border-t-0 lg:border-r border-white/[0.05] p-0 lg:p-12 xl:p-16 relative z-20 bg-[#0A0A0A]/50 backdrop-blur-2xl no-scrollbar">
             {skillsData.map((group, index) => {
               const isActive = activeIndex === index;
               return (
@@ -302,7 +302,7 @@ export const TechStack = () => {
           >
             {/* Soft Interactive Spotlight */}
             <motion.div
-              className="absolute top-1/2 left-[50%] lg:left-[55%] xl:left-[60%] w-[600px] h-[600px] rounded-full mix-blend-screen pointer-events-none z-0"
+              className="absolute top-1/2 left-1/2 w-[600px] h-[600px] rounded-full mix-blend-screen pointer-events-none z-0"
               style={{
                 x: useTransform(smoothMx, (v) => v * 150),
                 y: useTransform(smoothMy, (v) => v * 150),
@@ -313,7 +313,7 @@ export const TechStack = () => {
             />
 
             {/* Radar / Grid System */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 lg:translate-x-12 xl:translate-x-24">
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
               <div className="absolute w-[150px] md:w-[250px] h-[150px] md:h-[250px] rounded-full border border-white/[0.03]" />
               <div className="absolute w-[300px] md:w-[450px] h-[300px] md:h-[450px] rounded-full border border-white/[0.05] border-dashed" />
               <div className="absolute w-[450px] md:w-[650px] h-[450px] md:h-[650px] rounded-full border border-white/[0.03]" />
@@ -329,7 +329,7 @@ export const TechStack = () => {
             <div className="absolute bottom-6 right-6 w-3 h-3 md:w-4 md:h-4 border-r border-b border-white/20" />
 
             {/* Giant Abstract Number */}
-            <div className="absolute top-1/2 left-[50%] lg:left-[55%] xl:left-[60%] -translate-x-1/2 -translate-y-1/2 z-0 select-none pointer-events-none">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 select-none pointer-events-none">
               <AnimatePresence mode="popLayout">
                 <motion.div
                   key={`bg-num-${activeIndex}`}
@@ -345,7 +345,7 @@ export const TechStack = () => {
             </div>
 
             {/* Live Interactive Node Network */}
-            <div className="absolute inset-0 z-10 pointer-events-none lg:translate-x-12 xl:translate-x-24">
+            <div className="absolute inset-0 z-10 pointer-events-none">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={`network-${activeIndex}`}
