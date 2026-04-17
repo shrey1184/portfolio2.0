@@ -31,15 +31,18 @@ export const ProjectGrid = ({ projects }: ProjectGridProps) => {
   const scrollTrackHeight = `${projects.length * 100}vh`;
 
   return (
-    <div 
-      ref={containerRef}
-      className="relative w-full"
-      style={{ height: scrollTrackHeight }}
-    >
-      {/* Sticky container completely freezes the background while we scroll down its height */}
-      <div className="sticky top-32 w-full flex flex-col items-center justify-start">
+    <section id="projects" className="chrome-border-top py-0 relative w-full" ref={containerRef} style={{ height: scrollTrackHeight }}>
+      {/* Sticky container completely freezes the text heading and background while we scroll down its height */}
+      <div className="sticky top-0 w-full h-screen flex flex-col items-center justify-center overflow-hidden py-16">
         
-        <div className="relative w-full max-w-7xl mx-auto h-[450px] md:h-[550px]">
+        {/* Section Heading embedded inside the pinned sticky frame */}
+        <div className="text-center mb-12">
+          <p className="font-[family-name:var(--font-body)] text-xs font-semibold text-[var(--outline)] tracking-widest uppercase chrome-text-protect inline-block">
+            03 / REPOSITORY
+          </p>
+        </div>
+
+        <div className="relative w-full max-w-7xl mx-auto h-[450px] md:h-[550px] px-6">
           {projects.map((project, i) => {
             const total = projects.length;
             
@@ -145,6 +148,6 @@ export const ProjectGrid = ({ projects }: ProjectGridProps) => {
           })}
         </div>
       </div>
-    </div>
+    </section>
   );
 };
