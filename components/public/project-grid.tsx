@@ -33,10 +33,10 @@ export const ProjectGrid = ({ projects }: ProjectGridProps) => {
   return (
     <section id="projects" className="chrome-border-top py-0 relative w-full" ref={containerRef} style={{ height: scrollTrackHeight }}>
       {/* Sticky container completely freezes the text heading and background while we scroll down its height */}
-      <div className="sticky top-0 w-full h-screen flex flex-col items-center justify-center overflow-hidden py-16">
+      <div className="sticky top-0 w-full h-[100vh] flex flex-col items-center justify-center overflow-hidden py-16">
         
         {/* Section Heading embedded inside the pinned sticky frame */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <p className="font-[family-name:var(--font-body)] text-xs font-semibold text-[var(--outline)] tracking-widest uppercase chrome-text-protect inline-block">
             03 / REPOSITORY
           </p>
@@ -47,7 +47,6 @@ export const ProjectGrid = ({ projects }: ProjectGridProps) => {
             const total = projects.length;
             
             // Calculate progress thresholds based on number of cards
-            // e.g. for 3 cards: step is 0.5. Card 1 animates 0->0.5, Card 2 animates 0.5->1.0
             const step = 1 / Math.max(1, total - 1);
             const startIn = (i - 1) * step;
             const endIn = i * step;
@@ -91,7 +90,7 @@ export const ProjectGrid = ({ projects }: ProjectGridProps) => {
                 */}
                 <motion.div
                   style={{ scale, transformOrigin: 'top center' }}
-                  className="relative w-full h-[400px] md:h-[500px] !bg-zinc-950 group overflow-hidden rounded-[40px] transform-gpu will-change-transform shadow-[0_-10px_35px_rgba(0,0,0,0.5)] border border-white/10"
+                  className="relative w-full h-[400px] md:h-[500px] !bg-[var(--surface)] bg-zinc-950 group overflow-hidden rounded-[40px] transform-gpu will-change-transform shadow-[0_-10px_35px_rgba(0,0,0,0.5)] border border-white/10"
                 >
                   {/* Dynamic Dark Depth Shadow overlay mapping to scroll distance */}
                   <motion.div 
@@ -147,6 +146,9 @@ export const ProjectGrid = ({ projects }: ProjectGridProps) => {
             );
           })}
         </div>
+
+        {/* Gradual surface fade at the bottom of the sticky frame to hide lower card edges seamlessly */}
+        <div className="absolute bottom-0 w-full h-40 bg-gradient-to-t from-[var(--surface)] to-transparent z-[100] pointer-events-none" />
       </div>
     </section>
   );

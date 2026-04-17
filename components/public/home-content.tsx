@@ -233,9 +233,7 @@ export const HomeContent = ({ projects, achievements, experience, sectionOrder, 
       </IndustrialSection>
     ),
     projects: (
-      <IndustrialSection id="projects" number="03" title="Repository" center={true}>
-        <ProjectGrid projects={projects} />
-      </IndustrialSection>
+      <ProjectGrid projects={projects} />
     ),
     achievements: (
       <IndustrialSection id="achievements" number="04" title="Recognition" center={true}>
