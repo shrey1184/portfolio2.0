@@ -60,6 +60,15 @@ export function ThemeEditor({ theme, onChange }: { theme: any, onChange: (t: any
       <div className="space-y-3">
         <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-500 border-b border-slate-700 pb-1">Hero Media</h3>
         <div className="flex flex-col gap-2">
+          <label className="text-sm text-slate-300">Hero Image</label>
+          <MediaUploadField 
+            name="hero_image_url" 
+            folder="theme" 
+            defaultValue={theme.hero_image_url}
+            accept="image/*"
+          />
+        </div>
+        <div className="flex flex-col gap-2">
           <label className="text-sm text-slate-300">Background Video</label>
           <MediaUploadField 
             name="hero_video_url" 

@@ -78,29 +78,50 @@ const getIcon = (id: string, colorClass: string) => {
   }
 };
 
-// ── Graph Connection Line ──
-function GraphLine({ item, i, mx, my, multiplier }: any) {
-  const angRad = (item.angle * Math.PI) / 180;
-  const baseX = Math.cos(angRad) * item.radius * multiplier;
-  const baseY = Math.sin(angRad) * item.radius * multiplier;
-
-  const cx = useTransform(mx, [-1, 1], [-15, 15]);
-  const cy = useTransform(my, [-1, 1], [-15, 15]);
-
-  const nx = useTransform(mx, (val: number) => baseX + (val * item.depth * multiplier));
-  const ny = useTransform(my, (val: number) => baseY + (val * item.depth * multiplier));
+// ── Graph Radar Polygon ──
+function RadarPolygon({ group, mx, my, multiplier }: any) {
+  const points = useTransform(() => {
+    const mxVal = mx.get();
+    const myVal = my.get();
+    
+    // Sort objects by angle to ensure a correct polygon
+    const sortedItems = [...group.items].sort((a: any, b: any) => a.angle - b.angle);
+    
+    return sortedItems.map((item: any) => {
+      const angRad = (item.angle * Math.PI) / 180;
+      const baseX = Math.cos(angRad) * item.radius * multiplier;
+      const baseY = Math.sin(angRad) * item.radius * multiplier;
+      
+      const nx = baseX + (mxVal * item.depth * multiplier);
+      const ny = baseY + (myVal * item.depth * multiplier);
+      
+      return `${nx},${ny}`;
+    }).join(" ");
+  });
 
   return (
     <>
-      <motion.line x1={cx} y1={cy} x2={nx} y2={ny} stroke="currentColor" strokeWidth={1} className="opacity-20" />
-      <motion.line 
-         x1={cx} y1={cy} x2={nx} y2={ny} 
+      <motion.polygon 
+        points={points} 
+        fill="currentColor" 
+        className="opacity-10" 
+      />
+      <motion.polygon 
+        points={points} 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth={1} 
+        className="opacity-20" 
+      />
+      <motion.polygon 
+         points={points} 
+         fill="none"
          stroke="currentColor" 
          strokeWidth={2} 
          strokeDasharray="4 16" 
          initial={{ strokeDashoffset: 0 }}
          animate={{ strokeDashoffset: 20 }}
-         transition={{ repeat: Infinity, duration: 1 + (i % 3) * 0.2, ease: "linear" }}
+         transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
          className="opacity-40" 
       />
     </>
@@ -156,7 +177,7 @@ function CoreNode({ mx, my, group }: any) {
         
         <div className="flex flex-col items-center justify-center w-20 h-20 md:w-28 md:h-28 bg-[#0A0A0A]/90 border border-white/20 rounded-full backdrop-blur-2xl shadow-[0_0_40px_rgba(0,0,0,0.5)]">
            <div className="mb-1">{getIcon(group.id, group.textColor)}</div>
-           <span className="font-mono text-[8px] md:text-[10px] text-white/40 tracking-widest uppercase">System Core</span>
+           <span className="font-mono text-[8px] md:text-[10px] text-white/40 tracking-widest uppercase">Stack</span>
         </div>
       </motion.div>
     </motion.div>
@@ -164,23 +185,23 @@ function CoreNode({ mx, my, group }: any) {
 }
 
 // ── Complete Unified Network Layer ──
-function NetworkGraph({ group, mx, my, multiplier }: any) {
+function NetworkGraph({ group, mx, my, multiplier, isActive = true }: any) {
   return (
-    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+    <div className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-700 ${isActive ? 'z-20 opacity-100' : 'z-10 opacity-60'}`}>
       <svg width="2000" height="2000" viewBox="0 0 2000 2000" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible z-0">
-        <g transform="translate(1000, 1000)" className={group.textColor}>
-           {group.items.map((item: any, i: number) => (
-             <GraphLine key={`${group.id}-line-${i}`} item={item} i={i} mx={mx} my={my} multiplier={multiplier} />
-           ))}
+        <g transform="translate(1000, 1000)" className={isActive ? group.textColor : 'text-white/40'}>
+           <RadarPolygon group={group} mx={mx} my={my} multiplier={multiplier} />
         </g>
       </svg>
       
-      <div className="absolute top-1/2 left-1/2 w-0 h-0 z-10 pointer-events-auto origin-center">
-        {group.items.map((item: any, i: number) => (
-           <GraphNode key={`${group.id}-node-${i}`} item={item} i={i} mx={mx} my={my} glow={group.accentColor} multiplier={multiplier} />
-        ))}
-        <CoreNode mx={mx} my={my} group={group} />
-      </div>
+      {isActive && (
+        <div className="absolute top-1/2 left-1/2 w-0 h-0 z-10 pointer-events-auto origin-center">
+          {group.items.map((item: any, i: number) => (
+             <GraphNode key={`${group.id}-node-${i}`} item={item} i={i} mx={mx} my={my} glow={group.accentColor} multiplier={multiplier} />
+          ))}
+          <CoreNode mx={mx} my={my} group={group} />
+        </div>
+      )}
     </div>
   );
 }
@@ -328,36 +349,18 @@ export const TechStack = () => {
             <div className="absolute bottom-6 left-6 w-3 h-3 md:w-4 md:h-4 border-l border-b border-white/20" />
             <div className="absolute bottom-6 right-6 w-3 h-3 md:w-4 md:h-4 border-r border-b border-white/20" />
 
-            {/* Giant Abstract Number */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 select-none pointer-events-none">
-              <AnimatePresence mode="popLayout">
-                <motion.div
-                  key={`bg-num-${activeIndex}`}
-                  initial={{ opacity: 0, scale: 0.5, filter: "blur(20px)" }}
-                  animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, scale: 1.5, filter: "blur(20px)" }}
-                  transition={{ duration: 0.8, ease: [0.16,1,0.3,1] }}
-                  className="font-[family-name:var(--font-display)] text-[12rem] md:text-[25rem] font-black text-white/[0.015] tracking-tighter"
-                >
-                  {skillsData[activeIndex].id}
-                </motion.div>
-              </AnimatePresence>
-            </div>
-
             {/* Live Interactive Node Network */}
             <div className="absolute inset-0 z-10 pointer-events-none">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={`network-${activeIndex}`}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 1.05, filter: "blur(10px)" }}
-                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                  className="absolute inset-0 w-full h-full"
-                >
-                  <NetworkGraph group={skillsData[activeIndex]} mx={smoothMx} my={smoothMy} multiplier={radiusMultiplier} />
-                </motion.div>
-              </AnimatePresence>
+              {skillsData.map((group, index) => (
+                <NetworkGraph 
+                  key={`network-${group.id}`}
+                  group={group}
+                  mx={smoothMx} 
+                  my={smoothMy} 
+                  multiplier={radiusMultiplier}
+                  isActive={index === activeIndex}
+                />
+              ))}
             </div>
 
           </div>

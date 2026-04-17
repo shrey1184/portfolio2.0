@@ -155,6 +155,7 @@ export type Database = {
           tertiary_color: string;
           font_family: string;
           hero_video_url: string | null;
+          hero_image_url: string | null;
           hero_video_opacity: number;
           blob_count: number;
           blob_thickness: number;
@@ -170,6 +171,7 @@ export type Database = {
           tertiary_color?: string;
           font_family: string;
           hero_video_url?: string | null;
+          hero_image_url?: string | null;
           hero_video_opacity?: number;
           blob_count?: number;
           blob_thickness?: number;
@@ -185,6 +187,7 @@ export type Database = {
           tertiary_color?: string;
           font_family?: string;
           hero_video_url?: string | null;
+          hero_image_url?: string | null;
           hero_video_opacity?: number;
           blob_count?: number;
           blob_thickness?: number;

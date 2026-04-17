@@ -65,7 +65,7 @@ const AnimatedRoleText = ({ layer }: { layer: 'solid' | 'outline' }) => {
   );
 };
 
-const HeroSection = ({ videoUrl, opacity, grayscale, blobs }: { videoUrl: string | null, opacity: number, grayscale: boolean, blobs: any }) => (
+const HeroSection = ({ videoUrl, imageUrl, opacity, grayscale, blobs }: { videoUrl: string | null, imageUrl: string | null, opacity: number, grayscale: boolean, blobs: any }) => (
   <section className="min-h-[100svh] flex flex-col justify-center relative z-10 pt-16 mt-[-64px] bg-[var(--surface)] overflow-hidden">
     {/* Background video and blobs */}
     <div className={`absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none ${videoUrl ? 'bg-black' : 'bg-secondary'}`}>
@@ -176,7 +176,7 @@ const HeroSection = ({ videoUrl, opacity, grayscale, blobs }: { videoUrl: string
       <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
         {/* Using standard img with drop-shadow to separate it from the text */}
         <img 
-          src="/angel1.png" 
+          src={imageUrl || "/angel1.png"} 
           alt="Subject" 
           className="h-[100vh] w-auto max-w-none scale-110 md:scale-125 origin-bottom object-contain object-bottom drop-shadow-[0_0_30px_rgba(0,0,0,0.8)] filter brightness-90 contrast-125"
         />
@@ -212,6 +212,7 @@ export const HomeContent = ({ projects, achievements, experience, sectionOrder, 
     hero: (
       <HeroSection 
         videoUrl={theme.hero_video_url} 
+        imageUrl={theme.hero_image_url}
         opacity={theme.hero_video_opacity ?? 0.5} 
         grayscale={theme.hero_video_grayscale ?? true}
         blobs={{

@@ -4,6 +4,7 @@ import Image from "next/image";
 import type { Project } from "@/types/domain";
 import { motion, useScroll, useTransform } from "framer-motion";
 import React, { useRef } from "react";
+import Grainient from './Grainient';
 
 interface ProjectGridProps {
   projects: Project[];
@@ -35,14 +36,41 @@ export const ProjectGrid = ({ projects }: ProjectGridProps) => {
       {/* Sticky container completely freezes the text heading and background while we scroll down its height */}
       <div className="sticky top-0 w-full h-[100vh] flex flex-col items-center justify-center overflow-hidden py-16">
         
+        <div className="absolute inset-0 z-0 pointer-events-none w-full h-full">
+          <Grainient
+            color1="#040404"
+            color2="#0b0bdb"
+            color3="#131213"
+            timeSpeed={0.80}
+            colorBalance={0}
+            warpStrength={1}
+            warpFrequency={5}
+            warpSpeed={2}
+            warpAmplitude={50}
+            blendAngle={0}
+            blendSoftness={0.05}
+            rotationAmount={500}
+            noiseScale={2}
+            grainAmount={0.1}
+            grainScale={2}
+            grainAnimated={false}
+            contrast={1.5}
+            gamma={1}
+            saturation={1}
+            centerX={0}
+            centerY={0}
+            zoom={0.9}
+          />
+        </div>
+
         {/* Section Heading embedded inside the pinned sticky frame */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 relative z-10">
           <p className="font-[family-name:var(--font-body)] text-xs font-semibold text-[var(--outline)] tracking-widest uppercase chrome-text-protect inline-block">
             03 / REPOSITORY
           </p>
         </div>
 
-        <div className="relative w-full max-w-7xl mx-auto h-[450px] md:h-[550px] px-6">
+        <div className="relative z-10 w-full max-w-7xl mx-auto h-[450px] md:h-[550px] px-6">
           {projects.map((project, i) => {
             const total = projects.length;
             
@@ -90,7 +118,7 @@ export const ProjectGrid = ({ projects }: ProjectGridProps) => {
                 */}
                 <motion.div
                   style={{ scale, transformOrigin: 'top center' }}
-                  className="relative w-full h-[400px] md:h-[500px] !bg-[var(--surface)] bg-zinc-950 group overflow-hidden rounded-[40px] transform-gpu will-change-transform shadow-[0_-10px_35px_rgba(0,0,0,0.5)] border border-white/10"
+                  className="relative w-full h-[400px] md:h-[500px] bg-white/5 backdrop-blur-2xl group overflow-hidden rounded-[40px] transform-gpu will-change-transform shadow-[0_-10px_35px_rgba(0,0,0,0.5)] border border-white/10"
                 >
                   {/* Dynamic Dark Depth Shadow overlay mapping to scroll distance */}
                   <motion.div 
@@ -110,12 +138,12 @@ export const ProjectGrid = ({ projects }: ProjectGridProps) => {
                     ) : null}
                     
                     {/* Hover Overlay */}
-                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 pointer-events-none z-10" />
+                    <div className="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-colors duration-300 pointer-events-none z-10" />
 
                     {/* Glassmorphed Content box */}
                     <div className="absolute inset-0 flex flex-col justify-end p-6 pointer-events-none z-10">
                       <div 
-                        className="bg-black/20 backdrop-blur-md border border-white/10 p-5 md:p-6 rounded-xl flex flex-col justify-end text-neutral-100 transform-gpu pointer-events-auto"
+                        className="bg-black/10 backdrop-blur-md border border-white/5 p-5 md:p-6 rounded-xl flex flex-col justify-end text-neutral-100 transform-gpu pointer-events-auto"
                         style={{ WebkitBackdropFilter: 'blur(12px)', transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
                       >
                         <h3 className="text-2xl md:text-3xl font-bold uppercase tracking-widest mb-2 font-[family-name:var(--font-display)] transform-gpu" style={{ backfaceVisibility: 'hidden' }}>
@@ -127,7 +155,7 @@ export const ProjectGrid = ({ projects }: ProjectGridProps) => {
                             {project.tech_stack.slice(0, 4).map((tech) => (
                               <span
                                 key={tech}
-                                className="text-[10px] pb-[1px] font-bold tracking-widest uppercase bg-white/10 px-2 py-1 rounded backdrop-blur-sm border border-white/10 font-[family-name:var(--font-body)]"
+                                className="text-[10px] pb-[1px] font-bold tracking-widest uppercase bg-white/5 px-2 py-1 rounded backdrop-blur-sm border border-white/5 font-[family-name:var(--font-body)]"
                               >
                                 {tech}
                               </span>
