@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useSpring, useMotionValue, useTransform } from "framer-motion";
-import { Sparkles, Cpu, Code, Globe, Layers } from "lucide-react";
+import { Layers, Globe, Code, Cpu, Sparkles } from "lucide-react";
+import Beams from "../ui/Beams";
 
 const skillsData = [
   {
@@ -244,7 +245,20 @@ export const TechStack = () => {
 
   return (
     <section id="skills" className="relative bg-[#050505] py-24 md:py-40 z-20 overflow-hidden min-h-[50vh] flex items-center w-full">
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none" />
+      <div className="absolute inset-0 z-0 w-full h-full pointer-events-none opacity-40">
+        <Beams
+          beamWidth={3}
+          beamHeight={30}
+          beamNumber={20}
+          lightColor="#ffffff"
+          speed={2}
+          noiseIntensity={1.75}
+          scale={0.2}
+          rotation={30}
+        />
+      </div>
+      
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none z-[1]" />
 
       <div className="w-full relative z-10 max-w-[1920px] mx-auto">
         <motion.div 

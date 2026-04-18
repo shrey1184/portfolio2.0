@@ -39,7 +39,7 @@ export const ProjectGrid = ({ projects }: ProjectGridProps) => {
         <div className="absolute inset-0 z-0 pointer-events-none w-full h-full">
           <Grainient
             color1="#040404"
-            color2="#0b0bdb"
+            color2="#3a3a3a"
             color3="#131213"
             timeSpeed={0.80}
             colorBalance={0}

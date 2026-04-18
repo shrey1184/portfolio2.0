@@ -2,6 +2,7 @@
 
 import { useState, useEffect, type ReactNode } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { AchievementList } from "@/components/public/achievement-list";
 import { ExperienceList } from "@/components/public/experience-list";
 import { ProjectGrid } from "@/components/public/project-grid";
@@ -256,26 +257,91 @@ export const HomeContent = ({ projects, achievements, experience, sectionOrder, 
         {sectionOrder.map((sectionId) => (
           <div key={sectionId}>{sections[sectionId]}</div>
         ))}
-        {/* Contact block added at the bottom as standard module */}
-        <section className="bg-[var(--primary)] text-[var(--surface)] py-32 border-t-[12px] border-[var(--primary)] mt-12 chrome-surface">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 max-w-[1400px] mx-auto px-6">
-            <div className="lg:col-span-8 chrome-border-bottom pb-12 mb-8">
-              <h2 className="font-[family-name:var(--font-display)] text-4xl md:text-6xl font-bold uppercase leading-[1.1] mb-2 tracking-[0.02em] chrome-text-protect">
-                Let's build systems<br />
-                that matter.
-              </h2>
-            </div>
-            <div className="lg:col-span-4 flex flex-col justify-end pb-20">
-              <Link
-                href="/contact"
-                className="chrome-button inline-block border border-[var(--outline)] text-[var(--outline)] font-[family-name:var(--font-display)] font-bold text-xs tracking-widest uppercase px-8 py-3 w-max transition-industrial hover:bg-[var(--outline)] hover:text-[var(--primary)] mb-4"
-              >
-                Initiate Sequence
-              </Link>
-              <p className="font-[family-name:var(--font-body)] text-[10px] text-[var(--outline)] tracking-widest uppercase opacity-80">
-                <span className="chrome-text-protect">A system optimized for latency is inherently robust.</span>
-              </p>
-            </div>
+        {/* Animated Contact Block */}
+        <section id="contact" className="relative bg-[#050505] text-white py-32 md:py-64 min-h-[80vh] flex flex-col items-center justify-center overflow-hidden border-t-[1px] border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.8)]">
+          
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(50,50,50,0.3)_0%,transparent_60%)] pointer-events-none z-[0]" />
+          
+          <div className="w-full max-w-[1400px] mx-auto px-6 flex flex-col items-center z-10">
+            <motion.h2 
+              variants={{
+                hidden: { opacity: 0 },
+                visible: { 
+                  opacity: 1, 
+                  transition: { staggerChildren: 0.3, delayChildren: 0.1 } 
+                }
+              }}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              className="font-[family-name:var(--font-display)] text-[clamp(4rem,10vw,12rem)] font-black uppercase leading-[0.85] tracking-tighter text-center flex flex-col items-center overflow-hidden"
+            >
+              <div className="flex flex-wrap justify-center gap-4 md:gap-8 overflow-hidden pb-4">
+                <motion.span 
+                  variants={{
+                    hidden: { opacity: 0, y: 100, filter: "blur(10px)" },
+                    visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { type: "spring", stiffness: 100, damping: 20 } }
+                  }} 
+                  className="text-white"
+                >
+                  LET'S
+                </motion.span>
+                <motion.span 
+                  variants={{
+                    hidden: { opacity: 0, y: 100, filter: "blur(10px)" },
+                    visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { type: "spring", stiffness: 100, damping: 20 } }
+                  }} 
+                  className="text-transparent" 
+                  style={{ WebkitTextStroke: "2px rgba(255,255,255,0.4)" }}
+                >
+                  BUILD
+                </motion.span>
+              </div>
+              <div className="overflow-hidden pb-6 mt-[-1rem] md:mt-[-2rem]">
+                <motion.span 
+                  variants={{
+                    hidden: { opacity: 0, y: 100, filter: "blur(10px)" },
+                    visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { type: "spring", stiffness: 100, damping: 20 } }
+                  }} 
+                  className="text-white inline-block bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40"
+                  style={{ WebkitTextFillColor: "transparent" }}
+                >
+                  TOGETHER
+                </motion.span>
+              </div>
+            </motion.h2>
+
+            <motion.div 
+              variants={{
+                hidden: { opacity: 0 },
+                visible: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 1.2 } }
+              }}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              className="flex flex-wrap justify-center gap-4 sm:gap-6 mt-16 sm:mt-24 pointer-events-auto"
+            >
+              {[
+                { name: "Gmail", href: "mailto:youremail@gmail.com" },
+                { name: "Twitter", href: "https://twitter.com/yourhandle" },
+                { name: "LinkedIn", href: "https://linkedin.com/in/yourhandle" },
+                { name: "GitHub", href: "https://github.com/yourhandle" },
+              ].map((link) => (
+                <motion.a
+                  key={link.name}
+                  variants={{
+                    hidden: { opacity: 0, y: 30, scale: 0.9 },
+                    visible: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 100, damping: 15 } }
+                  }}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-[family-name:var(--font-body)] text-xs md:text-sm font-bold tracking-[0.25em] uppercase px-8 py-4 border border-white/20 rounded-full hover:bg-white hover:text-black hover:scale-105 transition-all duration-500 backdrop-blur-md bg-white/5"
+                >
+                  {link.name}
+                </motion.a>
+              ))}
+            </motion.div>
           </div>
         </section>
       </main>
