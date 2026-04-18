@@ -4,13 +4,13 @@ import Image from "next/image";
 import type { Project } from "@/types/domain";
 import { motion, useScroll, useTransform } from "framer-motion";
 import React, { useRef } from "react";
-import Grainient from './Grainient';
 
 interface ProjectGridProps {
   projects: Project[];
+  theme?: any;
 }
 
-export const ProjectGrid = ({ projects }: ProjectGridProps) => {
+export const ProjectGrid = ({ projects, theme }: ProjectGridProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   
   const { scrollYProgress } = useScroll({
@@ -37,30 +37,19 @@ export const ProjectGrid = ({ projects }: ProjectGridProps) => {
       <div className="sticky top-0 w-full h-[100vh] flex flex-col items-center justify-center overflow-hidden py-16">
         
         <div className="absolute inset-0 z-0 pointer-events-none w-full h-full">
-          <Grainient
-            color1="#040404"
-            color2="#3a3a3a"
-            color3="#131213"
-            timeSpeed={0.80}
-            colorBalance={0}
-            warpStrength={1}
-            warpFrequency={5}
-            warpSpeed={2}
-            warpAmplitude={50}
-            blendAngle={0}
-            blendSoftness={0.05}
-            rotationAmount={500}
-            noiseScale={2}
-            grainAmount={0.1}
-            grainScale={2}
-            grainAnimated={false}
-            contrast={1.5}
-            gamma={1}
-            saturation={1}
-            centerX={0}
-            centerY={0}
-            zoom={0.9}
-          />
+          <video 
+            autoPlay 
+            loop 
+            muted 
+            playsInline 
+            className="object-cover w-full h-full"
+            style={{ 
+              opacity: theme?.project_video_opacity ?? 0.3,
+              filter: `brightness(${theme?.project_video_brightness ?? 100}%) ${theme?.project_video_grayscale ? 'grayscale(100%)' : ''}`
+            }}
+          >
+            <source src="/0_Gears_Mechanism_3840x2160.mp4" type="video/mp4" />
+          </video>
         </div>
 
         {/* Section Heading embedded inside the pinned sticky frame */}

@@ -10,6 +10,7 @@ import { SiteHeader } from "@/components/public/site-header";
 import type { Achievement, ExperienceItem, HomeSectionId, Project } from "@/types/domain";
 import { BlobTracer } from "@/components/public/blob-tracer";
 import { TechStack } from "@/components/public/tech-stack";
+import Grainient from "@/components/public/Grainient";
 
 interface HomeContentProps {
   projects: Project[];
@@ -230,12 +231,42 @@ export const HomeContent = ({ projects, achievements, experience, sectionOrder, 
       <TechStack />
     ),
     experience: (
-      <IndustrialSection id="experience" number="02" title="Impact">
-        <ExperienceList items={experience} />
-      </IndustrialSection>
+      <div className="relative w-full overflow-hidden">
+        <div className="absolute inset-0 z-[0] pointer-events-none w-full h-full">
+          <Grainient
+            color1="#040404"
+            color2="#3a3a3a"
+            color3="#131213"
+            timeSpeed={0.80}
+            colorBalance={0}
+            warpStrength={1}
+            warpFrequency={5}
+            warpSpeed={2}
+            warpAmplitude={50}
+            blendAngle={0}
+            blendSoftness={0.05}
+            rotationAmount={500}
+            noiseScale={2}
+            grainAmount={0.1}
+            grainScale={2}
+            grainAnimated={false}
+            contrast={1.5}
+            gamma={1}
+            saturation={1}
+            centerX={0}
+            centerY={0}
+            zoom={0.9}
+          />
+        </div>
+        <div className="relative z-[10] w-full">
+          <IndustrialSection id="experience" number="02" title="Impact">
+            <ExperienceList items={experience} />
+          </IndustrialSection>
+        </div>
+      </div>
     ),
     projects: (
-      <ProjectGrid projects={projects} />
+      <ProjectGrid projects={projects} theme={theme} />
     ),
     achievements: (
       <IndustrialSection id="achievements" number="04" title="Recognition" center={true}>

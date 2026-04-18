@@ -66,6 +66,7 @@ export function ThemeEditor({ theme, onChange }: { theme: any, onChange: (t: any
             folder="theme" 
             defaultValue={theme.hero_image_url}
             accept="image/*"
+            onChange={(val) => onChange({ ...theme, hero_image_url: val })}
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -75,6 +76,7 @@ export function ThemeEditor({ theme, onChange }: { theme: any, onChange: (t: any
             folder="theme" 
             defaultValue={theme.hero_video_url}
             accept="video/*"
+            onChange={(val) => onChange({ ...theme, hero_video_url: val })}
           />
         </div>
         <div className="flex flex-col gap-1 text-sm">
@@ -102,6 +104,52 @@ export function ThemeEditor({ theme, onChange }: { theme: any, onChange: (t: any
             className="w-4 h-4 rounded accent-[var(--primary)]"
           />
           <input type="hidden" name="hero_video_grayscale" value={String(theme.hero_video_grayscale ?? true)} />
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-500 border-b border-slate-700 pb-1">Project Video Background</h3>
+        <div className="flex flex-col gap-1 text-sm">
+          <div className="flex justify-between text-xs">
+            <label className="text-slate-300">Video Opacity</label>
+            <span className="text-slate-500">{Math.round((theme.project_video_opacity ?? 0.3) * 100)}%</span>
+          </div>
+          <input 
+            type="range" 
+            name="project_video_opacity" 
+            min="0" 
+            max="1" 
+            step="0.05"
+            value={theme.project_video_opacity ?? 0.3} 
+            onChange={(e) => onChange({ ...theme, project_video_opacity: parseFloat(e.target.value) })}
+            className="w-full accent-[var(--primary)] h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer"
+          />
+        </div>
+        <div className="flex flex-col gap-1 text-sm">
+          <div className="flex justify-between text-xs">
+            <label className="text-slate-300">Video Brightness</label>
+            <span className="text-slate-500">{Math.round((theme.project_video_brightness ?? 100))}%</span>
+          </div>
+          <input 
+            type="range" 
+            name="project_video_brightness" 
+            min="0" 
+            max="200" 
+            step="5"
+            value={theme.project_video_brightness ?? 100} 
+            onChange={(e) => onChange({ ...theme, project_video_brightness: parseFloat(e.target.value) })}
+            className="w-full accent-[var(--primary)] h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer"
+          />
+        </div>
+        <div className="flex justify-between items-center text-sm gap-2">
+          <label className="text-slate-300">Grayscale Video</label>
+          <input 
+            type="checkbox" 
+            checked={theme.project_video_grayscale ?? false} 
+            onChange={(e) => onChange({ ...theme, project_video_grayscale: e.target.checked })}
+            className="w-4 h-4 rounded accent-[var(--primary)]"
+          />
+          <input type="hidden" name="project_video_grayscale" value={String(theme.project_video_grayscale ?? false)} />
         </div>
       </div>
 

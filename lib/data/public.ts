@@ -105,6 +105,12 @@ const FALLBACK_THEME: ThemeConfig = {
   blob_size: 80,
   blob_color: "#FFFFFF",
   blob_speed: 4,
+  hero_video_grayscale: false,
+  filled_blob_color: "#FFFFFF",
+  achievement_border_color: "#FFFFFF",
+  project_video_grayscale: false,
+  project_video_opacity: 0.3,
+  project_video_brightness: 100,
   updated_at: new Date().toISOString(),
 };
 

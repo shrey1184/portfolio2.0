@@ -162,6 +162,12 @@ export type Database = {
           blob_size: number;
           blob_color: string;
           blob_speed: number;
+          hero_video_grayscale: boolean;
+          filled_blob_color: string;
+          achievement_border_color: string;
+          project_video_grayscale: boolean;
+          project_video_opacity: number;
+          project_video_brightness: number;
           updated_at: string;
         };
         Insert: {
@@ -178,6 +184,12 @@ export type Database = {
           blob_size?: number;
           blob_color?: string;
           blob_speed?: number;
+          hero_video_grayscale?: boolean;
+          filled_blob_color?: string;
+          achievement_border_color?: string;
+          project_video_grayscale?: boolean;
+          project_video_opacity?: number;
+          project_video_brightness?: number;
           updated_at?: string;
         };
         Update: {
@@ -194,6 +206,12 @@ export type Database = {
           blob_size?: number;
           blob_color?: string;
           blob_speed?: number;
+          hero_video_grayscale?: boolean;
+          filled_blob_color?: string;
+          achievement_border_color?: string;
+          project_video_grayscale?: boolean;
+          project_video_opacity?: number;
+          project_video_brightness?: number;
           updated_at?: string;
         };
         Relationships: [];

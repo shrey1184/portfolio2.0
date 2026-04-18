@@ -15,9 +15,9 @@ const skillsData = [
     items: [
       { name: "LangChain", angle: 15, radius: 140, depth: 20 },
       { name: "LangGraph", angle: 60, radius: 210, depth: 35 },
-      { name: "LlamaIndex", angle: 110, radius: 150, depth: 15 },
-      { name: "OpenAI API", angle: 155, radius: 200, depth: 40 },
-      { name: "Gemini", angle: 205, radius: 140, depth: 25 },
+      { name: "Openclaw", angle: 110, radius: 150, depth: 15 },
+      { name: "Claude Code", angle: 155, radius: 200, depth: 40 },
+      { name: "CrewAI", angle: 205, radius: 140, depth: 25 },
       { name: "Hugging Face", angle: 250, radius: 230, depth: 45 },
       { name: "MCP", angle: 295, radius: 160, depth: 20 },
       { name: "RAG Systems", angle: 340, radius: 210, depth: 30 }
@@ -31,7 +31,7 @@ const skillsData = [
     accentColor: "#c084fc",
     items: [
       { name: "Python", angle: 35, radius: 150, depth: 20 },
-      { name: "C++", angle: 105, radius: 220, depth: 40 },
+      { name: "Java", angle: 105, radius: 220, depth: 40 },
       { name: "TypeScript", angle: 175, radius: 140, depth: 15 },
       { name: "JavaScript", angle: 245, radius: 200, depth: 30 },
       { name: "SQL", angle: 315, radius: 160, depth: 25 }
@@ -294,7 +294,7 @@ export const TechStack = () => {
         <div className="flex flex-col-reverse lg:flex-row gap-0 xl:gap-8 relative w-full items-stretch lg:min-h-[650px] border-y border-white/[0.05] bg-black/40 overflow-hidden backdrop-blur-md shadow-2xl">
           
           {/* LEFT: Nav Stack */}
-          <div className="w-full lg:w-[40%] xl:w-[35%] flex flex-row overflow-x-auto lg:overflow-x-visible lg:flex-col justify-start lg:justify-center border-t lg:border-t-0 lg:border-r border-white/[0.05] p-0 lg:p-12 xl:p-16 relative z-20 bg-[#0A0A0A]/50 backdrop-blur-2xl no-scrollbar">
+          <div className="w-full lg:w-[40%] xl:w-[35%] flex flex-row overflow-x-auto lg:overflow-x-visible lg:flex-col justify-start lg:justify-center border-t lg:border-t-0 lg:border-r border-white/0 p-0 lg:p-12 xl:p-16 relative z-20 bg-[#0A0A0A]/0 backdrop-blur-2xl no-scrollbar">
             {skillsData.map((group, index) => {
               const isActive = activeIndex === index;
               return (

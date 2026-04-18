@@ -14,6 +14,7 @@ export const updateThemeAction = async (formData: FormData) => {
   const secondaryColor = String(formData.get("secondary_color") ?? "").trim();
   const tertiaryColor = String(formData.get("tertiary_color") ?? "").trim();
   const fontFamily = String(formData.get("font_family") ?? "").trim();
+  const heroImageUrl = String(formData.get("hero_image_url") ?? "").trim() || null;
   const heroVideoUrl = String(formData.get("hero_video_url") ?? "").trim() || null;
   const heroVideoOpacity = parseFloat(String(formData.get("hero_video_opacity") ?? "0.5"));
   const blobCount = parseInt(String(formData.get("blob_count") ?? "10"));
@@ -26,6 +27,10 @@ export const updateThemeAction = async (formData: FormData) => {
 
   const filledBlobColor = String(formData.get("filled_blob_color") ?? "#FFFFFF").trim();
   const heroVideoGrayscale = formData.get("hero_video_grayscale") === "true";
+
+  const projectVideoGrayscale = formData.get("project_video_grayscale") === "true";
+  const projectVideoOpacity = parseFloat(String(formData.get("project_video_opacity") ?? "0.3"));
+  const projectVideoBrightness = parseFloat(String(formData.get("project_video_brightness") ?? "100"));
 
   if (!isHexColor(primaryColor)) {
     throw new Error("Primary color must be a valid hex value.");
@@ -57,6 +62,7 @@ export const updateThemeAction = async (formData: FormData) => {
     secondary_color: secondaryColor,
     tertiary_color: tertiaryColor,
     font_family: fontFamily,
+    hero_image_url: heroImageUrl,
     hero_video_url: heroVideoUrl,
     hero_video_opacity: isNaN(heroVideoOpacity) ? 0.5 : heroVideoOpacity,
     hero_video_grayscale: heroVideoGrayscale,
@@ -67,6 +73,9 @@ export const updateThemeAction = async (formData: FormData) => {
     filled_blob_color: filledBlobColor,
     blob_speed: isNaN(blobSpeed) ? 4 : blobSpeed,
     achievement_border_color: achievementBorderColor,
+    project_video_grayscale: projectVideoGrayscale,
+    project_video_opacity: isNaN(projectVideoOpacity) ? 0.3 : projectVideoOpacity,
+    project_video_brightness: isNaN(projectVideoBrightness) ? 100 : projectVideoBrightness,
   });
 
   if (error) {

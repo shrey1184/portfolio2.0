@@ -10,18 +10,26 @@ interface MediaUploadFieldProps {
   folder: "projects" | "achievements" | "experience" | "theme";
   defaultValue?: string | null;
   accept?: string;
+  onChange?: (val: string) => void;
 }
 
 export const MediaUploadField = ({ 
   name, 
   folder, 
   defaultValue, 
-  accept = "image/*,video/*" 
+  accept = "image/*,video/*",
+  onChange
 }: MediaUploadFieldProps) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [value, setValue] = useState(defaultValue ?? "");
+  const [value, setValueState] = useState(defaultValue ?? "");
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const setValue = (val: string) => {
+    setValueState(val);
+    onChange?.(val);
+  };
+
 
   const isVideo = value?.toLowerCase().endsWith(".mp4") || value?.toLowerCase().endsWith(".webm");
 
