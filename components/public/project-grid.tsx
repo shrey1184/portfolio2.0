@@ -48,7 +48,7 @@ export const ProjectGrid = ({ projects, theme }: ProjectGridProps) => {
               filter: `brightness(${theme?.project_video_brightness ?? 100}%) ${theme?.project_video_grayscale ? 'grayscale(100%)' : ''}`
             }}
           >
-            <source src="/0_Gears_Mechanism_3840x2160.mp4" type="video/mp4" />
+            <source src="/gears.mp4" type="video/mp4" />
           </video>
         </div>
 

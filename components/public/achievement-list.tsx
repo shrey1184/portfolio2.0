@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useEffect, useRef, useState } from "react";
+import type { Achievement } from "@/types/domain";
 
 interface AchievementItem {
   id: string;
@@ -26,11 +27,11 @@ const HARDCODED_ACHIEVEMENTS: AchievementItem[] = [
 
 // Stable deterministic node positions arranged in a constellation
 function buildNodePositions(count: number) {
-  // Manually crafted positions (% of container) so nodes spread naturally
+  // Manually crafted positions (% of container) so nodes spread naturally over more vertical space
   const positions = [
-    { x: 12, y: 18 }, { x: 38, y: 10 }, { x: 65, y: 15 }, { x: 88, y: 22 },
-    { x: 22, y: 42 }, { x: 50, y: 38 }, { x: 78, y: 40 },
-    { x: 10, y: 65 }, { x: 36, y: 68 }, { x: 62, y: 70 }, { x: 85, y: 62 },
+    { x: 6, y: 15 }, { x: 38, y: 8 }, { x: 65, y: 12 }, { x: 88, y: 20 },
+    { x: 2, y: 65 }, { x: 27, y: 60 }, { x: 78, y: 46 },
+    { x: 12, y: 110 }, { x: 38, y: 96 }, { x: 62, y: 82 }, { x: 85, y: 109 },
   ];
   return positions.slice(0, count);
 }
@@ -55,9 +56,22 @@ function floatStyle(index: number) {
   return { animation: `nodeFloat ${duration}s ease-in-out ${delay}s infinite` };
 }
 
-export const AchievementList = () => {
-  const positions = useMemo(() => buildNodePositions(HARDCODED_ACHIEVEMENTS.length), []);
-  const edges     = useMemo(() => buildEdges(HARDCODED_ACHIEVEMENTS.length), []);
+export const AchievementList = ({ achievements = [], borderColor }: { achievements?: Achievement[], borderColor?: string | null }) => {
+  const displayData: AchievementItem[] = useMemo(() => {
+    if (achievements && achievements.length > 0) {
+      return achievements.map(a => ({
+        id: a.id,
+        title: a.title,
+        description: a.description || "",
+        issuer: a.issuer || "",
+        year: a.achieved_at ? new Date(a.achieved_at).getFullYear().toString() : ""
+      }));
+    }
+    return HARDCODED_ACHIEVEMENTS;
+  }, [achievements]);
+
+  const positions = useMemo(() => buildNodePositions(displayData.length), [displayData.length]);
+  const edges     = useMemo(() => buildEdges(displayData.length), [displayData.length]);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   // We need actual DOM positions for SVG lines, so we measure card centers
@@ -85,9 +99,9 @@ export const AchievementList = () => {
     // Re-measure after animations settle
     const t = setTimeout(measure, 600);
     return () => { window.removeEventListener("resize", measure); clearTimeout(t); };
-  }, []);
+  }, [displayData.length]);
 
-  const hoveredIndex = hoveredId ? HARDCODED_ACHIEVEMENTS.findIndex(a => a.id === hoveredId) : -1;
+  const hoveredIndex = hoveredId ? displayData.findIndex(a => a.id === hoveredId) : -1;
   const connectedSet = useMemo(() => {
     if (hoveredIndex === -1) return new Set<number>();
     const s = new Set<number>();
@@ -99,19 +113,19 @@ export const AchievementList = () => {
   }, [hoveredIndex, edges]);
 
   return (
-    <div className="relative w-full min-h-screen overflow-hidden bg-[#030712]">
+    <div className="relative w-full min-h-screen overflow-hidden bg-[#050505]">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Syne:wght@700;800&display=swap');
 
         :root {
-          --blue-glow:   #3b82f6;
-          --blue-soft:   #60a5fa;
-          --blue-dim:    rgba(59,130,246,0.25);
-          --card-bg:     rgba(10,16,30,0.85);
-          --card-border: rgba(59,130,246,0.35);
-          --card-hover:  rgba(59,130,246,0.65);
+          --blue-glow:   var(--outline);
+          --blue-soft:   var(--outline);
+          --blue-dim:    var(--outline);
+          --card-bg:     rgba(255, 255, 255, 0.05); /* Glassmorphed */
+          --card-border: rgba(255, 255, 255, 0.1);
+          --card-hover:  rgba(255, 255, 255, 0.2);
           --text-primary: #e2e8f0;
-          --text-muted:   #64748b;
+          --text-muted:   #94a3b8;
         }
 
           /* ── Noise texture overlay ── */
@@ -165,36 +179,26 @@ export const AchievementList = () => {
         .ach-btn {
           display: flex;
           flex-direction: column;
-          gap: 2px;
-          padding: 10px 16px;
-          background: var(--card-bg);
-          border: 1.5px solid var(--card-border);
-          border-radius: 10px;
+          gap: 6px;
+          padding: 14px 20px;
+          background: rgba(255, 255, 255, 0.05); /* Glassmorphed background */
+          border: 1px solid var(--card-border);
+          border-radius: 12px;
           cursor: pointer;
           backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
           box-shadow:
-            0 0 0 0 transparent,
-            0 4px 24px rgba(0,0,0,0.5),
-            inset 0 1px 0 rgba(255,255,255,0.04);
+            0 8px 32px rgba(0,0,0,0.3);
           transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s, max-width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-          min-width: 170px;
-          max-width: 220px;
+          min-width: 220px;
+          max-width: 280px;
           text-align: left;
           position: relative;
         }
 
-        .ach-btn::after {
-          content: "";
-          position: absolute;
-          inset: 0;
-          border-radius: 10px;
-          background: linear-gradient(135deg, rgba(59,130,246,0.08) 0%, transparent 60%);
-          pointer-events: none;
-        }
-
         .ach-btn.is-hovered,
         .ach-btn:hover {
-          max-width: 280px;
+          max-width: 320px;
           z-index: 20;
         }
 
@@ -202,27 +206,23 @@ export const AchievementList = () => {
         .ach-btn.is-connected {
           border-color: var(--card-hover);
           box-shadow:
-            0 0 18px rgba(59,130,246,0.35),
-            0 0 40px rgba(59,130,246,0.12),
-            0 4px 24px rgba(0,0,0,0.5),
-            inset 0 1px 0 rgba(255,255,255,0.06);
+            0 8px 32px rgba(0,0,0,0.4),
+            0 0 20px var(--outline);
           transform: translateY(-3px) scale(1.03);
         }
 
         .ach-btn.is-hovered {
-          border-color: #60a5fa;
+          border-color: var(--outline);
           box-shadow:
-            0 0 24px rgba(96,165,250,0.55),
-            0 0 60px rgba(59,130,246,0.2),
-            0 4px 24px rgba(0,0,0,0.5),
-            inset 0 1px 0 rgba(255,255,255,0.1);
+            0 8px 32px rgba(0,0,0,0.5),
+            0 0 30px var(--outline);
           transform: translateY(-5px) scale(1.06);
           z-index: 20;
         }
 
         .ach-label {
           font-family: 'Space Grotesk', sans-serif;
-          font-size: 10.5px;
+          font-size: 14px;
           font-weight: 700;
           letter-spacing: 0.04em;
           color: var(--text-primary);
@@ -249,30 +249,30 @@ export const AchievementList = () => {
         .ach-desc-inner {
           overflow: hidden;
           font-family: 'Space Grotesk', sans-serif;
-          font-size: 10px;
+          font-size: 12px;
           color: var(--text-muted);
           line-height: 1.5;
-          margin-top: 6px;
+          margin-top: 8px;
         }
 
         .ach-meta {
           display: flex;
           align-items: center;
-          gap: 6px;
-          margin-top: 4px;
+          gap: 8px;
+          margin-top: 6px;
         }
 
         .ach-issuer {
-          font-size: 9px;
+          font-size: 11px;
           font-weight: 600;
           letter-spacing: 0.08em;
           text-transform: uppercase;
-          color: var(--blue-soft);
+          color: var(--outline);
           opacity: 0.8;
         }
 
         .ach-year {
-          font-size: 9px;
+          font-size: 11px;
           color: var(--text-muted);
           font-weight: 500;
         }
@@ -281,15 +281,15 @@ export const AchievementList = () => {
           width: 3px;
           height: 3px;
           border-radius: 50%;
-          background: var(--blue-dim);
+          background: var(--outline);
           flex-shrink: 0;
         }
 
         /* ── SVG lines pulse ── */
         .edge-active {
-          stroke: #3b82f6;
+          stroke: var(--outline);
           stroke-opacity: 0.7;
-          filter: drop-shadow(0 0 4px #3b82f6);
+          filter: drop-shadow(0 0 4px var(--outline));
         }
 
         /* ── Header ── */
@@ -306,14 +306,15 @@ export const AchievementList = () => {
           position: absolute;
           left: 0; right: 0;
           height: 2px;
-          background: linear-gradient(to right, transparent, rgba(59,130,246,0.08), transparent);
+          background: linear-gradient(to right, transparent, var(--outline), transparent);
+          opacity: 0.15;
           pointer-events: none;
           z-index: 1;
           animation: scanline 8s linear infinite;
         }
       `}</style>
 
-      <div className="ach-root relative w-full min-h-screen bg-[var(--surface)] overflow-hidden">
+      <div className="ach-root relative w-full min-h-screen bg-[var(--surface)] overflow-hidden" style={borderColor ? { '--outline': borderColor } as React.CSSProperties : undefined}>
         {/* Dot grid */}
         <div className="dot-grid" />
         <div className="grid-mask" />
@@ -328,7 +329,7 @@ export const AchievementList = () => {
             fontWeight: 700,
             letterSpacing: "0.3em",
             textTransform: "uppercase",
-            color: "#3b82f6",
+            color: "var(--outline)",
             marginBottom: "14px",
             opacity: 0.8,
           }}>
@@ -344,7 +345,7 @@ export const AchievementList = () => {
           }}>
             Recognition with{" "}
             <span style={{
-              background: "linear-gradient(135deg, #3b82f6 0%, #60a5fa 50%, #93c5fd 100%)",
+              background: "linear-gradient(135deg, var(--outline) 0%, var(--outline) 50%, var(--outline) 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}>actual signal.</span>
@@ -368,9 +369,9 @@ export const AchievementList = () => {
             justifyContent: "center",
             marginTop: "24px",
           }}>
-            <div style={{ width: "60px", height: "1px", background: "linear-gradient(to right, transparent, rgba(59,130,246,0.4))" }} />
-            <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#3b82f6", boxShadow: "0 0 8px #3b82f6" }} />
-            <div style={{ width: "60px", height: "1px", background: "linear-gradient(to left, transparent, rgba(59,130,246,0.4))" }} />
+            <div style={{ width: "60px", height: "1px", background: "linear-gradient(to right, transparent, var(--outline))", opacity: 0.4 }} />
+            <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "var(--outline)", boxShadow: "0 0 8px var(--outline)" }} />
+            <div style={{ width: "60px", height: "1px", background: "linear-gradient(to left, transparent, var(--outline))", opacity: 0.4 }} />
           </div>
         </div>
 
@@ -399,7 +400,7 @@ export const AchievementList = () => {
             <defs>
               <linearGradient id="edgeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%"   stopColor="#1d4ed8" stopOpacity="0.5" />
-                <stop offset="50%"  stopColor="#3b82f6" stopOpacity="0.7" />
+                <stop offset="50%"  stopColor="var(--outline)" stopOpacity="0.7" />
                 <stop offset="100%" stopColor="#1d4ed8" stopOpacity="0.5" />
               </linearGradient>
               <filter id="lineGlow">
@@ -411,7 +412,7 @@ export const AchievementList = () => {
               </filter>
             </defs>
 
-            {cardCenters.length === HARDCODED_ACHIEVEMENTS.length &&
+            {cardCenters.length === displayData.length &&
               edges.map(([a, b], i) => {
                 const ca = cardCenters[a];
                 const cb = cardCenters[b];
@@ -424,7 +425,7 @@ export const AchievementList = () => {
                     key={i}
                     x1={ca.x} y1={ca.y}
                     x2={cb.x} y2={cb.y}
-                    stroke={isActive ? "#60a5fa" : "url(#edgeGrad)"}
+                    stroke={isActive ? "var(--outline)" : "url(#edgeGrad)"}
                     strokeWidth={isActive ? 1.5 : 0.8}
                     strokeOpacity={isActive ? 0.85 : 0.3}
                     filter={isActive ? "url(#lineGlow)" : undefined}
@@ -436,7 +437,7 @@ export const AchievementList = () => {
           </svg>
 
           {/* Cards */}
-          {HARDCODED_ACHIEVEMENTS.map((item, index) => {
+          {displayData.map((item, index) => {
             const pos = positions[index];
             const isHovered   = hoveredId === item.id;
             const isConnected = connectedSet.has(index);
@@ -476,17 +477,7 @@ export const AchievementList = () => {
           })}
         </div>
 
-        {/* Bottom fade */}
-        <div style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: "120px",
-          background: "linear-gradient(to top, #030712, transparent)",
-          pointerEvents: "none",
-          zIndex: 15,
-        }} />
+        {/* Bottom fade entirely removed as requested */}
       </div>
     </div>
   );

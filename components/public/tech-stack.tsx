@@ -8,7 +8,7 @@ import Beams from "../ui/Beams";
 const skillsData = [
   {
     id: "01",
-    category: "AI & Agents",
+    category: "Artificial Intelligence",
     textColor: "text-blue-400",
     glowColor: "rgba(96, 165, 250, 0.15)",
     accentColor: "#60a5fa",
@@ -55,16 +55,16 @@ const skillsData = [
   },
   {
     id: "04",
-    category: "Frontend UI",
+    category: "Machine Learning",
     textColor: "text-amber-400",
     glowColor: "rgba(251, 191, 36, 0.15)",
     accentColor: "#fbbf24",
     items: [
-      { name: "React", angle: 45, radius: 160, depth: 25 },
-      { name: "Next.js", angle: 115, radius: 220, depth: 40 },
-      { name: "Tailwind CSS", angle: 185, radius: 150, depth: 20 },
-      { name: "Framer Motion", angle: 255, radius: 210, depth: 35 },
-      { name: "Zustand", angle: 325, radius: 140, depth: 15 }
+      { name: "EDA", angle: 45, radius: 160, depth: 25 },
+      { name: "Deep Learning", angle: 115, radius: 220, depth: 40 },
+      { name: "Neural Network", angle: 185, radius: 150, depth: 20 },
+      { name: "Supervised learning", angle: 255, radius: 210, depth: 35 },
+      { name: "Computer vision", angle: 325, radius: 140, depth: 15 }
     ]
   }
 ];
@@ -154,9 +154,9 @@ function GraphNode({ item, i, mx, my, glow, multiplier }: any) {
         >
            <div className="absolute inset-0 rounded-full blur-md opacity-0 group-hover:opacity-40 transition-opacity duration-300" style={{ backgroundColor: glow }} />
            
-           <div className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-[#050505]/90 border border-white/10 rounded-full backdrop-blur-xl group-hover:border-white/30 transition-colors shadow-2xl">
-             <span className="w-1.5 h-1.5 rounded-full animate-pulse shadow-[0_0_8px_currentColor]" style={{ backgroundColor: glow, color: glow }} />
-             <span className="font-mono text-[9px] md:text-[11px] text-white/70 group-hover:text-white tracking-wider uppercase whitespace-nowrap">
+           <div className="flex items-center gap-3 px-5 md:px-6 py-2 md:py-3 bg-white/5 border border-white/10 rounded-full backdrop-blur-xl group-hover:border-white/30 transition-colors shadow-2xl">
+             <span className="w-2 h-2 rounded-full animate-pulse shadow-[0_0_8px_currentColor]" style={{ backgroundColor: glow, color: glow }} />
+             <span className="font-mono text-[12px] md:text-[14px] text-white/70 group-hover:text-white tracking-wider uppercase whitespace-nowrap">
                 {item.name}
              </span>
            </div>
