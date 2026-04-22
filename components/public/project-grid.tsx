@@ -107,7 +107,7 @@ export const ProjectGrid = ({ projects, theme }: ProjectGridProps) => {
                 */}
                 <motion.div
                   style={{ scale, transformOrigin: 'top center' }}
-                  className="relative w-full h-[400px] md:h-[500px] bg-white/5 backdrop-blur-2xl group overflow-hidden rounded-[40px] transform-gpu will-change-transform shadow-[0_-10px_35px_rgba(0,0,0,0.5)] border border-white/10"
+                  className="relative w-full h-[400px] md:h-[500px] bg-white/5 backdrop-blur-md group overflow-hidden rounded-[40px] transform-gpu will-change-transform shadow-[0_-10px_35px_rgba(0,0,0,0.5)] border border-white/10"
                 >
                   {/* Dynamic Dark Depth Shadow overlay mapping to scroll distance */}
                   <motion.div 
@@ -117,13 +117,15 @@ export const ProjectGrid = ({ projects, theme }: ProjectGridProps) => {
 
                   <div className="relative h-full w-full">
                     {project.image_url ? (
-                      <Image
-                        src={project.image_url}
-                        alt={project.title}
-                        fill
-                        quality={100}
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
+                      <div className="absolute inset-4 md:inset-8 overflow-hidden rounded-3xl">
+                        <Image
+                          src={project.image_url}
+                          alt={project.title}
+                          fill
+                          quality={100}
+                          className="object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105"
+                        />
+                      </div>
                     ) : null}
                     
                     {/* Hover Overlay */}

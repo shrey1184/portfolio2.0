@@ -291,11 +291,10 @@ export const TechStack = () => {
           </div>
         </motion.div>
 
-        <div className="flex flex-col-reverse lg:flex-row gap-0 xl:gap-8 relative w-full items-stretch lg:min-h-[650px] border-y border-white/[0.05] bg-black/40 overflow-hidden backdrop-blur-md shadow-2xl">
+        <div className="flex flex-col-reverse lg:flex-row gap-0 xl:gap-8 relative w-full items-stretch lg:min-h-[650px] border-y border-white/[0.05] bg-transparent overflow-hidden shadow-2xl">
           
           {/* LEFT: Nav Stack */}
-          <div className="w-full lg:w-[40%] xl:w-[35%] flex flex-row overflow-x-auto lg:overflow-x-visible lg:flex-col justify-start lg:justify-center border-t lg:border-t-0 lg:border-r border-white/0 p-0 lg:p-12 xl:p-16 relative z-20 bg-[#0A0A0A]/0 backdrop-blur-2xl no-scrollbar">
-            {skillsData.map((group, index) => {
+          <div className="w-full lg:w-[40%] xl:w-[35%] flex flex-row lg:flex-col overflow-x-auto lg:overflow-x-visible justify-start lg:justify-center border-0 bg-transparent backdrop-blur-none p-0 lg:p-12 xl:p-16 relative z-20 no-scrollbar">            {skillsData.map((group, index) => {
               const isActive = activeIndex === index;
               return (
                 <div
@@ -333,7 +332,7 @@ export const TechStack = () => {
             ref={containerRef}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
-            className="w-full lg:w-[60%] xl:w-[65%] relative flex-1 min-h-[400px] sm:min-h-[550px] overflow-hidden bg-[#050505]"
+            className="w-full lg:w-[60%] xl:w-[65%] relative flex-1 min-h-[400px] sm:min-h-[550px] overflow-hidden bg-transparent"
           >
             {/* Soft Interactive Spotlight */}
             <motion.div

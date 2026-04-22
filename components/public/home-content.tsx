@@ -11,6 +11,7 @@ import type { Achievement, ExperienceItem, HomeSectionId, Project } from "@/type
 import { BlobTracer } from "@/components/public/blob-tracer";
 import { TechStack } from "@/components/public/tech-stack";
 import Grainient from "@/components/public/Grainient";
+import { BackgroundBeams } from "@/components/ui/background-beams";
 
 interface HomeContentProps {
   projects: Project[];
@@ -20,9 +21,9 @@ interface HomeContentProps {
   theme: any;
 }
 
-const IndustrialSection = ({ id, number, title, children, center = false }: { id: string; number: string; title: string; children: ReactNode; center?: boolean }) => (
+const IndustrialSection = ({ id, number, title, children, center = false, fullWidth = false }: { id: string; number: string; title: string; children: ReactNode; center?: boolean; fullWidth?: boolean }) => (
   <section id={id} className={`chrome-border-top ${center ? 'py-16' : 'py-24'}`}>
-    <div className={`grid grid-cols-1 ${center ? 'flex flex-col items-center gap-6' : 'lg:grid-cols-12 gap-12'} max-w-[1400px] mx-auto px-6`}>
+    <div className={`grid grid-cols-1 ${center ? 'flex flex-col items-center gap-6' : 'lg:grid-cols-12 gap-12'} ${fullWidth ? 'w-full px-6' : 'max-w-[1400px] mx-auto px-6'}`}>
       <div className={center ? 'text-center' : 'lg:col-span-3'}>
         <p className="font-[family-name:var(--font-body)] text-xs font-semibold text-[var(--outline)] tracking-widest uppercase chrome-text-protect inline-block">
           {number} / {title}
@@ -269,7 +270,7 @@ export const HomeContent = ({ projects, achievements, experience, sectionOrder, 
       <ProjectGrid projects={projects} theme={theme} />
     ),
     achievements: (
-      <IndustrialSection id="achievements" number="04" title="Recognition" center={true}>
+      <IndustrialSection id="achievements" number="04" title="Recognition" center={true} fullWidth={true}>
         <AchievementList 
           achievements={achievements} 
           borderColor={theme.achievement_border_color} 
@@ -374,6 +375,8 @@ export const HomeContent = ({ projects, achievements, experience, sectionOrder, 
               ))}
             </motion.div>
           </div>
+          
+          <BackgroundBeams />
         </section>
       </main>
     </div>
