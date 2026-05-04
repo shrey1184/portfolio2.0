@@ -19,7 +19,7 @@ export const SiteHeader = ({ compact = false }: SiteHeaderProps) => {
   const pathname = usePathname();
 
   return (
-    <header className={`z-50 ${compact ? 'bg-transparent relative' : 'sticky top-0 bg-[var(--surface)] chrome-border-bottom chrome-surface'} transition-industrial`}>
+    <header className={`z-50 ${compact ? 'bg-transparent relative' : 'sticky top-0 bg-[var(--surface)]'} transition-industrial`}>
       <div className="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
         <Link
           href="/"
