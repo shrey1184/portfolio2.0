@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode, useRef } from "react";
 import Link from "next/link";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
@@ -14,6 +14,7 @@ import type { Achievement, ExperienceItem, HomeSectionId, Project } from "@/type
 import { saveLayoutAction } from "@/app/admin/actions/layout-config";
 import { BlobTracer } from "@/components/public/blob-tracer";
 import { TechStack } from "@/components/public/tech-stack";
+import { SiteHeader } from "@/components/public/site-header";
 
 interface AdminHomeContentProps {
   projects: Project[];
@@ -82,17 +83,71 @@ const AnimatedRoleText = ({ layer }: { layer: 'solid' | 'outline' }) => {
   );
 };
 
-const HeroSection = ({ dragHandleProps, dragListeners, videoUrl, imageUrl, opacity, grayscale, blobs }: any) => (
-  <section className="min-h-[100svh] flex flex-col justify-center relative z-10 pt-16 mt-[-64px] bg-[var(--surface)] overflow-hidden group">
+const HeroSection = ({ dragHandleProps, dragListeners, videoUrl, imageUrl, opacity, grayscale, blobs }: any) => {
+  const [topPadding, setTopPadding] = useState(0);
+  const isDraggingRef = useRef(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('heroTopPadding');
+    if (saved) setTopPadding(parseInt(saved, 10));
+  }, []);
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    isDraggingRef.current = true;
+    if (e.currentTarget.setPointerCapture) {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    }
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDraggingRef.current) return;
+    const newPadding = Math.max(0, topPadding + e.movementY);
+    setTopPadding(newPadding);
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    isDraggingRef.current = false;
+    if (e.currentTarget.releasePointerCapture) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+  };
+
+  const savePadding = () => {
+    localStorage.setItem('heroTopPadding', topPadding.toString());
+    alert('Top spacing saved to local storage! It will now appear on your / root page.');
+  };
+
+  return (
+  <section className="relative z-10 px-4 pb-4 pt-4 group">
+    <div 
+      className="absolute top-0 left-0 w-full h-4 cursor-ns-resize hover:bg-slate-500/20 z-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      title="Drag up/down to adjust top spacing"
+    >
+      <div className="w-12 h-1 bg-[var(--outline)] rounded-full pointer-events-none" />
+    </div>
+    
+    <div className="absolute top-6 left-6 z-50 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+      <button 
+        onClick={savePadding}
+        className="px-3 py-1 bg-[var(--primary)] text-[var(--surface)] text-xs font-bold rounded hover:opacity-80"
+      >
+        Save Spacing
+      </button>
+    </div>
+
     <button 
       {...dragHandleProps} 
       {...dragListeners} 
-      className="absolute top-6 right-6 z-50 p-2 bg-[var(--outline)] rounded-md text-[var(--surface)] hover:opacity-80 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
+      className="absolute top-8 right-8 z-50 p-2 bg-[var(--outline)] rounded-md text-[var(--surface)] hover:opacity-80 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
       title="Drag to reorder Hero"
     >
       <GripVertical className="h-5 w-5" />
     </button>
-    <div className={`absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none ${videoUrl ? 'bg-black' : 'bg-secondary'}`}>
+    <div className="flex flex-col justify-center relative overflow-hidden !rounded-[24px]" style={{ minHeight: `calc(100svh - 96px - ${topPadding}px)`, marginTop: `${topPadding}px`, backgroundColor: 'var(--surface)', border: '0px solid var(--outline)' }}>
+      <div className={`absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none ${videoUrl ? 'bg-black' : 'bg-secondary'}`}>
       {videoUrl && (
         <video 
           key={videoUrl}
@@ -120,84 +175,47 @@ const HeroSection = ({ dragHandleProps, dragListeners, videoUrl, imageUrl, opaci
 
     <div className="absolute inset-6 sm:inset-10 z-10 pointer-events-none border-[0.5px] border-[var(--outline)] opacity-30" />
 
+    {/* Top Center Stars */}
     <div className="absolute top-16 left-1/2 -translate-x-1/2 flex items-center gap-6 text-[var(--primary)] z-20 opacity-80 text-lg">
+      <span>✦</span>
       <span>✦</span>
       <span>✦</span>
       <span>✦</span>
     </div>
 
+    {/* Bottom Center Text */}
     <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex items-center gap-8 text-[var(--primary)] z-20 opacity-80">
       <span className="text-[10px] sm:text-xs uppercase tracking-[0.4em] font-[family-name:var(--font-display)]">Constructed</span>
       <span className="text-sm">⊕</span>
       <span className="text-[10px] sm:text-xs uppercase tracking-[0.4em] font-[family-name:var(--font-display)]">Systems</span>
     </div>
 
-    <div className="absolute top-16 left-16 hidden lg:flex flex-col gap-2 max-w-[220px] z-20">
-      <div className="text-[var(--primary)] text-xl mb-1">✧</div>
-      <h3 className="text-[var(--primary)] font-[family-name:var(--font-display)] text-[11px] tracking-[0.3em] uppercase">CLOSE-UP</h3>
-      <p className="text-[var(--outline)] font-[family-name:var(--font-body)] text-[9px] leading-relaxed uppercase tracking-widest mt-1 opacity-70">
-        Capture the raw intensity of code, the structured elegance of systems.
-      </p>
-    </div>
-
-    <div className="absolute top-16 right-16 hidden lg:flex flex-col items-end text-right gap-2 max-w-[220px] z-20">
-      <div className="text-[var(--primary)] text-xl mb-1">✧</div>
-      <h3 className="text-[var(--primary)] font-[family-name:var(--font-display)] text-[11px] tracking-[0.3em] uppercase">MID-SHOT</h3>
-      <p className="text-[var(--outline)] font-[family-name:var(--font-body)] text-[9px] leading-relaxed uppercase tracking-widest mt-1 opacity-70">
-        Frame the system against the backdrop of constraint, a vision of raw capacity.
-      </p>
-    </div>
-
-    <div className="absolute top-1/2 -translate-y-1/2 left-16 hidden xl:flex flex-col gap-2 max-w-[200px] z-20">
-      <div className="text-[var(--primary)] text-2xl mb-4">❋</div>
-      <h3 className="text-[var(--primary)] font-[family-name:var(--font-display)] text-[11px] tracking-[0.3em] uppercase">VOID BOUND</h3>
-      <p className="text-[var(--outline)] font-[family-name:var(--font-body)] text-[9px] leading-relaxed uppercase tracking-widest mt-1 opacity-70">
-        Born in logic, crowned in structure. The design is etched in terminal output.
-      </p>
-    </div>
-
-    <div className="absolute top-1/2 -translate-y-1/2 right-16 hidden xl:flex flex-col items-end text-right gap-2 max-w-[200px] z-20">
-      <div className="text-[var(--primary)] text-2xl mb-4">❋</div>
-      <h3 className="text-[var(--primary)] font-[family-name:var(--font-display)] text-[11px] tracking-[0.3em] uppercase">DARK REIGN</h3>
-      <p className="text-[var(--outline)] font-[family-name:var(--font-body)] text-[9px] leading-relaxed uppercase tracking-widest mt-1 opacity-70">
-        A network forged in fire, feared by all. Constraints of destiny cannot bind it.
-      </p>
-    </div>
-
-    <div className="absolute bottom-16 left-16 hidden lg:flex flex-col gap-2 max-w-[280px] z-20">
-      <div className="text-[var(--primary)] text-2xl mb-2 font-light">++</div>
-      <h3 className="text-[var(--primary)] font-[family-name:var(--font-display)] text-[11px] tracking-[0.3em] uppercase">ARCHITECT</h3>
-      <p className="text-[var(--outline)] font-[family-name:var(--font-body)] text-[9px] leading-relaxed uppercase tracking-widest mt-1 opacity-70">
-        She stands at the precipice of complexity, draped in the echoes of data and willed in the structuring of systems long forgotten.
-      </p>
-    </div>
-
-    <div className="absolute bottom-16 right-16 hidden lg:flex flex-col items-end text-right gap-2 max-w-[280px] z-20">
-      <div className="text-[var(--primary)] text-2xl mb-2 font-light">++</div>
-      <h3 className="text-[var(--primary)] font-[family-name:var(--font-display)] text-[11px] tracking-[0.3em] uppercase">IRON LOGIC</h3>
-      <p className="text-[var(--outline)] font-[family-name:var(--font-body)] text-[9px] leading-relaxed uppercase tracking-widest mt-1 opacity-70">
-        A system forged in logic, feared by entropy. Her presence alone bends the will of servers.
-      </p>
-    </div>
-
+    {/* Central Focus Area */}
     <div className="relative w-full h-[75vh] flex flex-col items-center justify-center z-10 mt-8">
+      {/* 1. Underlying Solid Text Layer */}
       <div className="absolute inset-0 z-[5]">
         <AnimatedRoleText layer="solid" />
       </div>
 
+      {/* 2. The Subject Image (Angel) */}
       <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
-        <img 
-          src={imageUrl || "/angel1.png"} 
-          alt="Subject" 
-          className="h-[100vh] w-auto max-w-none scale-110 md:scale-125 origin-bottom object-contain object-bottom drop-shadow-[0_0_30px_rgba(0,0,0,0.8)] filter brightness-90 contrast-125"
-        />
+        {/* Using standard img with drop-shadow to separate it from the text */}
+        {imageUrl && (
+          <img 
+            src={imageUrl} 
+            alt="Subject" 
+            className="h-[100vh] w-auto max-w-none scale-110 md:scale-125 origin-bottom object-contain object-bottom drop-shadow-[0_0_30px_rgba(0,0,0,0.8)] filter brightness-90 contrast-125"
+          />
+        )}
       </div>
 
+      {/* 3. Overlaying Outline Text Layer */}
       <div className="absolute inset-0 z-20 pointer-events-none">
          <AnimatedRoleText layer="outline" />
       </div>
 
-      <div className="absolute bottom-0 z-30 flex flex-col items-center gap-6 pb-4">
+      {/* Initialize Button (bottom center above the text) */}
+      <div className="absolute bottom-10 z-30 flex flex-col items-center gap-6 pb-4">
         <Link
           href="#skills"
           className="chrome-button bg-transparent border border-[var(--primary)] text-[var(--primary)] font-[family-name:var(--font-display)] font-bold text-xs tracking-[0.3em] uppercase px-12 py-3 transition-industrial hover:bg-[var(--primary)] hover:text-[var(--surface)] backdrop-blur-sm"
@@ -211,9 +229,12 @@ const HeroSection = ({ dragHandleProps, dragListeners, videoUrl, imageUrl, opaci
       </div>
     </div>
     
+    {/* Subtle gradient to mask bottom edge of image */}
     <div className="absolute bottom-0 w-full h-32 bg-gradient-to-t from-[var(--surface)] to-transparent z-20 pointer-events-none" />
+    </div>
   </section>
-);
+  );
+};
 
 function SortableSection({ id, children }: { id: HomeSectionId, children: (props: any) => React.ReactNode }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
@@ -300,6 +321,19 @@ export const AdminHomeContent = ({ projects, setProjects, achievements, setAchie
           <GripVertical className="w-5 h-5" />
         </button>
         <TechStack />
+      </div>
+    ),
+    header: (p) => (
+      <div className="relative group">
+        <button 
+          {...p.attributes} 
+          {...p.listeners} 
+          className="absolute right-6 top-4 z-[60] p-2 bg-[var(--outline)] rounded-md text-[var(--surface)] hover:opacity-80 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
+          title="Drag to reorder header"
+        >
+          <GripVertical className="w-5 h-5" />
+        </button>
+        <SiteHeader />
       </div>
     ),
     contact: (p) => (

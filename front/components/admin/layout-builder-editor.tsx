@@ -23,6 +23,7 @@ interface LayoutBuilderEditorProps {
 }
 
 const labels: Record<HomeSectionId, string> = {
+  header: "Header Navigation",
   hero: "Hero",
   projects: "Projects",
   achievements: "Achievements",

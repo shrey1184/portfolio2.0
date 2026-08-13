@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useSpring, useMotionValue, useTransform } from "framer-motion";
 import { Layers, Globe, Code, Cpu, Sparkles } from "lucide-react";
-import Beams from "../ui/Beams";
 
 const skillsData = [
   {
@@ -156,7 +155,7 @@ function GraphNode({ item, i, mx, my, glow, multiplier }: any) {
            
            <div className="flex items-center gap-3 px-5 md:px-6 py-2 md:py-3 bg-white/5 border border-white/10 rounded-full backdrop-blur-xl group-hover:border-white/30 transition-colors shadow-2xl">
              <span className="w-2 h-2 rounded-full animate-pulse shadow-[0_0_8px_currentColor]" style={{ backgroundColor: glow, color: glow }} />
-             <span className="font-mono text-[12px] md:text-[14px] text-white/70 group-hover:text-white tracking-wider uppercase whitespace-nowrap">
+             <span className="font-mono text-[12px] md:text-[14px] text-black/70 group-hover:text-black tracking-wider uppercase whitespace-nowrap">
                 {item.name}
              </span>
            </div>
@@ -178,7 +177,7 @@ function CoreNode({ mx, my, group }: any) {
         
         <div className="flex flex-col items-center justify-center w-20 h-20 md:w-28 md:h-28 bg-[#0A0A0A]/90 border border-white/20 rounded-full backdrop-blur-2xl shadow-[0_0_40px_rgba(0,0,0,0.5)]">
            <div className="mb-1">{getIcon(group.id, group.textColor)}</div>
-           <span className="font-mono text-[8px] md:text-[10px] text-white/40 tracking-widest uppercase">Stack</span>
+           <span className="font-mono text-[8px] md:text-[10px] text-black/40 tracking-widest uppercase">Stack</span>
         </div>
       </motion.div>
     </motion.div>
@@ -190,7 +189,7 @@ function NetworkGraph({ group, mx, my, multiplier, isActive = true }: any) {
   return (
     <div className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-700 ${isActive ? 'z-20 opacity-100' : 'z-10 opacity-60'}`}>
       <svg width="2000" height="2000" viewBox="0 0 2000 2000" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible z-0">
-        <g transform="translate(1000, 1000)" className={isActive ? group.textColor : 'text-white/40'}>
+        <g transform="translate(1000, 1000)" className={isActive ? group.textColor : 'text-black/40'}>
            <RadarPolygon group={group} mx={mx} my={my} multiplier={multiplier} />
         </g>
       </svg>
@@ -244,54 +243,36 @@ export const TechStack = () => {
   };
 
   return (
-    <section id="skills" className="relative bg-[#050505] py-24 md:py-40 z-20 overflow-hidden min-h-[50vh] flex items-center w-full">
-      <div className="absolute inset-0 z-0 w-full h-full pointer-events-none opacity-40">
-        <Beams
-          beamWidth={3}
-          beamHeight={30}
-          beamNumber={20}
-          lightColor="#ffffff"
-          speed={2}
-          noiseIntensity={1.75}
-          scale={0.2}
-          rotation={30}
-        />
-      </div>
-      
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none z-[1]" />
-
-      <div className="w-full relative z-10 max-w-[1920px] mx-auto">
-        <motion.div 
-          initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
-          whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.1, duration: 0.8 }}
-          className="px-6 sm:px-12 lg:px-16"
-        >
-          <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-8 mb-20 md:mb-32">
-            <div className="flex flex-col gap-6">
-              <div className="flex items-center gap-4">
-                <span className="flex items-center justify-center w-8 h-8 rounded-full border border-white/10 bg-white/5">
-                  <Layers className="w-4 h-4 text-white/60" />
-                </span>
-                <span className="font-[family-name:var(--font-body)] text-xs tracking-[0.2em] text-white/40 uppercase">
-                  Technical Arsenal
-                </span>
-              </div>
-              <h2 className="font-[family-name:var(--font-display)] text-[clamp(2.5rem,8vw,7rem)] font-bold tracking-tighter leading-[0.85] text-white uppercase">
-                Systems & <br />
-                <span className="text-white/20 italic font-medium">Execution.</span>
-              </h2>
+    <section id="skills" className="relative px-4 pb-4 pt-4 z-20 w-full">
+      <div 
+        className="relative !rounded-[24px] overflow-hidden min-h-[50vh] flex flex-col justify-center border border-white/10 shadow-2xl py-24 md:py-32"
+      >
+        
+        <div className="w-full relative z-10 max-w-[1920px] mx-auto flex flex-col h-full gap-16 md:gap-24">
+          <motion.div 
+            initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
+            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1, duration: 0.8 }}
+            className="px-6 md:px-12 w-full flex flex-col items-center relative"
+          >
+            {/* "What we do" badge aligned left on large screens, or just positioned absolutely */}
+            <div className="absolute left-6 md:left-12 lg:left-16 top-0 md:top-4 flex items-center gap-3">
+              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white text-black text-xs font-bold shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+                 -
+              </span>
+              <span className="font-[family-name:var(--font-body)] text-xs md:text-sm tracking-[0.1em] text-black/90 font-medium">
+                What we do
+              </span>
             </div>
-            
-            <p className="font-[family-name:var(--font-body)] max-w-md text-white/40 text-lg md:text-xl font-light leading-relaxed pb-2">
-              Transforming complex technical requirements into physical logic. 
-              Interactive agent graph—hover to track node flow.
-            </p>
-          </div>
-        </motion.div>
 
-        <div className="flex flex-col-reverse lg:flex-row gap-0 xl:gap-8 relative w-full items-stretch lg:min-h-[650px] border-y border-white/[0.05] bg-transparent overflow-hidden shadow-2xl">
+            <h2 className="font-[family-name:var(--font-display)] text-[clamp(4rem,12vw,10rem)] font-bold tracking-tighter leading-none text-black mt-12 lg:mt-0 text-center flex items-start">
+              Services.
+              <span className="text-black/40 text-2xl md:text-4xl font-normal ml-2 md:ml-4 tracking-normal mt-4 md:mt-8">(4)</span>
+            </h2>
+          </motion.div>
+
+          <div className="flex flex-col-reverse lg:flex-row gap-0 xl:gap-8 relative w-full items-stretch lg:min-h-[600px] bg-transparent overflow-hidden px-0 lg:px-6">
           
           {/* LEFT: Nav Stack */}
           <div className="w-full lg:w-[40%] xl:w-[35%] flex flex-row lg:flex-col overflow-x-auto lg:overflow-x-visible justify-start lg:justify-center border-0 bg-transparent backdrop-blur-none p-0 lg:p-12 xl:p-16 relative z-20 no-scrollbar">            {skillsData.map((group, index) => {
@@ -304,10 +285,10 @@ export const TechStack = () => {
                   className="group relative flex items-center justify-center lg:justify-between py-4 px-6 lg:py-8 border-r lg:border-r-0 lg:border-b border-white/[0.02] last:border-0 cursor-pointer shrink-0"
                 >
                   <div className="flex flex-col lg:flex-row items-center lg:items-center gap-2 lg:gap-8 z-10 w-full text-center lg:text-left">
-                    <span className={`font-mono text-[10px] md:text-xs lg:text-sm transition-all duration-500 ease-out ${isActive ? group.textColor : 'text-white/20 group-hover:text-white/40'}`}>
+                    <span className={`font-mono text-[10px] md:text-xs lg:text-sm transition-all duration-500 ease-out ${isActive ? group.textColor : 'text-black/20 group-hover:text-black/40'}`}>
                       {group.id}
                     </span>
-                    <h3 className={`font-[family-name:var(--font-display)] text-sm md:text-base lg:text-5xl font-black uppercase tracking-tighter transition-all duration-700 ease-[0.16,1,0.3,1] w-full ${isActive ? 'text-white lg:translate-x-6' : 'text-white/20 group-hover:text-white/40'}`}>
+                    <h3 className={`font-[family-name:var(--font-display)] text-sm md:text-base lg:text-5xl font-black uppercase tracking-tighter transition-all duration-700 ease-[0.16,1,0.3,1] w-full ${isActive ? 'text-black lg:translate-x-6' : 'text-black/20 group-hover:text-black/40'}`}>
                       {group.category}
                     </h3>
                   </div>
@@ -348,12 +329,12 @@ export const TechStack = () => {
 
             {/* Radar / Grid System */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-              <div className="absolute w-[150px] md:w-[250px] h-[150px] md:h-[250px] rounded-full border border-white/[0.03]" />
-              <div className="absolute w-[300px] md:w-[450px] h-[300px] md:h-[450px] rounded-full border border-white/[0.05] border-dashed" />
-              <div className="absolute w-[450px] md:w-[650px] h-[450px] md:h-[650px] rounded-full border border-white/[0.03]" />
+              <div className="absolute w-[150px] md:w-[250px] h-[150px] md:h-[250px] rounded-full border border-black/[0.03]" />
+              <div className="absolute w-[300px] md:w-[450px] h-[300px] md:h-[450px] rounded-full border border-black/[0.05] border-dashed" />
+              <div className="absolute w-[450px] md:w-[650px] h-[450px] md:h-[650px] rounded-full border border-black/[0.03]" />
               
-              <div className="absolute top-0 bottom-0 left-1/2 w-px bg-white/[0.03]" />
-              <div className="absolute left-0 right-0 top-1/2 h-px bg-white/[0.03]" />
+              <div className="absolute top-0 bottom-0 left-1/2 w-px bg-black/[0.03]" />
+              <div className="absolute left-0 right-0 top-1/2 h-px bg-black/[0.03]" />
             </div>
 
             {/* UI Tech Corners */}
@@ -378,6 +359,7 @@ export const TechStack = () => {
 
           </div>
         </div>
+      </div>
       </div>
     </section>
   );

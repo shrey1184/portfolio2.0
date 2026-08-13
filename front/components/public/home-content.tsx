@@ -12,6 +12,8 @@ import { BlobTracer } from "@/components/public/blob-tracer";
 import { TechStack } from "@/components/public/tech-stack";
 import Grainient from "@/components/public/Grainient";
 import { BackgroundBeams } from "@/components/ui/background-beams";
+import LiquidMusicPlayer from "@/components/public/liquidplayer";
+import Blackhole from "@/components/originkit/ui/blackhole";
 
 interface HomeContentProps {
   projects: Project[];
@@ -38,7 +40,7 @@ const IndustrialSection = ({ id, number, title, children, center = false, fullWi
 
 const AnimatedRoleText = ({ layer }: { layer: 'solid' | 'outline' }) => {
   const [wordIndex, setWordIndex] = useState(0);
-  const words = ["AI DEVELOPER", "FULL STACK", "SYSTEM ENGINEER"];
+  const words = ["AI DEVELOPER", "FULLSTACK", "DEVOPS ENGINEER"];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -57,7 +59,7 @@ const AnimatedRoleText = ({ layer }: { layer: 'solid' | 'outline' }) => {
           } ${layer === 'solid' ? "text-[hidden]" : "text-transparent"}`}
           style={
             layer === 'solid' 
-            ? { color: 'var(--primary)', opacity: index === wordIndex ? 1 : 0 }
+            ? { color: 'var(--secondary)', opacity: index === wordIndex ? 1 : 0 }
             : { WebkitTextStroke: "1px var(--primary)", filter: "drop-shadow(0 0 20px rgba(var(--primary-rgb), 0.2))" }
           }
         >
@@ -68,12 +70,20 @@ const AnimatedRoleText = ({ layer }: { layer: 'solid' | 'outline' }) => {
   );
 };
 
-const HeroSection = ({ videoUrl, imageUrl, opacity, grayscale, blobs }: { videoUrl: string | null, imageUrl: string | null, opacity: number, grayscale: boolean, blobs: any }) => (
+const HeroSection = ({ videoUrl, imageUrl, opacity, grayscale, blobs }: { videoUrl: string | null, imageUrl: string | null, opacity: number, grayscale: boolean, blobs: any }) => {
+  const [topPadding, setTopPadding] = useState(0);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('heroTopPadding');
+    if (saved) setTopPadding(parseInt(saved, 10));
+  }, []);
+
+  return (
   <section className="relative z-10 px-4 pb-4 pt-4">
-    <div className="min-h-[calc(100svh-96px)] flex flex-col justify-center relative overflow-hidden !rounded-[24px]" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--outline)' }}>
+    <div className="flex flex-col justify-center relative overflow-hidden !rounded-[24px]" style={{ minHeight: `calc(100svh - 96px - ${topPadding}px)`, marginTop: `${topPadding}px`, backgroundColor: 'var(--surface)', border: '0px solid var(--outline)' }}>
       {/* Background video and blobs */}
       <div className={`absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none ${videoUrl ? 'bg-black' : 'bg-secondary'}`}>
-      {videoUrl && (
+      {/* {videoUrl && (
         <video 
           key={videoUrl}
           autoPlay 
@@ -83,10 +93,13 @@ const HeroSection = ({ videoUrl, imageUrl, opacity, grayscale, blobs }: { videoU
           crossOrigin="anonymous"
           style={{ opacity: opacity * 0.5 }}
           className={`w-full h-full object-cover mix-blend-screen ${grayscale ? 'grayscale' : ''}`}
-        >
+>
           <source src={videoUrl} type="video/mp4" />
         </video>
-      )}
+      )} */}
+
+              <Blackhole />
+
       <BlobTracer 
         count={blobs.count} 
         thickness={blobs.thickness} 
@@ -95,79 +108,77 @@ const HeroSection = ({ videoUrl, imageUrl, opacity, grayscale, blobs }: { videoU
         filledColor={blobs.filledColor}
         speed={blobs.speed} 
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[var(--surface)] opacity-100" />
+      {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[var(--surface)] opacity-100" /> */}
     </div>
 
     {/* Frame Graphic Elements */}
     <div className="absolute inset-6 sm:inset-10 z-10 pointer-events-none border-[0.5px] border-[var(--outline)] opacity-30" />
 
-    {/* Top Center Stars */}
-    <div className="absolute top-16 left-1/2 -translate-x-1/2 flex items-center gap-6 text-[var(--primary)] z-20 opacity-80 text-lg">
+    Top Center Stars
+    <div className="absolute top-16 left-1/2 -translate-x-1/2 flex items-center gap-6 text-[var(--secondary)] z-20 opacity-80 text-lg">
       <span>✦</span>
       <span>✦</span>
       <span>✦</span>
+      <span>✦</span>
+
     </div>
 
-    {/* Bottom Center Text */}
-    <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex items-center gap-8 text-[var(--primary)] z-20 opacity-80">
+    Bottom Center Text
+    <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex items-center gap-8 text-[var(--secondary)] z-20 opacity-80">
       <span className="text-[10px] sm:text-xs uppercase tracking-[0.4em] font-[family-name:var(--font-display)]">Constructed</span>
       <span className="text-sm">⊕</span>
       <span className="text-[10px] sm:text-xs uppercase tracking-[0.4em] font-[family-name:var(--font-display)]">Systems</span>
     </div>
 
     {/* Top Left Corner */}
-    <div className="absolute top-16 left-16 hidden lg:flex flex-col gap-2 max-w-[220px] z-20">
-      <div className="text-[var(--primary)] text-xl mb-1">✧</div>
-      <h3 className="text-[var(--primary)] font-[family-name:var(--font-display)] text-[11px] tracking-[0.3em] uppercase">CLOSE-UP</h3>
-      <p className="text-[var(--outline)] font-[family-name:var(--font-body)] text-[9px] leading-relaxed uppercase tracking-widest mt-1 opacity-70">
-        Capture the raw intensity of code, the structured elegance of systems.
-      </p>
-    </div>
+    {/* <div className="absolute top-16 left-16 z-20 w-[300px]">
+      <LiquidMusicPlayer titleColor="var(--secondary)" artistColor="var(--outline)" trackColor="var(--surface)" timeColor="var(--outline)" tint="var(--primary)" buttonColor="var(--primary)" />
+    </div> */}
 
-    {/* Top Right Corner */}
+    {/* Top Right Corner
     <div className="absolute top-16 right-16 hidden lg:flex flex-col items-end text-right gap-2 max-w-[220px] z-20">
       <div className="text-[var(--primary)] text-xl mb-1">✧</div>
       <h3 className="text-[var(--primary)] font-[family-name:var(--font-display)] text-[11px] tracking-[0.3em] uppercase">MID-SHOT</h3>
       <p className="text-[var(--outline)] font-[family-name:var(--font-body)] text-[9px] leading-relaxed uppercase tracking-widest mt-1 opacity-70">
         Frame the system against the backdrop of constraint, a vision of raw capacity.
       </p>
-    </div>
+    </div> */}
 
-    {/* Center Left Corner */}
+    {/* Center Left Corner
     <div className="absolute top-1/2 -translate-y-1/2 left-16 hidden xl:flex flex-col gap-2 max-w-[200px] z-20">
       <div className="text-[var(--primary)] text-2xl mb-4">❋</div>
       <h3 className="text-[var(--primary)] font-[family-name:var(--font-display)] text-[11px] tracking-[0.3em] uppercase">VOID BOUND</h3>
       <p className="text-[var(--outline)] font-[family-name:var(--font-body)] text-[9px] leading-relaxed uppercase tracking-widest mt-1 opacity-70">
         Born in logic, crowned in structure. The design is etched in terminal output.
       </p>
-    </div>
+    </div> */}
 
-    {/* Center Right Corner */}
+    {/* Center Right Corner
     <div className="absolute top-1/2 -translate-y-1/2 right-16 hidden xl:flex flex-col items-end text-right gap-2 max-w-[200px] z-20">
       <div className="text-[var(--primary)] text-2xl mb-4">❋</div>
       <h3 className="text-[var(--primary)] font-[family-name:var(--font-display)] text-[11px] tracking-[0.3em] uppercase">DARK REIGN</h3>
       <p className="text-[var(--outline)] font-[family-name:var(--font-body)] text-[9px] leading-relaxed uppercase tracking-widest mt-1 opacity-70">
         A network forged in fire, feared by all. Constraints of destiny cannot bind it.
       </p>
-    </div>
+    </div> */}
 
-    {/* Bottom Left Corner */}
+    {/* Bottom Left Corner
     <div className="absolute bottom-16 left-16 hidden lg:flex flex-col gap-2 max-w-[280px] z-20">
       <div className="text-[var(--primary)] text-2xl mb-2 font-light">++</div>
       <h3 className="text-[var(--primary)] font-[family-name:var(--font-display)] text-[11px] tracking-[0.3em] uppercase">ARCHITECT</h3>
       <p className="text-[var(--outline)] font-[family-name:var(--font-body)] text-[9px] leading-relaxed uppercase tracking-widest mt-1 opacity-70">
         She stands at the precipice of complexity, draped in the echoes of data and willed in the structuring of systems long forgotten.
       </p>
-    </div>
+    </div> */}
 
-    {/* Bottom Right Corner */}
+    {/* Bottom Right Corner
     <div className="absolute bottom-16 right-16 hidden lg:flex flex-col items-end text-right gap-2 max-w-[280px] z-20">
       <div className="text-[var(--primary)] text-2xl mb-2 font-light">++</div>
       <h3 className="text-[var(--primary)] font-[family-name:var(--font-display)] text-[11px] tracking-[0.3em] uppercase">IRON LOGIC</h3>
       <p className="text-[var(--outline)] font-[family-name:var(--font-body)] text-[9px] leading-relaxed uppercase tracking-widest mt-1 opacity-70">
         A system forged in logic, feared by entropy. Her presence alone bends the will of servers.
       </p>
-    </div>
+    </div> */}
 
     {/* Central Focus Area */}
     <div className="relative w-full h-[75vh] flex flex-col items-center justify-center z-10 mt-8">
@@ -194,10 +205,10 @@ const HeroSection = ({ videoUrl, imageUrl, opacity, grayscale, blobs }: { videoU
       </div>
 
       {/* Initialize Button (bottom center above the text) */}
-      <div className="absolute bottom-0 z-30 flex flex-col items-center gap-6 pb-4">
+      <div className="absolute bottom-10 z-30 flex flex-col items-center gap-6 pb-4">
         <Link
           href="#skills"
-          className="chrome-button bg-transparent border border-[var(--primary)] text-[var(--primary)] font-[family-name:var(--font-display)] font-bold text-xs tracking-[0.3em] uppercase px-12 py-3 transition-industrial hover:bg-[var(--primary)] hover:text-[var(--surface)] backdrop-blur-sm"
+          className="chrome-button bg-transparent border border-[var(--secondary)] text-[var(--secondary)] font-[family-name:var(--font-display)] font-bold text-xs tracking-[0.3em] uppercase px-12 py-3 transition-industrial hover:bg-[var(--primary)] hover:text-[var(--surface)] backdrop-blur-sm"
           onClick={(e) => {
             e.preventDefault();
             document.getElementById('skills')?.scrollIntoView({ behavior: 'smooth' });
@@ -207,12 +218,10 @@ const HeroSection = ({ videoUrl, imageUrl, opacity, grayscale, blobs }: { videoU
         </Link>
       </div>
     </div>
-    
-    {/* Subtle gradient to mask bottom edge of image */}
-    <div className="absolute bottom-0 w-full h-32 bg-gradient-to-t from-[var(--surface)] to-transparent z-20 pointer-events-none" />
     </div>
   </section>
-);
+  );
+};
 
 export const HomeContent = ({ projects, achievements, experience, sectionOrder, theme }: HomeContentProps) => {
   const sections: Record<HomeSectionId, ReactNode> = {
@@ -239,7 +248,7 @@ export const HomeContent = ({ projects, achievements, experience, sectionOrder, 
       <div className="relative w-full overflow-hidden">
         <div className="absolute inset-0 z-[0] pointer-events-none w-full h-full">
           <Grainient
-            color1="#040404"
+            color1="#262525"
             color2="#3a3a3a"
             color3="#131213"
             timeSpeed={0.80}
@@ -284,11 +293,13 @@ export const HomeContent = ({ projects, achievements, experience, sectionOrder, 
     contact: (
       null 
     ),
+    header: (
+      <SiteHeader />
+    ),
   };
 
   return (
     <div className="min-h-screen bg-[var(--surface)] text-[var(--primary)] selection:bg-[var(--primary)] selection:text-[var(--surface)]">
-      <SiteHeader />
       <main className="flex flex-col relative z-10">
         {sectionOrder.map((sectionId) => (
           <div key={sectionId}>{sections[sectionId]}</div>
@@ -358,10 +369,10 @@ export const HomeContent = ({ projects, achievements, experience, sectionOrder, 
               className="flex flex-wrap justify-center gap-4 sm:gap-6 mt-16 sm:mt-24 pointer-events-auto"
             >
               {[
-                { name: "Gmail", href: "mailto:youremail@gmail.com" },
-                { name: "Twitter", href: "https://twitter.com/yourhandle" },
-                { name: "LinkedIn", href: "https://linkedin.com/in/yourhandle" },
-                { name: "GitHub", href: "https://github.com/yourhandle" },
+                { name: "Gmail", href: "mailto:shreyshrivastava11@gmail.com" },
+                { name: "Twitter", href: "https://x.com/_Shrey_11" },
+                { name: "LinkedIn", href: "https://linkedin.com/in/shrey1184" },
+                { name: "GitHub", href: "https://github.com/shrey1184" },
               ].map((link) => (
                 <motion.a
                   key={link.name}

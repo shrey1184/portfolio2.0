@@ -1,6 +1,7 @@
 import type { Database } from "@/types/database";
 
 export const HOMEPAGE_SECTIONS = [
+  "header",
   "hero",
   "stack",
   "projects",
