@@ -4,6 +4,7 @@ import Image from "next/image";
 import type { Project } from "@/types/domain";
 import React from "react";
 import AsciiBackground from "../originkit/ui/AsciiBackground";
+import AsciiImage from "../originkit/ui/AsciiImage";
 
 interface ProjectGridProps {
   projects: Project[];
@@ -41,13 +42,23 @@ export const ProjectGrid = ({ projects, theme }: ProjectGridProps) => {
           >
             <div className="relative h-full w-full">
               {project.image_url ? (
-                <div className="absolute inset-4 md:inset-8 overflow-hidden rounded-3xl">
+                <div className="absolute inset-4 md:inset-8 overflow-hidden rounded-3xl bg-black">
                   <Image
                     src={project.image_url}
                     alt={project.title}
                     fill
                     quality={100}
                     className="object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105"
+                  />
+
+                  {/* ASCII overlay — fades out on hover to reveal the real image */}
+                  <AsciiImage
+                    src={project.image_url}
+                    cellWidth={5}
+                    cellHeight={8}
+                    fontSize={7}
+                    color="rgba(255,255,255,0.9)"
+                    className="bg-black transition-opacity duration-500 ease-out group-hover:opacity-0 z-[5]"
                   />
                 </div>
               ) : null}

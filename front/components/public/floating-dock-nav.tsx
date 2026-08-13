@@ -7,6 +7,7 @@ import {
   Instagram,
   Mail,
   Twitter,
+  Linkedin,
 } from "lucide-react";
 
 export function FloatingDockNav() {
@@ -19,27 +20,32 @@ export function FloatingDockNav() {
     {
       title: "GitHub",
       icon: <Github className="h-full w-full text-white/80" />,
-      href: "#", // Add your Github link here
+      href: "https://github.com/shrey1184", // Add your Github link here
     },
-    {
-      title: "Resume",
-      icon: <FileText className="h-full w-full text-white/80" />,
-      href: "#", // Add your resume link here
-    },
+    // {
+    //   title: "Resume",
+    //   icon: <FileText className="h-full w-full text-white/80" />,
+    //   href: "#", // Add your resume link here
+    // },
     {
       title: "Instagram",
       icon: <Instagram className="h-full w-full text-white/80" />,
-      href: "#", // Add your Instagram link here
+      href: "https://instagram.com/shrey.draft", // Add your Instagram link here
     },
     {
       title: "Mail",
       icon: <Mail className="h-full w-full text-white/80" />,
-      href: "#", // Add your email link here
+      href: "mailto:shrey1184@gmail.com", // Add your email link here
+    },
+        {
+      title: "LinkedIn",
+      icon: <Linkedin className="h-full w-full text-white/80" />,
+      href: "https://linkedin.com/in/shrey1184", // Add your LinkedIn link here
     },
     {
       title: "Twitter",
       icon: <Twitter className="h-full w-full text-white/80" />,
-      href: "#", // Add your Twitter/X link here
+      href: "https://x.com/_Shrey_11", // Add your Twitter/X link here
     },
   ];
 

@@ -148,6 +148,12 @@ class RubikCubeScene {
   private lastT = 0;
   private disposed = false;
 
+  // Set from outside (via IntersectionObserver) — when false, the scene
+  // skips all particle math, rendering, and even the idle auto-rotate,
+  // instead of burning a full frame's worth of trig + fill on a canvas
+  // nobody can see.
+  visible = true;
+
   private tmp: Vec3 = { x: 0, y: 0, z: 0 };
 
   constructor(container: HTMLElement, cfg: Config) {
@@ -355,6 +361,11 @@ class RubikCubeScene {
     if (!isFinite(dt) || dt < 0) dt = 0;
     if (dt > 0.05) dt = 0.05;
 
+    // Off-screen: skip rotation, move-picking, and rendering entirely.
+    // We still reset lastT above so dt doesn't spike once it re-enters
+    // view.
+    if (!this.visible) return;
+
     if (!this.isDragging) {
       const rot = this.cfg.rotation;
       const k = 0.06;
@@ -424,8 +435,12 @@ class RubikCubeScene {
       this.pyp[i] = cy - y3 * scale * persp;
     }
 
+    // NOTE: no depth sort here. `globalCompositeOperation = "lighter"`
+    // below is additive blending, which is commutative — draw order
+    // cannot change the visual result. Sorting ~3,000 points every
+    // frame was pure wasted work; `order` stays the identity mapping
+    // built in adoptShell().
     const order = this.order;
-    order.sort((a, b) => this.depth[a] - this.depth[b]);
 
     ctx.globalCompositeOperation = "lighter";
     ctx.fillStyle = this.cfg.color || "#ffffff";
@@ -519,9 +534,21 @@ export default function RubikParticles({
     });
     resizeObserver.observe(container);
 
+    // Pause all per-frame math and drawing while the cube is scrolled
+    // out of view — it's typically pinned (sticky) inside a tall
+    // section, so it can sit off-screen for most of the scroll.
+    const intersectionObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (sceneRef.current) sceneRef.current.visible = entry.isIntersecting;
+      },
+      { rootMargin: "200px", threshold: 0 }
+    );
+    intersectionObserver.observe(container);
+
     return () => {
       cancelled = true;
       resizeObserver.disconnect();
+      intersectionObserver.disconnect();
       sceneRef.current?.dispose();
       sceneRef.current = null;
     };

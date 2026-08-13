@@ -140,8 +140,19 @@ export default function BlackHole(props: Props) {
     const particlesRef = useRef<Particle[]>([])
     const animRef = useRef<number>(0)
     const sizeRef = useRef({ w: 600, h: 600 })
+    const visibleRef = useRef(true)
     // Bumped whenever the real canvas size changes, so particles re-seed in place
     const [sizeVersion, setSizeVersion] = useState(0)
+
+    // Cached radial gradients for the center sphere + rim light. These
+    // only depend on void radius/position/color, which change on resize
+    // or prop change, not every frame — so rebuild them lazily instead
+    // of calling createRadialGradient() (+ hex parsing) 60 times/sec.
+    const gradientCacheRef = useRef<{
+        key: string
+        sphere: CanvasGradient
+        rim: CanvasGradient
+    } | null>(null)
 
     // ─── Initialize Particles ────────────────────────────────
 
@@ -222,6 +233,23 @@ export default function BlackHole(props: Props) {
         return () => ro.disconnect()
     }, [])
 
+    // ─── Visibility Observer ─────────────────────────────────
+    // Pauses the render loop's real work while the hero is scrolled out
+    // of view (e.g. once the user is deep into later sections).
+
+    useEffect(() => {
+        const container = containerRef.current
+        if (!container || typeof IntersectionObserver === "undefined") return
+        const io = new IntersectionObserver(
+            ([entry]) => {
+                visibleRef.current = entry.isIntersecting
+            },
+            { rootMargin: "200px", threshold: 0 }
+        )
+        io.observe(container)
+        return () => io.disconnect()
+    }, [])
+
     // ─── Animation Loop ──────────────────────────────────────
 
     useEffect(() => {
@@ -237,6 +265,9 @@ export default function BlackHole(props: Props) {
         const draw = (now: number) => {
             const dt = Math.min((now - lastTime) / 16.667, 3) // Normalize to ~60fps
             lastTime = now
+
+            animRef.current = requestAnimationFrame(draw)
+            if (!visibleRef.current) return
 
             const { w, h } = sizeRef.current
             const dpr = Math.min(window.devicePixelRatio || 1, 1.5)
@@ -369,7 +400,9 @@ export default function BlackHole(props: Props) {
                 }
             }
 
-            // Sort arrays back-to-front (Z-Buffer)
+            // Sort arrays back-to-front (Z-Buffer). Unlike additive-blend
+            // scenes, these particles use normal "source-over" blending,
+            // so draw order genuinely matters here — this one has to stay.
             backgroundParticles.sort((a, b) => b.z - a.z)
             foregroundParticles.sort((a, b) => b.z - a.z)
 
@@ -416,59 +449,68 @@ export default function BlackHole(props: Props) {
                     }
                     return { r, g, b }
                 }
-                const voidRgb = hexToRgb(voidColor)
 
-                // Layer 3: Base sphere with 3D depth gradient (dark core → slightly lighter edge)
-                const sphereGrad = ctx.createRadialGradient(
-                    voidCx - voidRadius * 0.25,
-                    voidCy - voidRadius * 0.3,
-                    voidRadius * 0.05,
-                    voidCx,
-                    voidCy,
-                    voidRadius
-                )
-                // Compute slightly brighter tones from void color for 3D depth
-                const edgeR = Math.min(255, voidRgb.r + 18)
-                const edgeG = Math.min(255, voidRgb.g + 18)
-                const edgeB = Math.min(255, voidRgb.b + 18)
-                sphereGrad.addColorStop(
-                    0,
-                    `rgba(${Math.min(255, voidRgb.r + 8)}, ${Math.min(255, voidRgb.g + 8)}, ${Math.min(255, voidRgb.b + 8)}, 1)`
-                )
-                sphereGrad.addColorStop(
-                    0.65,
-                    `rgba(${voidRgb.r}, ${voidRgb.g}, ${voidRgb.b}, 1)`
-                )
-                sphereGrad.addColorStop(
-                    0.92,
-                    `rgba(${edgeR}, ${edgeG}, ${edgeB}, 1)`
-                )
-                sphereGrad.addColorStop(
-                    1,
-                    `rgba(${edgeR}, ${edgeG}, ${edgeB}, 0.9)`
-                )
+                // Gradients only depend on void position/radius/color —
+                // none of which change frame-to-frame — so rebuild them
+                // only when that signature actually changes.
+                const cacheKey = `${voidCx.toFixed(1)}|${voidCy.toFixed(1)}|${voidRadius}|${voidColor}`
+                let cached = gradientCacheRef.current
+                if (!cached || cached.key !== cacheKey) {
+                    const voidRgb = hexToRgb(voidColor)
+                    const edgeR = Math.min(255, voidRgb.r + 18)
+                    const edgeG = Math.min(255, voidRgb.g + 18)
+                    const edgeB = Math.min(255, voidRgb.b + 18)
+
+                    const sphereGrad = ctx.createRadialGradient(
+                        voidCx - voidRadius * 0.25,
+                        voidCy - voidRadius * 0.3,
+                        voidRadius * 0.05,
+                        voidCx,
+                        voidCy,
+                        voidRadius
+                    )
+                    sphereGrad.addColorStop(
+                        0,
+                        `rgba(${Math.min(255, voidRgb.r + 8)}, ${Math.min(255, voidRgb.g + 8)}, ${Math.min(255, voidRgb.b + 8)}, 1)`
+                    )
+                    sphereGrad.addColorStop(
+                        0.65,
+                        `rgba(${voidRgb.r}, ${voidRgb.g}, ${voidRgb.b}, 1)`
+                    )
+                    sphereGrad.addColorStop(
+                        0.92,
+                        `rgba(${edgeR}, ${edgeG}, ${edgeB}, 1)`
+                    )
+                    sphereGrad.addColorStop(
+                        1,
+                        `rgba(${edgeR}, ${edgeG}, ${edgeB}, 0.9)`
+                    )
+
+                    const rimGrad = ctx.createRadialGradient(
+                        voidCx,
+                        voidCy,
+                        voidRadius * 0.88,
+                        voidCx,
+                        voidCy,
+                        voidRadius * 1.02
+                    )
+                    rimGrad.addColorStop(0, `rgba(255, 255, 255, 0)`)
+                    rimGrad.addColorStop(0.6, `rgba(180, 180, 200, 0.06)`)
+                    rimGrad.addColorStop(0.85, `rgba(180, 180, 200, 0.12)`)
+                    rimGrad.addColorStop(1, `rgba(180, 180, 200, 0)`)
+
+                    cached = { key: cacheKey, sphere: sphereGrad, rim: rimGrad }
+                    gradientCacheRef.current = cached
+                }
 
                 ctx.globalAlpha = 1.0
-                ctx.fillStyle = sphereGrad
+                ctx.fillStyle = cached.sphere
                 ctx.beginPath()
                 ctx.arc(voidCx, voidCy, voidRadius, 0, Math.PI * 2)
                 ctx.fill()
 
-                // Layer 5: Rim light (bright edge outline for 3D pop)
-                const rimGrad = ctx.createRadialGradient(
-                    voidCx,
-                    voidCy,
-                    voidRadius * 0.88,
-                    voidCx,
-                    voidCy,
-                    voidRadius * 1.02
-                )
-                rimGrad.addColorStop(0, `rgba(255, 255, 255, 0)`)
-                rimGrad.addColorStop(0.6, `rgba(180, 180, 200, 0.06)`)
-                rimGrad.addColorStop(0.85, `rgba(180, 180, 200, 0.12)`)
-                rimGrad.addColorStop(1, `rgba(180, 180, 200, 0)`)
                 ctx.globalAlpha = 1.0
-                ctx.fillStyle = rimGrad
+                ctx.fillStyle = cached.rim
                 ctx.beginPath()
                 ctx.arc(voidCx, voidCy, voidRadius * 1.02, 0, Math.PI * 2)
                 ctx.fill()
@@ -484,8 +526,6 @@ export default function BlackHole(props: Props) {
                 fgCtx.fill()
             }
             fgCtx.globalAlpha = 1.0
-
-            animRef.current = requestAnimationFrame(draw)
         }
 
         animRef.current = requestAnimationFrame(draw)

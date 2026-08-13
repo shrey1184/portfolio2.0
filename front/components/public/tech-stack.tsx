@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence, useSpring, useMotionValue, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useSpring, useMotionValue, useTransform, useInView } from "framer-motion";
 import { Layers, Globe, Code, Cpu, Sparkles } from "lucide-react";
 
 const skillsData = [
@@ -79,57 +79,58 @@ const getIcon = (id: string, colorClass: string) => {
 };
 
 // ── Graph Radar Polygon ──
-function RadarPolygon({ group, mx, my, multiplier }: any) {
+function RadarPolygon({ group, mx, my, multiplier, isInView }: any) {
   const points = useTransform(() => {
     const mxVal = mx.get();
     const myVal = my.get();
-    
+
     // Sort objects by angle to ensure a correct polygon
     const sortedItems = [...group.items].sort((a: any, b: any) => a.angle - b.angle);
-    
+
     return sortedItems.map((item: any) => {
       const angRad = (item.angle * Math.PI) / 180;
       const baseX = Math.cos(angRad) * item.radius * multiplier;
       const baseY = Math.sin(angRad) * item.radius * multiplier;
-      
+
       const nx = baseX + (mxVal * item.depth * multiplier);
       const ny = baseY + (myVal * item.depth * multiplier);
-      
+
       return `${nx},${ny}`;
     }).join(" ");
   });
 
   return (
     <>
-      <motion.polygon 
-        points={points} 
-        fill="currentColor" 
-        className="opacity-10" 
+      <motion.polygon
+        points={points}
+        fill="currentColor"
+        className="opacity-10"
       />
-      <motion.polygon 
-        points={points} 
-        fill="none" 
-        stroke="currentColor" 
-        strokeWidth={1} 
-        className="opacity-20" 
+      <motion.polygon
+        points={points}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1}
+        className="opacity-20"
       />
-      <motion.polygon 
-         points={points} 
+      {/* Dashed marching-ants stroke: only animates while the section is in view */}
+      <motion.polygon
+         points={points}
          fill="none"
-         stroke="currentColor" 
-         strokeWidth={2} 
-         strokeDasharray="4 16" 
+         stroke="currentColor"
+         strokeWidth={2}
+         strokeDasharray="4 16"
          initial={{ strokeDashoffset: 0 }}
-         animate={{ strokeDashoffset: 20 }}
-         transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-         className="opacity-40" 
+         animate={isInView ? { strokeDashoffset: 20 } : { strokeDashoffset: 0 }}
+         transition={isInView ? { repeat: Infinity, duration: 2, ease: "linear" } : { duration: 0 }}
+         className="opacity-40"
       />
     </>
   );
 }
 
 // ── Graph Satellite Node ──
-function GraphNode({ item, i, mx, my, glow, multiplier }: any) {
+function GraphNode({ item, i, mx, my, glow, multiplier, isInView }: any) {
   const angRad = (item.angle * Math.PI) / 180;
   const baseX = Math.cos(angRad) * item.radius * multiplier;
   const baseY = Math.sin(angRad) * item.radius * multiplier;
@@ -146,13 +147,14 @@ function GraphNode({ item, i, mx, my, glow, multiplier }: any) {
          transition={{ delay: i * 0.05, type: "spring", bounce: 0.4, duration: 0.6 }}
          className="relative group cursor-pointer"
       >
+        {/* Vertical bob: only animates while the section is in view */}
         <motion.div
-           animate={{ y: [-3, 3, -3] }}
-           transition={{ duration: 3 + (i % 3), repeat: Infinity, ease: "easeInOut" }}
+           animate={isInView ? { y: [-3, 3, -3] } : { y: 0 }}
+           transition={isInView ? { duration: 3 + (i % 3), repeat: Infinity, ease: "easeInOut" } : { duration: 0.3 }}
            className="relative"
         >
            <div className="absolute inset-0 rounded-full blur-md opacity-0 group-hover:opacity-40 transition-opacity duration-300" style={{ backgroundColor: glow }} />
-           
+
            <div className="flex items-center gap-3 px-5 md:px-6 py-2 md:py-3 bg-white/5 border border-white/10 rounded-full backdrop-blur-xl group-hover:border-white/30 transition-colors shadow-2xl">
              <span className="w-2 h-2 rounded-full animate-pulse shadow-[0_0_8px_currentColor]" style={{ backgroundColor: glow, color: glow }} />
              <span className="font-mono text-[12px] md:text-[14px] text-black/70 group-hover:text-black tracking-wider uppercase whitespace-nowrap">
@@ -166,15 +168,20 @@ function GraphNode({ item, i, mx, my, glow, multiplier }: any) {
 }
 
 // ── Graph Central Core ──
-function CoreNode({ mx, my, group }: any) {
+function CoreNode({ mx, my, group, isInView }: any) {
   const cx = useTransform(mx, [-1, 1], [-15, 15]);
   const cy = useTransform(my, [-1, 1], [-15, 15]);
 
   return (
     <motion.div style={{ x: cx, y: cy }} className="absolute flex items-center justify-center -translate-x-1/2 -translate-y-1/2 z-20">
-      <motion.div animate={{ y: [-4, 4, -4] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="relative">
+      {/* Vertical bob: only animates while the section is in view */}
+      <motion.div
+        animate={isInView ? { y: [-4, 4, -4] } : { y: 0 }}
+        transition={isInView ? { duration: 4, repeat: Infinity, ease: "easeInOut" } : { duration: 0.3 }}
+        className="relative"
+      >
         <div className="absolute inset-0 rounded-full blur-3xl opacity-40" style={{ backgroundColor: group.accentColor }} />
-        
+
         <div className="flex flex-col items-center justify-center w-20 h-20 md:w-28 md:h-28 bg-[#0A0A0A]/90 border border-white/20 rounded-full backdrop-blur-2xl shadow-[0_0_40px_rgba(0,0,0,0.5)]">
            <div className="mb-1">{getIcon(group.id, group.textColor)}</div>
            <span className="font-mono text-[8px] md:text-[10px] text-black/40 tracking-widest uppercase">Stack</span>
@@ -185,21 +192,21 @@ function CoreNode({ mx, my, group }: any) {
 }
 
 // ── Complete Unified Network Layer ──
-function NetworkGraph({ group, mx, my, multiplier, isActive = true }: any) {
+function NetworkGraph({ group, mx, my, multiplier, isActive = true, isInView }: any) {
   return (
     <div className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-700 ${isActive ? 'z-20 opacity-100' : 'z-10 opacity-60'}`}>
       <svg width="2000" height="2000" viewBox="0 0 2000 2000" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible z-0">
         <g transform="translate(1000, 1000)" className={isActive ? group.textColor : 'text-black/40'}>
-           <RadarPolygon group={group} mx={mx} my={my} multiplier={multiplier} />
+           <RadarPolygon group={group} mx={mx} my={my} multiplier={multiplier} isInView={isInView} />
         </g>
       </svg>
-      
+
       {isActive && (
         <div className="absolute top-1/2 left-1/2 w-0 h-0 z-10 pointer-events-auto origin-center">
           {group.items.map((item: any, i: number) => (
-             <GraphNode key={`${group.id}-node-${i}`} item={item} i={i} mx={mx} my={my} glow={group.accentColor} multiplier={multiplier} />
+             <GraphNode key={`${group.id}-node-${i}`} item={item} i={i} mx={mx} my={my} glow={group.accentColor} multiplier={multiplier} isInView={isInView} />
           ))}
-          <CoreNode mx={mx} my={my} group={group} />
+          <CoreNode mx={mx} my={my} group={group} isInView={isInView} />
         </div>
       )}
     </div>
@@ -210,8 +217,14 @@ function NetworkGraph({ group, mx, my, multiplier, isActive = true }: any) {
 export const TechStack = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
   const [radiusMultiplier, setRadiusMultiplier] = useState(1);
-  
+
+  // Gate all infinite loops (radar dash, node bob, core bob) on real visibility.
+  // margin extends the trigger area slightly so animations warm up just before
+  // the section enters the viewport rather than popping in.
+  const isInView = useInView(sectionRef, { margin: "200px 0px 200px 0px" });
+
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
   const smoothMx = useSpring(mx, { stiffness: 40, damping: 15 });
@@ -243,13 +256,13 @@ export const TechStack = () => {
   };
 
   return (
-    <section id="skills" className="relative px-4 pb-4 pt-4 z-20 w-full">
-      <div 
+    <section id="skills" ref={sectionRef} className="relative px-4 pb-4 pt-4 z-20 w-full">
+      <div
         className="relative !rounded-[24px] overflow-hidden min-h-[50vh] flex flex-col justify-center border border-white/10 shadow-2xl py-24 md:py-32"
       >
-        
+
         <div className="w-full relative z-10 max-w-[1920px] mx-auto flex flex-col h-full gap-16 md:gap-24">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
             whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             viewport={{ once: true }}
@@ -273,7 +286,7 @@ export const TechStack = () => {
           </motion.div>
 
           <div className="flex flex-col-reverse lg:flex-row gap-0 xl:gap-8 relative w-full items-stretch lg:min-h-[600px] bg-transparent overflow-hidden px-0 lg:px-6">
-          
+
           {/* LEFT: Nav Stack */}
           <div className="w-full lg:w-[40%] xl:w-[35%] flex flex-row lg:flex-col overflow-x-auto lg:overflow-x-visible justify-start lg:justify-center border-0 bg-transparent backdrop-blur-none p-0 lg:p-12 xl:p-16 relative z-20 no-scrollbar">            {skillsData.map((group, index) => {
               const isActive = activeIndex === index;
@@ -297,7 +310,7 @@ export const TechStack = () => {
                     animate={{ width: isActive ? "100%" : 0, opacity: isActive ? 1 : 0 }}
                     className={`absolute bottom-0 left-0 h-[2px] lg:relative lg:bottom-auto lg:left-auto lg:w-0 lg:h-[2px] ${group.textColor.replace('text-', 'bg-')}`}
                   />
-                  
+
                   {/* Desktop active indicator line */}
                   <motion.div
                     animate={{ width: isActive ? 40 : 0, opacity: isActive ? 1 : 0 }}
@@ -309,7 +322,7 @@ export const TechStack = () => {
           </div>
 
           {/* RIGHT: Physics Graph Workspace */}
-          <div 
+          <div
             ref={containerRef}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
@@ -332,7 +345,7 @@ export const TechStack = () => {
               <div className="absolute w-[150px] md:w-[250px] h-[150px] md:h-[250px] rounded-full border border-black/[0.03]" />
               <div className="absolute w-[300px] md:w-[450px] h-[300px] md:h-[450px] rounded-full border border-black/[0.05] border-dashed" />
               <div className="absolute w-[450px] md:w-[650px] h-[450px] md:h-[650px] rounded-full border border-black/[0.03]" />
-              
+
               <div className="absolute top-0 bottom-0 left-1/2 w-px bg-black/[0.03]" />
               <div className="absolute left-0 right-0 top-1/2 h-px bg-black/[0.03]" />
             </div>
@@ -346,13 +359,14 @@ export const TechStack = () => {
             {/* Live Interactive Node Network */}
             <div className="absolute inset-0 z-10 pointer-events-none">
               {skillsData.map((group, index) => (
-                <NetworkGraph 
+                <NetworkGraph
                   key={`network-${group.id}`}
                   group={group}
-                  mx={smoothMx} 
-                  my={smoothMy} 
+                  mx={smoothMx}
+                  my={smoothMy}
                   multiplier={radiusMultiplier}
                   isActive={index === activeIndex}
+                  isInView={isInView}
                 />
               ))}
             </div>

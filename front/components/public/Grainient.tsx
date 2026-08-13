@@ -152,6 +152,7 @@ const Grainient: React.FC<GrainientProps> = ({
   className = ''
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const visibleRef = useRef(true);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -220,18 +221,31 @@ const Grainient: React.FC<GrainientProps> = ({
     ro.observe(container);
     setSize();
 
+    // Pause the WebGL render loop entirely while this background is
+    // scrolled out of view — a per-pixel fragment shader running at 60fps
+    // behind content nobody can see is pure GPU waste.
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visibleRef.current = entry.isIntersecting;
+      },
+      { rootMargin: '200px', threshold: 0 }
+    );
+    io.observe(container);
+
     let raf = 0;
     const t0 = performance.now();
     const loop = (t: number) => {
+      raf = requestAnimationFrame(loop);
+      if (!visibleRef.current) return;
       (program.uniforms.iTime as { value: number }).value = (t - t0) * 0.001;
       renderer.render({ scene: mesh });
-      raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
 
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
+      io.disconnect();
       try {
         container.removeChild(canvas);
       } catch {

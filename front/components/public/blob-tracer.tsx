@@ -15,6 +15,7 @@ interface BlobTracerProps {
 export const BlobTracer = ({ count, thickness, size, color, filledColor, speed }: BlobTracerProps) => {
   const [blobs, setBlobs] = useState<any[]>([]);
   const prevFrameRef = useRef<Uint8ClampedArray | null>(null);
+  const rootRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     // Attempt to find the hero video element
@@ -32,8 +33,25 @@ export const BlobTracer = ({ count, thickness, size, color, filledColor, speed }
 
     let rafId: number;
     let lastProcessingTime = 0;
+    let visible = true;
+
+    // Skip the (relatively expensive) video-frame readback + diffing
+    // entirely once the hero has scrolled out of view — this used to
+    // run unconditionally for the entire session.
+    const io = typeof IntersectionObserver !== "undefined" && rootRef.current
+      ? new IntersectionObserver(
+          ([entry]) => {
+            visible = entry.isIntersecting;
+          },
+          { rootMargin: "200px", threshold: 0 }
+        )
+      : null;
+    if (io && rootRef.current) io.observe(rootRef.current);
 
     const process = (time: number) => {
+      rafId = requestAnimationFrame(process);
+      if (!visible) return;
+
       // Regulate processing speed based on the speed prop (1-10)
       const delay = Math.max(20, 400 / (speed || 5));
       if (time - lastProcessingTime > delay) {
@@ -115,15 +133,17 @@ export const BlobTracer = ({ count, thickness, size, color, filledColor, speed }
           }
         }
       }
-      rafId = requestAnimationFrame(process);
     };
 
     rafId = requestAnimationFrame(process);
-    return () => cancelAnimationFrame(rafId);
+    return () => {
+      cancelAnimationFrame(rafId);
+      io?.disconnect();
+    };
   }, [count, speed]);
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none z-10 select-none">
+    <div ref={rootRef} className="absolute inset-0 overflow-hidden pointer-events-none z-10 select-none">
       <AnimatePresence>
         {blobs.filter(b => b.visible).map((blob) => (
           <motion.div
