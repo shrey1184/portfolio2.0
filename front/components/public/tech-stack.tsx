@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useSpring, useMotionValue, useTransform, useInView } from "framer-motion";
 import { Layers, Globe, Code, Cpu, Sparkles } from "lucide-react";
+import DitherReveal from "@/components/originkit/ui/dither-reveal-custom-style";
 
 const skillsData = [
   {
@@ -38,7 +39,7 @@ const skillsData = [
   },
   {
     id: "03",
-    category: "Backend Core",
+    category: "Backend",
     textColor: "text-emerald-400",
     glowColor: "rgba(52, 211, 153, 0.15)",
     accentColor: "#34d399",
@@ -104,7 +105,7 @@ function RadarPolygon({ group, mx, my, multiplier, isInView }: any) {
       <motion.polygon
         points={points}
         fill="currentColor"
-        className="opacity-10"
+        className="opacity-70"
       />
       <motion.polygon
         points={points}
@@ -256,12 +257,40 @@ export const TechStack = () => {
   };
 
   return (
-    <section id="skills" ref={sectionRef} className="relative px-4 pb-4 pt-4 z-20 w-full">
+    // Removed px-4 pb-4 pt-4 from <section> so there's no gap between the
+    // page edge and this section on left, right, top, or bottom.
+    <section id="skills" ref={sectionRef} className="relative z-20 w-full">
       <div
-        className="relative !rounded-[24px] overflow-hidden min-h-[50vh] flex flex-col justify-center border border-white/10 shadow-2xl py-24 md:py-32"
+        // Removed py-24 md:py-32 from this outer rounded box so it has
+        // zero internal padding on all sides too (top/bottom/left/right).
+        className="relative !rounded-[24px] overflow-hidden min-h-[50vh] flex flex-col justify-center border border-white/10 shadow-2xl"
       >
 
-        <div className="w-full relative z-10 max-w-[1920px] mx-auto flex flex-col h-full gap-16 md:gap-24">
+        {/* ============================================================
+            NEW COMPONENT: DitherReveal (originkit/ui/dither-reveal-custom-style)
+            Placed as the first child inside this div, absolutely positioned
+            to fill the whole rounded box edge-to-edge (z-0, behind the
+            z-10 content wrapper below). Since this outer div has NO
+            padding on any side, the component covers the full section.
+        ============================================================ */}
+        <div className="absolute inset-0 z-0">
+          {/* NOTE: the preset's baked-in default image is a dead blob: URL
+              from the Originkit editor session it was exported from
+              (blob:https://www.originkit.dev/...), which the browser
+              correctly refuses to load — that's why you saw a black
+              canvas. Passing `image` here overrides that broken default.
+              Swap the src below for your own image (local /public path
+              or a real hosted URL). */}
+          <DitherReveal
+            image={{ src: "/pdfma6-pdfamouspainting095001c-image.jpg" }}
+            style={{ width: "100%", height: "100%" }}
+          />
+        </div>
+
+        <div className="w-full relative z-10 max-w-[1920px] mx-auto flex flex-col h-full gap-16 md:gap-24 py-24 md:py-32">
+          {/* py-24 md:py-32 moved here so the existing heading/nav/graph
+              content keeps its original spacing, without that padding
+              leaking onto anything you add directly above in the parent div */}
           <motion.div
             initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
             whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -275,13 +304,13 @@ export const TechStack = () => {
                  -
               </span>
               <span className="font-[family-name:var(--font-body)] text-xs md:text-sm tracking-[0.1em] text-black/90 font-medium">
-                What we do
+                What I do
               </span>
             </div>
 
             <h2 className="font-[family-name:var(--font-display)] text-[clamp(4rem,12vw,10rem)] font-bold tracking-tighter leading-none text-black mt-12 lg:mt-0 text-center flex items-start">
-              Services.
-              <span className="text-black/40 text-2xl md:text-4xl font-normal ml-2 md:ml-4 tracking-normal mt-4 md:mt-8">(4)</span>
+              TechStack
+              <span className="text-black/40 text-2xl md:text-4xl font-normal ml-2 md:ml-4 tracking-normal mt-4 md:mt-8"></span>
             </h2>
           </motion.div>
 
