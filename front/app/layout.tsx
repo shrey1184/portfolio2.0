@@ -7,8 +7,9 @@ import "./globals.css";
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { FloatingDockNav } from "@/components/public/floating-dock-nav";
+import Preloader from "@/components/originkit/ui/preloader";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
 export const metadata: Metadata = {
   title: {
@@ -46,6 +47,11 @@ export default async function RootLayout({
   return (
     <html lang="en" className={cn("scroll-smooth", "font-sans", geist.variable)}>
       <body style={style} suppressHydrationWarning>
+        <Preloader
+          bgColor={theme.primary_color}
+          textColor={theme.secondary_color}
+          fontFamily={theme.font_family}
+        />
         {children}
         <FloatingDockNav />
       </body>
