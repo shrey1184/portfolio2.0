@@ -50,7 +50,7 @@ export function FloatingDockNav() {
   ];
 
   return (
-    <div className="fixed bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 z-50">
+    <div className="fixed bottom-4 right-4 z-50 md:bottom-8 md:right-auto md:left-1/2 md:-translate-x-1/2">
       <FloatingDock items={links} />
     </div>
   );

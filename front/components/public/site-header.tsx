@@ -38,14 +38,14 @@ export const SiteHeader = ({ compact = false }: SiteHeaderProps) => {
 
   return (
     <header className={`z-50 ${compact ? 'bg-transparent relative' : 'sticky top-0 bg-[var(--surface)]'} transition-industrial`}>
-      <div className="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 min-h-16 sm:h-16 py-3 sm:py-0 flex flex-wrap sm:flex-nowrap items-center justify-between gap-x-4 gap-y-3 overflow-hidden">
         <Link
           href="/"
-          className="font-[family-name:var(--font-display)] font-bold text-sm tracking-[0.05em] uppercase text-[var(--primary)]"
+          className="shrink-0 font-[family-name:var(--font-display)] font-bold text-xs sm:text-sm tracking-[0.05em] uppercase text-[var(--primary)]"
         >
           SHREY.DEV
         </Link>
-        <nav className="flex items-center gap-8">
+        <nav className="no-scrollbar flex min-w-0 basis-full sm:basis-auto sm:flex-1 items-center justify-start sm:justify-end gap-4 overflow-x-auto sm:gap-6 lg:gap-8">
           {NAV_LINKS.map((link) => {
             const active = pathname === "/" && link.id === "hero"; // adjust active logic if you add scroll-spy later
             return (
@@ -53,7 +53,7 @@ export const SiteHeader = ({ compact = false }: SiteHeaderProps) => {
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleNavClick(e, link.id)}
-                className={`font-[family-name:var(--font-body)] text-[11px] font-semibold tracking-widest uppercase transition-industrial hover:opacity-100 ${active ? "text-[var(--primary)] opacity-100 border-b-[3px] border-[var(--primary)] pb-1" : "text-[var(--outline)] opacity-80"
+                className={`shrink-0 font-[family-name:var(--font-body)] text-[10px] sm:text-[11px] font-semibold tracking-widest uppercase transition-industrial hover:opacity-100 ${active ? "text-[var(--primary)] opacity-100 border-b-[3px] border-[var(--primary)] pb-1" : "text-[var(--outline)] opacity-80"
                   }`}
               >
                 {link.label}

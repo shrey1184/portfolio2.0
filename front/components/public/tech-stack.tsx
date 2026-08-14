@@ -1,11 +1,27 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence, useSpring, useMotionValue, useTransform, useInView } from "framer-motion";
+import { motion, useSpring, useMotionValue, useTransform, useInView, type MotionValue } from "framer-motion";
 import { Layers, Globe, Code, Cpu, Sparkles } from "lucide-react";
 import DitherReveal from "@/components/originkit/ui/dither-reveal-custom-style";
 
-const skillsData = [
+interface SkillItem {
+  name: string;
+  angle: number;
+  radius: number;
+  depth: number;
+}
+
+interface SkillGroup {
+  id: string;
+  category: string;
+  textColor: string;
+  glowColor: string;
+  accentColor: string;
+  items: SkillItem[];
+}
+
+const skillsData: SkillGroup[] = [
   {
     id: "01",
     category: "Artificial Intelligence",
@@ -80,15 +96,15 @@ const getIcon = (id: string, colorClass: string) => {
 };
 
 // ── Graph Radar Polygon ──
-function RadarPolygon({ group, mx, my, multiplier, isInView }: any) {
+function RadarPolygon({ group, mx, my, multiplier, isInView }: { group: SkillGroup; mx: MotionValue<number>; my: MotionValue<number>; multiplier: number; isInView: boolean }) {
   const points = useTransform(() => {
     const mxVal = mx.get();
     const myVal = my.get();
 
     // Sort objects by angle to ensure a correct polygon
-    const sortedItems = [...group.items].sort((a: any, b: any) => a.angle - b.angle);
+    const sortedItems = [...group.items].sort((a, b) => a.angle - b.angle);
 
-    return sortedItems.map((item: any) => {
+    return sortedItems.map((item) => {
       const angRad = (item.angle * Math.PI) / 180;
       const baseX = Math.cos(angRad) * item.radius * multiplier;
       const baseY = Math.sin(angRad) * item.radius * multiplier;
@@ -131,7 +147,7 @@ function RadarPolygon({ group, mx, my, multiplier, isInView }: any) {
 }
 
 // ── Graph Satellite Node ──
-function GraphNode({ item, i, mx, my, glow, multiplier, isInView }: any) {
+function GraphNode({ item, i, mx, my, glow, multiplier, isInView }: { item: SkillItem; i: number; mx: MotionValue<number>; my: MotionValue<number>; glow: string; multiplier: number; isInView: boolean }) {
   const angRad = (item.angle * Math.PI) / 180;
   const baseX = Math.cos(angRad) * item.radius * multiplier;
   const baseY = Math.sin(angRad) * item.radius * multiplier;
@@ -156,9 +172,9 @@ function GraphNode({ item, i, mx, my, glow, multiplier, isInView }: any) {
         >
            <div className="absolute inset-0 rounded-full blur-md opacity-0 group-hover:opacity-40 transition-opacity duration-300" style={{ backgroundColor: glow }} />
 
-           <div className="flex items-center gap-3 px-5 md:px-6 py-2 md:py-3 bg-white/5 border border-white/10 rounded-full backdrop-blur-xl group-hover:border-white/30 transition-colors shadow-2xl">
+           <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-5 md:px-6 py-2 md:py-3 bg-white/5 border border-white/10 rounded-full backdrop-blur-xl group-hover:border-white/30 transition-colors shadow-2xl">
              <span className="w-2 h-2 rounded-full animate-pulse shadow-[0_0_8px_currentColor]" style={{ backgroundColor: glow, color: glow }} />
-             <span className="font-mono text-[12px] md:text-[14px] text-black/70 group-hover:text-black tracking-wider uppercase whitespace-nowrap">
+             <span className="font-mono text-[10px] sm:text-[12px] md:text-[14px] text-black/70 group-hover:text-black tracking-wider uppercase whitespace-nowrap">
                 {item.name}
              </span>
            </div>
@@ -169,7 +185,7 @@ function GraphNode({ item, i, mx, my, glow, multiplier, isInView }: any) {
 }
 
 // ── Graph Central Core ──
-function CoreNode({ mx, my, group, isInView }: any) {
+function CoreNode({ mx, my, group, isInView }: { mx: MotionValue<number>; my: MotionValue<number>; group: SkillGroup; isInView: boolean }) {
   const cx = useTransform(mx, [-1, 1], [-15, 15]);
   const cy = useTransform(my, [-1, 1], [-15, 15]);
 
@@ -193,7 +209,7 @@ function CoreNode({ mx, my, group, isInView }: any) {
 }
 
 // ── Complete Unified Network Layer ──
-function NetworkGraph({ group, mx, my, multiplier, isActive = true, isInView }: any) {
+function NetworkGraph({ group, mx, my, multiplier, isActive = true, isInView }: { group: SkillGroup; mx: MotionValue<number>; my: MotionValue<number>; multiplier: number; isActive?: boolean; isInView: boolean }) {
   return (
     <div className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-700 ${isActive ? 'z-20 opacity-100' : 'z-10 opacity-60'}`}>
       <svg width="2000" height="2000" viewBox="0 0 2000 2000" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible z-0">
@@ -204,7 +220,7 @@ function NetworkGraph({ group, mx, my, multiplier, isActive = true, isInView }: 
 
       {isActive && (
         <div className="absolute top-1/2 left-1/2 w-0 h-0 z-10 pointer-events-auto origin-center">
-          {group.items.map((item: any, i: number) => (
+          {group.items.map((item, i) => (
              <GraphNode key={`${group.id}-node-${i}`} item={item} i={i} mx={mx} my={my} glow={group.accentColor} multiplier={multiplier} isInView={isInView} />
           ))}
           <CoreNode mx={mx} my={my} group={group} isInView={isInView} />
@@ -233,7 +249,8 @@ export const TechStack = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 640) setRadiusMultiplier(0.45);
+      if (window.innerWidth < 480) setRadiusMultiplier(0.34);
+      else if (window.innerWidth < 640) setRadiusMultiplier(0.42);
       else if (window.innerWidth < 1024) setRadiusMultiplier(0.7);
       else setRadiusMultiplier(1);
     };
@@ -263,7 +280,7 @@ export const TechStack = () => {
       <div
         // Removed py-24 md:py-32 from this outer rounded box so it has
         // zero internal padding on all sides too (top/bottom/left/right).
-        className="relative !rounded-[24px] overflow-hidden min-h-[50vh] flex flex-col justify-center border border-white/10 shadow-2xl"
+        className="relative !rounded-[14px] sm:!rounded-[18px] lg:!rounded-[24px] overflow-hidden min-h-[50vh] flex flex-col justify-center border border-white/10 shadow-2xl"
       >
 
         {/* ============================================================
@@ -287,7 +304,7 @@ export const TechStack = () => {
           />
         </div>
 
-        <div className="w-full relative z-10 max-w-[1920px] mx-auto flex flex-col h-full gap-16 md:gap-24 py-24 md:py-32">
+        <div className="w-full relative z-10 max-w-[1920px] mx-auto flex flex-col h-full gap-10 sm:gap-16 md:gap-24 py-16 sm:py-24 md:py-32">
           {/* py-24 md:py-32 moved here so the existing heading/nav/graph
               content keeps its original spacing, without that padding
               leaking onto anything you add directly above in the parent div */}
@@ -296,19 +313,19 @@ export const TechStack = () => {
             whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             viewport={{ once: true }}
             transition={{ delay: 0.1, duration: 0.8 }}
-            className="px-6 md:px-12 w-full flex flex-col items-center relative"
+            className="px-4 sm:px-6 md:px-12 w-full flex flex-col items-center relative"
           >
             {/* "What we do" badge aligned left on large screens, or just positioned absolutely */}
-            <div className="absolute left-6 md:left-12 lg:left-16 top-0 md:top-4 flex items-center gap-3">
+            <div className="relative mb-4 flex self-start items-center gap-2 sm:gap-3 md:absolute md:left-12 md:top-4 md:mb-0 lg:left-16">
               <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white text-black text-xs font-bold shadow-[0_0_10px_rgba(255,255,255,0.3)]">
                  -
               </span>
-              <span className="font-[family-name:var(--font-body)] text-xs md:text-sm tracking-[0.1em] text-black/90 font-medium">
+              <span className="font-[family-name:var(--font-body)] text-[11px] md:text-sm tracking-[0.1em] text-black/90 font-medium">
                 What I do
               </span>
             </div>
 
-            <h2 className="font-[family-name:var(--font-display)] text-[clamp(4rem,12vw,10rem)] font-bold tracking-tighter leading-none text-black mt-12 lg:mt-0 text-center flex items-start">
+            <h2 className="font-[family-name:var(--font-display)] text-[clamp(2.5rem,13vw,3.6rem)] md:text-[clamp(4rem,12vw,10rem)] font-bold tracking-tighter leading-none text-black mt-0 md:mt-12 lg:mt-0 text-center flex items-start max-w-full">
               TechStack
               <span className="text-black/40 text-2xl md:text-4xl font-normal ml-2 md:ml-4 tracking-normal mt-4 md:mt-8"></span>
             </h2>
@@ -324,13 +341,13 @@ export const TechStack = () => {
                   key={group.id}
                   onClick={() => setActiveIndex(index)}
                   onMouseEnter={() => setActiveIndex(index)}
-                  className="group relative flex items-center justify-center lg:justify-between py-4 px-6 lg:py-8 border-r lg:border-r-0 lg:border-b border-white/[0.02] last:border-0 cursor-pointer shrink-0"
+                  className="group relative flex items-center justify-center lg:justify-between py-4 px-4 sm:px-6 lg:py-8 border-r lg:border-r-0 lg:border-b border-white/[0.02] last:border-0 cursor-pointer shrink-0"
                 >
                   <div className="flex flex-col lg:flex-row items-center lg:items-center gap-2 lg:gap-8 z-10 w-full text-center lg:text-left">
                     <span className={`font-mono text-[10px] md:text-xs lg:text-sm transition-all duration-500 ease-out ${isActive ? group.textColor : 'text-black/20 group-hover:text-black/40'}`}>
                       {group.id}
                     </span>
-                    <h3 className={`font-[family-name:var(--font-display)] text-sm md:text-base lg:text-5xl font-black uppercase tracking-tighter transition-all duration-700 ease-[0.16,1,0.3,1] w-full ${isActive ? 'text-black lg:translate-x-6' : 'text-black/20 group-hover:text-black/40'}`}>
+                    <h3 className={`font-[family-name:var(--font-display)] text-xs sm:text-sm md:text-base lg:text-5xl font-black uppercase tracking-tighter transition-all duration-700 ease-[0.16,1,0.3,1] w-full ${isActive ? 'text-black lg:translate-x-6' : 'text-black/20 group-hover:text-black/40'}`}>
                       {group.category}
                     </h3>
                   </div>
@@ -355,7 +372,7 @@ export const TechStack = () => {
             ref={containerRef}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
-            className="w-full lg:w-[60%] xl:w-[65%] relative flex-1 min-h-[400px] sm:min-h-[550px] overflow-hidden bg-transparent"
+            className="w-full lg:w-[60%] xl:w-[65%] relative flex-1 min-h-[360px] sm:min-h-[550px] overflow-hidden bg-transparent"
           >
             {/* Soft Interactive Spotlight */}
             <motion.div

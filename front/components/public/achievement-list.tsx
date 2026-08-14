@@ -158,6 +158,7 @@ export const AchievementList = ({
           line-height: 1.08;
           letter-spacing: -0.02em;
           margin-bottom: 16px;
+          overflow-wrap: normal;
         }
 
         .ach-heading-accent {
@@ -191,6 +192,7 @@ export const AchievementList = ({
           color: var(--outline);
           text-transform: uppercase;
           margin-bottom: 10px;
+          overflow-wrap: anywhere;
         }
 
         .ach-block-desc {
@@ -246,19 +248,52 @@ export const AchievementList = ({
         @media (max-width: 900px) {
           .ach-grid {
             grid-template-columns: 1fr;
+            gap: 24px;
             padding: 64px 24px 96px;
           }
 
           .ach-right {
             order: -1;
-            margin-bottom: 40px;
+            margin-bottom: 16px;
           }
 
           .ach-cube-box {
             position: static;
             transform: none !important;
-            width: 260px !important;
-            height: 260px !important;
+            width: min(56vw, 360px) !important;
+            height: min(56vw, 360px) !important;
+          }
+        }
+
+        @media (max-width: 600px) {
+          .ach-grid {
+            padding: 48px 18px 72px;
+          }
+
+          .ach-heading {
+            font-size: clamp(22px, 6.8vw, 26px);
+          }
+
+          .ach-subtext {
+            margin-bottom: 40px;
+          }
+
+          .ach-block {
+            padding: 28px 0;
+          }
+
+          .ach-block-desc {
+            font-size: 13px;
+          }
+
+          .ach-block-meta {
+            align-items: flex-start;
+            flex-wrap: wrap;
+          }
+
+          .ach-cube-box {
+            width: min(72vw, 280px) !important;
+            height: min(72vw, 280px) !important;
           }
         }
       `}</style>

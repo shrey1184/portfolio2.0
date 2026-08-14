@@ -1,17 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import type { Project } from "@/types/domain";
+import type { Project, ThemeConfig } from "@/types/domain";
 import React from "react";
 import AsciiBackground from "../originkit/ui/AsciiBackground";
 import AsciiImage from "../originkit/ui/AsciiImage";
 
 interface ProjectGridProps {
   projects: Project[];
-  theme?: any;
+  theme?: ThemeConfig;
 }
 
-export const ProjectGrid = ({ projects, theme }: ProjectGridProps) => {
+export const ProjectGrid = ({ projects }: ProjectGridProps) => {
   if (projects.length === 0) {
     return (
       <section id="projects" className="chrome-border-top py-16 w-full text-center bg-black">
@@ -23,26 +23,26 @@ export const ProjectGrid = ({ projects, theme }: ProjectGridProps) => {
   }
 
   return (
-    <section id="projects" className="chrome-border-top py-24 relative w-full bg-black overflow-hidden">
+    <section id="projects" className="chrome-border-top py-16 sm:py-20 lg:py-24 relative w-full bg-black overflow-hidden">
       <div className="absolute inset-0 z-0 pointer-events-none w-full h-full">
         <AsciiBackground cellWidth={6} cellHeight={10} fontSize={10} maxOpacity={0.5} />
       </div>
 
-      <div className="text-center mb-16 relative z-10">
+      <div className="text-center mb-10 sm:mb-14 lg:mb-16 relative z-10 px-4">
         <p className="font-[family-name:var(--font-body)] text-xs font-semibold text-[var(--outline)] tracking-widest uppercase chrome-text-protect inline-block">
           03 / REPOSITORY
         </p>
       </div>
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8">
         {projects.map((project) => (
           <div
             key={project.id}
-            className="relative w-full h-[400px] md:h-[450px] bg-white/5 backdrop-blur-md group overflow-hidden rounded-[40px] shadow-[0_-10px_35px_rgba(0,0,0,0.5)] border border-white/10"
+            className="relative w-full h-[360px] sm:h-[400px] md:h-[450px] bg-white/5 backdrop-blur-md group overflow-hidden rounded-[40px] shadow-[0_-10px_35px_rgba(0,0,0,0.5)] border border-white/10"
           >
             <div className="relative h-full w-full">
               {project.image_url ? (
-                <div className="absolute inset-4 md:inset-8 overflow-hidden rounded-3xl bg-black">
+                <div className="absolute inset-3 sm:inset-4 md:inset-8 overflow-hidden rounded-3xl bg-black">
                   <Image
                     src={project.image_url}
                     alt={project.title}
@@ -65,12 +65,12 @@ export const ProjectGrid = ({ projects, theme }: ProjectGridProps) => {
 
               <div className="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-colors duration-300 pointer-events-none z-10" />
 
-              <div className="absolute inset-0 flex flex-col justify-end p-6 pointer-events-none z-10">
+              <div className="absolute inset-0 flex flex-col justify-end p-3 sm:p-5 md:p-6 pointer-events-none z-10">
                 <div
-                  className="bg-black/10 backdrop-blur-md border border-white/5 p-5 md:p-6 rounded-xl flex flex-col justify-end text-neutral-100 pointer-events-auto"
+                  className="bg-black/10 backdrop-blur-md border border-white/5 p-4 sm:p-5 md:p-6 rounded-xl flex flex-col justify-end text-neutral-100 pointer-events-auto"
                   style={{ WebkitBackdropFilter: 'blur(12px)' }}
                 >
-                  <h3 className="text-2xl md:text-3xl font-bold uppercase tracking-widest mb-2 font-[family-name:var(--font-display)]">
+                  <h3 className="text-xl sm:text-2xl md:text-3xl font-bold uppercase tracking-widest mb-2 font-[family-name:var(--font-display)] leading-tight break-words">
                     {project.title}
                   </h3>
 
@@ -87,7 +87,7 @@ export const ProjectGrid = ({ projects, theme }: ProjectGridProps) => {
                     </div>
                   )}
 
-                  <p className="text-sm md:text-base text-neutral-300 line-clamp-2 md:line-clamp-3 font-[family-name:var(--font-body)]">
+                  <p className="text-xs sm:text-sm md:text-base text-neutral-300 line-clamp-3 font-[family-name:var(--font-body)]">
                     {project.description}
                   </p>
                 </div>

@@ -7,12 +7,11 @@ import { AchievementList } from "@/components/public/achievement-list";
 import { ExperienceList } from "@/components/public/experience-list";
 import { ProjectGrid } from "@/components/public/project-grid";
 import { SiteHeader } from "@/components/public/site-header";
-import type { Achievement, ExperienceItem, HomeSectionId, Project } from "@/types/domain";
+import type { Achievement, ExperienceItem, HomeSectionId, Project, ThemeConfig } from "@/types/domain";
 import { BlobTracer } from "@/components/public/blob-tracer";
 import { TechStack } from "@/components/public/tech-stack";
 import Grainient from "@/components/public/Grainient";
 import { BackgroundBeams } from "@/components/ui/background-beams";
-import LiquidMusicPlayer from "@/components/public/liquidplayer";
 import Blackhole from "@/components/originkit/ui/blackhole";
 
 interface HomeContentProps {
@@ -20,12 +19,21 @@ interface HomeContentProps {
   achievements: Achievement[];
   experience: ExperienceItem[];
   sectionOrder: HomeSectionId[];
-  theme: any;
+  theme: ThemeConfig;
+}
+
+interface BlobConfig {
+  count: number;
+  thickness: number;
+  size: number;
+  color: string;
+  filledColor: string;
+  speed: number;
 }
 
 const IndustrialSection = ({ id, number, title, children, center = false, fullWidth = false }: { id: string; number: string; title: string; children: ReactNode; center?: boolean; fullWidth?: boolean }) => (
-  <section id={id} className={`chrome-border-top ${center ? 'py-16' : 'py-24'}`}>
-    <div className={`grid grid-cols-1 ${center ? 'flex flex-col items-center gap-6' : 'lg:grid-cols-12 gap-12'} ${fullWidth ? 'w-full px-6' : 'max-w-[1400px] mx-auto px-6'}`}>
+  <section id={id} className={`chrome-border-top ${center ? 'py-12 sm:py-16' : 'py-16 sm:py-20 lg:py-24'}`}>
+    <div className={`grid grid-cols-1 ${center ? 'flex flex-col items-center gap-6' : 'gap-8 lg:grid-cols-12 lg:gap-12'} ${fullWidth ? 'w-full px-4 sm:px-6' : 'max-w-[1400px] mx-auto px-4 sm:px-6'}`}>
       <div className={center ? 'text-center' : 'lg:col-span-3'}>
         <p className="font-[family-name:var(--font-body)] text-xs font-semibold text-[var(--outline)] tracking-widest uppercase chrome-text-protect inline-block">
           {number} / {title}
@@ -45,20 +53,15 @@ const IndustrialSection = ({ id, number, title, children, center = false, fullWi
 // The file must sit at front/public/SHREY_logo.svg (served at
 // /SHREY_logo.svg since Next.js serves /public from the site root).
 const LOGO_COLOR = "var(--secondary)"; // any CSS color works here
-const LOGO_WIDTH = "60vw"; // overall size, e.g. "400px" or "20rem"
-// Position relative to dead-center. Negative X = left, positive = right.
-// Negative Y = up, positive = down.
-const LOGO_OFFSET_X = "-360px";
-const LOGO_OFFSET_Y = "-39vh";
 
 const HeroLogo = ({ layer }: { layer: "solid" | "glow" }) => (
   <div
-    className="absolute inset-0 flex items-center justify-center pointer-events-none w-full overflow-hidden"
-    style={{ transform: `translate(${LOGO_OFFSET_X}, ${LOGO_OFFSET_Y})` }}
+    className="absolute inset-0 flex items-center justify-center pointer-events-none w-full overflow-hidden [--hero-logo-width:94vw] [--hero-logo-x:0] [--hero-logo-y:-27vh] sm:[--hero-logo-width:88vw] sm:[--hero-logo-x:0] sm:[--hero-logo-y:-34vh] lg:[--hero-logo-width:60vw] lg:[--hero-logo-x:-360px] lg:[--hero-logo-y:-39vh]"
+    style={{ transform: "translate(var(--hero-logo-x), var(--hero-logo-y))" }}
   >
     <div
       style={{
-        width: LOGO_WIDTH,
+        width: "var(--hero-logo-width)",
         aspectRatio: "1778 / 885",
         backgroundColor: LOGO_COLOR,
         WebkitMaskImage: "url('/SHREY_logo.svg')",
@@ -76,17 +79,21 @@ const HeroLogo = ({ layer }: { layer: "solid" | "glow" }) => (
   </div>
 );
 
-const HeroSection = ({ videoUrl, imageUrl, opacity, grayscale, blobs }: { videoUrl: string | null, imageUrl: string | null, opacity: number, grayscale: boolean, blobs: any }) => {
+const HeroSection = ({ videoUrl, imageUrl, blobs }: { videoUrl: string | null, imageUrl: string | null, opacity: number, grayscale: boolean, blobs: BlobConfig }) => {
   const [topPadding, setTopPadding] = useState(0);
 
   useEffect(() => {
-    const saved = localStorage.getItem('heroTopPadding');
-    if (saved) setTopPadding(parseInt(saved, 10));
+    const frame = requestAnimationFrame(() => {
+      const saved = localStorage.getItem('heroTopPadding');
+      if (saved) setTopPadding(parseInt(saved, 10));
+    });
+
+    return () => cancelAnimationFrame(frame);
   }, []);
 
   return (
-  <section className="relative z-10 px-4 pb-4 pt-4">
-    <div className="flex flex-col justify-center relative overflow-hidden !rounded-[24px]" style={{ minHeight: `calc(100svh - 96px - ${topPadding}px)`, marginTop: `${topPadding}px`, backgroundColor: 'var(--surface)', border: '0px solid var(--outline)' }}>
+  <section className="relative z-10 px-2 pb-2 pt-2 sm:px-4 sm:pb-4 sm:pt-4">
+    <div className="flex flex-col justify-center relative overflow-hidden !rounded-[14px] sm:!rounded-[18px] lg:!rounded-[24px]" style={{ minHeight: `max(560px, calc(100svh - 96px - ${topPadding}px))`, marginTop: `${topPadding}px`, backgroundColor: 'var(--surface)', border: '0px solid var(--outline)' }}>
       {/* Background video and blobs */}
       <div className={`absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none ${videoUrl ? 'bg-black' : 'bg-secondary'}`}>
       {/* {videoUrl && (
@@ -121,8 +128,8 @@ const HeroSection = ({ videoUrl, imageUrl, opacity, grayscale, blobs }: { videoU
     {/* Frame Graphic Elements */}
     <div className="absolute inset-6 sm:inset-10 z-10 pointer-events-none border-[0.5px] border-[var(--outline)] opacity-30" />
 
-    Top Center Stars
-    <div className="absolute top-16 left-1/2 -translate-x-1/2 flex items-center gap-6 text-[var(--secondary)] z-20 opacity-80 text-lg">
+    {/* Top Center Stars */}
+    <div className="absolute top-8 sm:top-12 lg:top-16 left-1/2 -translate-x-1/2 flex items-center gap-4 sm:gap-6 text-[var(--secondary)] z-20 opacity-80 text-sm sm:text-lg">
       <span>✦</span>
       <span>✦</span>
       <span>✦</span>
@@ -130,11 +137,11 @@ const HeroSection = ({ videoUrl, imageUrl, opacity, grayscale, blobs }: { videoU
 
     </div>
 
-    Bottom Center Text
-    <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex items-center gap-8 text-[var(--secondary)] z-20 opacity-80">
-      <span className="text-[10px] sm:text-xs uppercase tracking-[0.4em] font-[family-name:var(--font-display)]">Constructed</span>
+    {/* Bottom Center Text */}
+    <div className="absolute bottom-8 sm:bottom-12 lg:bottom-16 left-1/2 -translate-x-1/2 flex items-center gap-4 sm:gap-8 text-[var(--secondary)] z-20 opacity-80">
+      <span className="text-[9px] sm:text-xs uppercase tracking-[0.25em] sm:tracking-[0.4em] font-[family-name:var(--font-display)]">Constructed</span>
       <span className="text-sm">⊕</span>
-      <span className="text-[10px] sm:text-xs uppercase tracking-[0.4em] font-[family-name:var(--font-display)]">Systems</span>
+      <span className="text-[9px] sm:text-xs uppercase tracking-[0.25em] sm:tracking-[0.4em] font-[family-name:var(--font-display)]">Systems</span>
     </div>
 
     {/* Top Left Corner */}
@@ -143,7 +150,7 @@ const HeroSection = ({ videoUrl, imageUrl, opacity, grayscale, blobs }: { videoU
     </div> */}
 
     {/* Central Focus Area */}
-    <div className="relative w-full h-[75vh] flex flex-col items-center justify-center z-10 mt-8">
+    <div className="relative w-full h-[68svh] min-h-[430px] sm:h-[72svh] sm:min-h-[520px] lg:h-[75vh] lg:min-h-0 flex flex-col items-center justify-center z-10 mt-4 lg:mt-8">
       {/* 1. Underlying Solid Logo Layer */}
       <div className="absolute inset-0 z-[5]">
         <HeroLogo layer="solid" />
@@ -156,7 +163,7 @@ const HeroSection = ({ videoUrl, imageUrl, opacity, grayscale, blobs }: { videoU
           <img 
             src={imageUrl} 
             alt="Subject" 
-            className="h-[100vh] w-auto max-w-none scale-110 md:scale-125 origin-bottom object-contain object-bottom drop-shadow-[0_0_30px_rgba(0,0,0,0.8)] filter brightness-90 contrast-125"
+            className="h-[78svh] sm:h-[90svh] lg:h-[100vh] w-auto max-w-none scale-100 sm:scale-110 md:scale-125 origin-bottom object-contain object-bottom drop-shadow-[0_0_30px_rgba(0,0,0,0.8)] filter brightness-90 contrast-125"
           />
         )}
       </div>
@@ -167,10 +174,10 @@ const HeroSection = ({ videoUrl, imageUrl, opacity, grayscale, blobs }: { videoU
       </div>
 
       {/* Initialize Button (bottom center above the text) */}
-      <div className="absolute bottom-10 z-30 flex flex-col items-center gap-6 pb-4">
+      <div className="absolute bottom-14 sm:bottom-10 z-30 flex flex-col items-center gap-6 pb-4">
         <Link
           href="#skills"
-          className="chrome-button bg-[var(--surface)] border border-[var(--secondary)] text-[var(--secondary)] font-[family-name:var(--font-display)] font-bold text-xs tracking-[0.3em] uppercase px-12 py-3 transition-industrial hover:bg-[var(--primary)] hover:text-[var(--surface)] backdrop-blur-sm"
+          className="chrome-button bg-[var(--surface)] border border-[var(--secondary)] text-[var(--secondary)] font-[family-name:var(--font-display)] font-bold text-[10px] sm:text-xs tracking-[0.22em] sm:tracking-[0.3em] uppercase px-7 sm:px-12 py-3 transition-industrial hover:bg-[var(--primary)] hover:text-[var(--surface)] backdrop-blur-sm"
           onClick={(e) => {
             e.preventDefault();
             document.getElementById('skills')?.scrollIntoView({ behavior: 'smooth' });
@@ -267,11 +274,11 @@ export const HomeContent = ({ projects, achievements, experience, sectionOrder, 
           <div key={sectionId}>{sections[sectionId]}</div>
         ))}
         {/* Animated Contact Block */}
-        <section id="contact" className="relative bg-black text-white py-32 md:py-64 min-h-[80vh] flex flex-col items-center justify-center overflow-hidden border-t-[1px] border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.8)]">
+        <section id="contact" className="relative bg-black text-white py-24 sm:py-32 md:py-64 min-h-[70vh] md:min-h-[80vh] flex flex-col items-center justify-center overflow-hidden border-t-[1px] border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.8)]">
           
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(50,50,50,0.3)_0%,transparent_60%)] pointer-events-none z-[0]" />
           
-          <div className="w-full max-w-[1400px] mx-auto px-6 flex flex-col items-center z-10">
+          <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 flex flex-col items-center z-10">
             <motion.h2 
               variants={{
                 hidden: { opacity: 0 },
@@ -283,9 +290,9 @@ export const HomeContent = ({ projects, achievements, experience, sectionOrder, 
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
-              className="font-[family-name:var(--font-display)] text-[clamp(4rem,10vw,12rem)] font-black uppercase leading-[0.85] tracking-tighter text-center flex flex-col items-center overflow-hidden"
+              className="font-[family-name:var(--font-display)] text-[clamp(2.8rem,14vw,5rem)] md:text-[clamp(4rem,10vw,12rem)] font-black uppercase leading-[0.88] md:leading-[0.85] tracking-tighter text-center flex flex-col items-center overflow-hidden max-w-full"
             >
-              <div className="flex flex-wrap justify-center gap-4 md:gap-8 overflow-hidden pb-4">
+              <div className="flex flex-wrap justify-center gap-2 sm:gap-4 md:gap-8 overflow-hidden pb-4">
                 <motion.span 
                   variants={{
                     hidden: { opacity: 0, y: 100, filter: "blur(10px)" },
@@ -293,7 +300,7 @@ export const HomeContent = ({ projects, achievements, experience, sectionOrder, 
                   }} 
                   className="text-white"
                 >
-                  LET'S
+                  LET&apos;S
                 </motion.span>
                 <motion.span 
                   variants={{
@@ -301,7 +308,7 @@ export const HomeContent = ({ projects, achievements, experience, sectionOrder, 
                     visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { type: "spring", stiffness: 100, damping: 20 } }
                   }} 
                   className="text-transparent" 
-                  style={{ WebkitTextStroke: "2px rgba(255,255,255,0.4)" }}
+                  style={{ WebkitTextStroke: "clamp(1px, 0.18vw, 2px) rgba(255,255,255,0.4)" }}
                 >
                   BUILD
                 </motion.span>
@@ -328,7 +335,7 @@ export const HomeContent = ({ projects, achievements, experience, sectionOrder, 
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="flex flex-wrap justify-center gap-4 sm:gap-6 mt-16 sm:mt-24 pointer-events-auto"
+              className="flex flex-wrap justify-center gap-3 sm:gap-6 mt-12 sm:mt-24 pointer-events-auto"
             >
               {[
                 { name: "Gmail", href: "mailto:shreyshrivastava11@gmail.com" },
@@ -345,7 +352,7 @@ export const HomeContent = ({ projects, achievements, experience, sectionOrder, 
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-[family-name:var(--font-body)] text-xs md:text-sm font-bold tracking-[0.25em] uppercase px-8 py-4 border border-white/20 rounded-full hover:bg-white hover:text-black hover:scale-105 transition-all duration-500 backdrop-blur-md bg-white/5"
+                  className="font-[family-name:var(--font-body)] text-[10px] sm:text-xs md:text-sm font-bold tracking-[0.18em] sm:tracking-[0.25em] uppercase px-5 sm:px-8 py-3 sm:py-4 border border-white/20 rounded-full hover:bg-white hover:text-black hover:scale-105 transition-all duration-500 backdrop-blur-md bg-white/5"
                 >
                   {link.name}
                 </motion.a>
