@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 
-const DEFAULT_WORDS = ["cogito", "ergo", "sum"]
+const DEFAULT_WORDS = ["Cogito.", "Ergo.", "Sum."]
 const MORPH = 0.45
 const HOLD = 0.3
 
@@ -19,7 +19,9 @@ export default function Preloader({
     words = DEFAULT_WORDS,
     bgColor = "#000000",
     textColor = "#f5f5f0",
-    fontFamily = "Georgia, 'Times New Roman', serif",
+    // Modern/tech default. Swap for "'JetBrains Mono', monospace" if you want
+    // an even more technical, code-like feel instead of a geometric sans.
+    fontFamily = "'Space Grotesk', 'Inter', -apple-system, sans-serif",
 }: PreloaderProps) {
     const [visible, setVisible] = useState(true)
     const [fading, setFading] = useState(false)
@@ -138,9 +140,9 @@ export default function Preloader({
                         visibility: "hidden",
                         whiteSpace: "nowrap",
                         fontFamily,
-                        fontWeight: 700,
+                        fontWeight: 600,
                         fontSize: "clamp(48px, 9vw, 84px)",
-                        letterSpacing: "0.04em",
+                        letterSpacing: "-0.01em",
                     }}
                 >
                     {words.reduce((a, b) => (b.length > a.length ? b : a), "")}
@@ -158,9 +160,9 @@ export default function Preloader({
                             color: textColor,
                             whiteSpace: "nowrap",
                             fontFamily,
-                            fontWeight: 700,
+                            fontWeight: 600,
                             fontSize: "clamp(48px, 9vw, 84px)",
-                            letterSpacing: "0.04em",
+                            letterSpacing: "-0.01em",
                             willChange: "transform, filter, opacity",
                             backfaceVisibility: "hidden",
                             animation: started
