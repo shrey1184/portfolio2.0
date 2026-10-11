@@ -28,9 +28,62 @@ const fract = (x: number) => x - Math.floor(x)
 
 type RGBA = [number, number, number, number]
 
+/** Resolves `var(--foo)` against an element so CSS variables work as colors. */
+function resolveVar(el: Element, input: string | undefined): string | undefined {
+    if (!input) return input
+    const m = input.trim().match(/^var\(\s*(--[^,)\s]+)/)
+    if (!m) return input
+    const v = getComputedStyle(el).getPropertyValue(m[1]).trim()
+    return v || input
+}
+
+/**
+ * Resolves ANY css color (hex, rgb, hsl, oklch, named, var(--x), color-mix...)
+ * to normalized RGBA by letting the browser compute it, then reading the pixel.
+ * Results are cached briefly so it is cheap to call every frame.
+ */
+const colorCache = new Map<string, { t: number; c: RGBA }>()
+let scratchCtx: CanvasRenderingContext2D | null = null
+
+function cssColor(el: HTMLElement, input: string | undefined, fallback: RGBA): RGBA {
+    if (!input) return fallback
+    const now = performance.now()
+    const hit = colorCache.get(input)
+    if (hit && now - hit.t < 500) return hit.c
+
+    let out = parseColor(resolveVar(el, input), fallback)
+    try {
+        const probe = document.createElement("span")
+        probe.style.color = input
+        if (probe.style.color) {
+            el.appendChild(probe)
+            const computed = getComputedStyle(probe).color
+            el.removeChild(probe)
+            if (!scratchCtx) {
+                const c = document.createElement("canvas")
+                c.width = 1
+                c.height = 1
+                scratchCtx = c.getContext("2d", { willReadFrequently: true })
+            }
+            if (scratchCtx) {
+                scratchCtx.clearRect(0, 0, 1, 1)
+                scratchCtx.fillStyle = "#000000"
+                scratchCtx.fillStyle = computed
+                scratchCtx.fillRect(0, 0, 1, 1)
+                const d = scratchCtx.getImageData(0, 0, 1, 1).data
+                out = [d[0] / 255, d[1] / 255, d[2] / 255, d[3] / 255]
+            }
+        }
+    } catch (e) {}
+
+    colorCache.set(input, { t: now, c: out })
+    return out
+}
+
 function parseColor(input: string | undefined, fallback: RGBA): RGBA {
     if (!input) return fallback
     let s = String(input).trim()
+    if (s.toLowerCase() === "transparent") return [0, 0, 0, 0]
     if (s.slice(0, 4).toLowerCase() === "var(") {
         const comma = s.indexOf(",")
         const close = s.lastIndexOf(")")
@@ -102,6 +155,7 @@ uniform vec2 uRes;
 uniform vec2 uAtlas;
 uniform vec2 uPtr;
 uniform float uReach;
+uniform float uFade;
 uniform vec3 uText;
 uniform vec3 uShade;
 uniform vec4 uAccent;
@@ -158,7 +212,7 @@ void main() {
     float inside = step(0.0, E.x) * step(E.x, 1.0) * step(0.0, E.y) * step(E.y, 1.0);
     vec2 safeUv = clamp(E, 0.0, 1.0);
 
-    float b = clamp(1.0 - E.y * 3.5, 0.0, 1.0) * 0.008;
+    float b = clamp(1.0 - E.y * 3.5, 0.0, 1.0) * 0.008 * uFade;
     vec2 soft = blurRG(safeUv, b);
     vec2 sharp = blurRG(safeUv, b * 0.1);
 
@@ -184,7 +238,7 @@ void main() {
     vec4 card = vec4(fill * mask, mask);
     vec4 comp = vec4(uAccent.rgb * A, A) + card * (1.0 - A);
 
-    gl_FragColor = comp * pow(clamp(E.y, 0.0, 1.0), 0.7);
+    gl_FragColor = comp * mix(1.0, pow(clamp(E.y, 0.0, 1.0), 0.7), uFade);
 }`
 
 function compile(gl: WebGLRenderingContext, vs: string, fs: string) {
@@ -216,6 +270,9 @@ function fontString(f: FontSpec, px: number) {
     return `${f.style} ${f.weight} ${px}px ${f.family}`
 }
 
+/* ------------------------------------------------------------------ */
+/* TEXT atlas (original behaviour, used when no `src` is given)        */
+/* ------------------------------------------------------------------ */
 function buildAtlas(
     text: string,
     f: FontSpec,
@@ -233,8 +290,7 @@ function buildAtlas(
                 ;(ctx as unknown as { letterSpacing: string }).letterSpacing =
                     f.letterSpacing
             }
-        } catch (e) {
-        }
+        } catch (e) {}
     }
 
     const measure = (px: number) => {
@@ -288,11 +344,128 @@ function buildAtlas(
     return { canvas, cssW: w * cssPerPx, cssH: h * cssPerPx }
 }
 
+/* ------------------------------------------------------------------ */
+/* LOGO atlas: traces any SVG / PNG using its alpha channel            */
+/*   red   channel = filled logo shape                                 */
+/*   green channel = dotted outline (what appears near the cursor)     */
+/* ------------------------------------------------------------------ */
+function buildLogoAtlas(
+    img: HTMLImageElement,
+    aspect: number,
+    cssW: number,
+    dpr: number
+): Atlas | null {
+    const texW = Math.round(clamp(cssW * dpr, 64, MAX_TEX))
+    const texH = Math.max(1, Math.round(texW / aspect))
+
+    const src = document.createElement("canvas")
+    src.width = texW
+    src.height = texH
+    const sctx = src.getContext("2d", { willReadFrequently: true })
+    if (!sctx) return null
+
+    sctx.drawImage(img, 0, 0, texW, texH)
+    const data = sctx.getImageData(0, 0, texW, texH).data
+
+    // Re-tint the logo pure red (keeps its alpha / antialiasing).
+    sctx.globalCompositeOperation = "source-in"
+    sctx.fillStyle = "#ff0000"
+    sctx.fillRect(0, 0, texW, texH)
+    sctx.globalCompositeOperation = "source-over"
+
+    // 1. binary mask from alpha
+    const solid = new Uint8Array(texW * texH)
+    for (let i = 0; i < solid.length; i += 1) {
+        solid[i] = data[i * 4 + 3] > 127 ? 1 : 0
+    }
+
+    // 2. edge pixels = solid pixels touching empty space
+    const edgeX: number[] = []
+    const edgeY: number[] = []
+    for (let y = 0; y < texH; y += 1) {
+        for (let x = 0; x < texW; x += 1) {
+            const i = y * texW + x
+            if (!solid[i]) continue
+            const edge =
+                x === 0 ||
+                y === 0 ||
+                x === texW - 1 ||
+                y === texH - 1 ||
+                !solid[i - 1] ||
+                !solid[i + 1] ||
+                !solid[i - texW] ||
+                !solid[i + texW]
+            if (edge) {
+                edgeX.push(x)
+                edgeY.push(y)
+            }
+        }
+    }
+
+    // 3. thin the edge down to evenly spaced dots (one per grid cell,
+    //    snapped to the edge pixel closest to the cell's centroid)
+    const pitch = Math.max(3, texH * DOT_PITCH)
+    const cols = Math.ceil(texW / pitch) + 1
+    const rows = Math.ceil(texH / pitch) + 1
+    const sumX = new Float64Array(cols * rows)
+    const sumY = new Float64Array(cols * rows)
+    const cnt = new Uint32Array(cols * rows)
+    for (let n = 0; n < edgeX.length; n += 1) {
+        const c = Math.floor(edgeX[n] / pitch) + Math.floor(edgeY[n] / pitch) * cols
+        sumX[c] += edgeX[n]
+        sumY[c] += edgeY[n]
+        cnt[c] += 1
+    }
+    const bestD = new Float32Array(cols * rows).fill(Infinity)
+    const bestX = new Float32Array(cols * rows)
+    const bestY = new Float32Array(cols * rows)
+    for (let n = 0; n < edgeX.length; n += 1) {
+        const c = Math.floor(edgeX[n] / pitch) + Math.floor(edgeY[n] / pitch) * cols
+        const dx = edgeX[n] - sumX[c] / cnt[c]
+        const dy = edgeY[n] - sumY[c] / cnt[c]
+        const dd = dx * dx + dy * dy
+        if (dd < bestD[c]) {
+            bestD[c] = dd
+            bestX[c] = edgeX[n]
+            bestY[c] = edgeY[n]
+        }
+    }
+
+    // 4. compose the atlas
+    const out = document.createElement("canvas")
+    out.width = texW
+    out.height = texH
+    const ctx = out.getContext("2d")
+    if (!ctx) return null
+    ctx.fillStyle = "#000000"
+    ctx.fillRect(0, 0, texW, texH)
+    ctx.globalCompositeOperation = "lighter"
+    ctx.drawImage(src, 0, 0)
+
+    ctx.fillStyle = "#00ff00"
+    const r = Math.max(0.8, (texH * DOT_DIAMETER) / 2)
+    ctx.beginPath()
+    for (let c = 0; c < cnt.length; c += 1) {
+        if (!cnt[c]) continue
+        ctx.moveTo(bestX[c] + 0.5 + r, bestY[c] + 0.5)
+        ctx.arc(bestX[c] + 0.5, bestY[c] + 0.5, r, 0, Math.PI * 2)
+    }
+    ctx.fill()
+
+    return { canvas: out, cssW, cssH: cssW / aspect }
+}
+
 type HandleGroup = { size: number; spread: number; labels: boolean }
 
 const HANDLE_DEFAULTS: HandleGroup = { size: 109, spread: 27, labels: true }
 
 export interface VectorWordmarkProps {
+    /** Image to trace (SVG/PNG with transparency, e.g. "/SHREY_logo.svg"). Overrides `text`. */
+    src?: string
+    /** width / height of the image, e.g. 1778 / 885 */
+    aspect?: number
+    /** 0 = no bottom fade/blur, 1 = original wordmark look */
+    fade?: number
     text?: string
     font?: React.CSSProperties
     background?: string
@@ -308,6 +481,9 @@ export interface VectorWordmarkProps {
 
 export default function VectorWordmark(props: VectorWordmarkProps) {
     const {
+        src,
+        aspect = 2,
+        fade = 1,
         text = "VECTOR",
         font = {
             fontFamily: "Inter",
@@ -349,10 +525,14 @@ export default function VectorWordmark(props: VectorWordmarkProps) {
     )}, ${Math.round(accentRGBA[2] * 255)})`
 
     const live = useRef({
+        src,
+        aspect,
+        fade,
         text,
         fontSpec,
         textColor,
         shade,
+        accent,
         background,
         accentRGBA,
         reach,
@@ -360,10 +540,14 @@ export default function VectorWordmark(props: VectorWordmarkProps) {
         damping,
         hg,
     })
+    live.current.src = src
+    live.current.aspect = aspect
+    live.current.fade = fade
     live.current.text = text
     live.current.fontSpec = fontSpec
     live.current.textColor = textColor
     live.current.shade = shade
+    live.current.accent = accent
     live.current.background = background
     live.current.accentRGBA = accentRGBA
     live.current.reach = reach
@@ -398,6 +582,7 @@ export default function VectorWordmark(props: VectorWordmarkProps) {
             atlas: gl.getUniformLocation(prog, "uAtlas"),
             ptr: gl.getUniformLocation(prog, "uPtr"),
             reach: gl.getUniformLocation(prog, "uReach"),
+            fade: gl.getUniformLocation(prog, "uFade"),
             text: gl.getUniformLocation(prog, "uText"),
             shade: gl.getUniformLocation(prog, "uShade"),
             accent: gl.getUniformLocation(prog, "uAccent"),
@@ -449,8 +634,35 @@ export default function VectorWordmark(props: VectorWordmarkProps) {
         let atlasRatioH = 1
         let atlasKey = ""
 
+        // logo image loading
+        let logoImg: HTMLImageElement | null = null
+        let loadedSrc = ""
+
+        function loadLogo(url: string) {
+            loadedSrc = url
+            logoImg = null
+            const i = new Image()
+            i.decoding = "async"
+            i.onload = () => {
+                if (!alive || loadedSrc !== url) return
+                logoImg = i
+                atlasKey = "" // force atlas rebuild
+            }
+            i.onerror = () => {
+                console.warn("[VectorWordmark] could not load", url)
+            }
+            i.src = url
+        }
+
+        // "size unit" the atlas is built around.
+        //  - logo mode: the largest the logo can be while fitting inside the host
+        //  - text mode: the font size, scaled by host width
         function drawFontPx() {
-            return live.current.fontSpec.size * (boxW / REF_WIDTH)
+            const L = live.current
+            if (L.src) {
+                return Math.min(boxW, boxH * L.aspect)
+            }
+            return L.fontSpec.size * (boxW / REF_WIDTH)
         }
 
         function resize() {
@@ -468,24 +680,32 @@ export default function VectorWordmark(props: VectorWordmarkProps) {
 
         function rebuildAtlas() {
             const L = live.current
-            const f = L.fontSpec
             const px = Math.max(8, drawFontPx())
-            const atlas = buildAtlas(L.text || " ", f, px, dpr)
-            if (!atlas) return
+            let atlas: Atlas | null = null
+
+            if (L.src) {
+                if (!logoImg) return // still loading
+                atlas = buildLogoAtlas(logoImg, L.aspect, px, dpr)
+            } else {
+                atlas = buildAtlas(L.text || " ", L.fontSpec, px, dpr)
+            }
+            if (!atlas) {
+                console.warn("[VectorWordmark] atlas build failed", { px, dpr })
+                return
+            }
             atlasRatioW = Math.max(1e-4, atlas.cssW / px)
             atlasRatioH = Math.max(1e-4, atlas.cssH / px)
 
-            if (typeof document !== "undefined" && document.fonts) {
+            if (!L.src && typeof document !== "undefined" && document.fonts) {
                 try {
-                    const probe = fontString(f, 64)
+                    const probe = fontString(L.fontSpec, 64)
                     if (!document.fonts.check(probe)) {
                         const again = () => {
                             if (alive) atlasKey = ""
                         }
                         document.fonts.load(probe, L.text).then(again, again)
                     }
-                } catch (e) {
-                }
+                } catch (e) {}
             }
             gl!.bindTexture(gl!.TEXTURE_2D, tex)
             gl!.pixelStorei(gl!.UNPACK_FLIP_Y_WEBGL, true)
@@ -502,7 +722,16 @@ export default function VectorWordmark(props: VectorWordmarkProps) {
             const ch = atlas.canvas.height
             const pot = (cw & (cw - 1)) === 0 && (ch & (ch - 1)) === 0
 
-            if (isGL2 || pot) {
+            if (L.src) {
+                // The logo atlas is already rendered at screen resolution,
+                // so mipmaps are unnecessary. Skipping them also avoids
+                // incomplete-texture / over-blurred sampling on big sizes.
+                gl!.texParameteri(
+                    gl!.TEXTURE_2D,
+                    gl!.TEXTURE_MIN_FILTER,
+                    gl!.LINEAR
+                )
+            } else if (isGL2 || pot) {
                 gl!.generateMipmap(gl!.TEXTURE_2D)
                 gl!.texParameteri(
                     gl!.TEXTURE_2D,
@@ -548,15 +777,25 @@ export default function VectorWordmark(props: VectorWordmarkProps) {
             }
         }
 
+        // Listen on window (not on the host) so it still works when the host
+        // sits inside a `pointer-events-none` wrapper or under other layers.
         const onMove = (e: PointerEvent) => {
-            hasPointer = true
-
             const r = host!.getBoundingClientRect()
             if (r.width <= 0 || r.height <= 0) return
+            const inside =
+                e.clientX >= r.left &&
+                e.clientX <= r.right &&
+                e.clientY >= r.top &&
+                e.clientY <= r.bottom
+            if (!inside) {
+                hasPointer = false // resume the idle sweep
+                return
+            }
+            hasPointer = true
             target.x = (e.clientX - r.left) / r.width
             target.y = 1 - (e.clientY - r.top) / r.height
         }
-        host.addEventListener("pointermove", onMove)
+        window.addEventListener("pointermove", onMove, { passive: true })
 
         let raf = 0
         let last = 0
@@ -568,8 +807,13 @@ export default function VectorWordmark(props: VectorWordmarkProps) {
                 boxDirty = false
                 resize()
             }
+            if (L.src && L.src !== loadedSrc) loadLogo(L.src)
+
             const f = L.fontSpec
             const key = [
+                L.src ?? "",
+                logoImg ? 1 : 0,
+                L.aspect,
                 L.text,
                 f.family,
                 f.weight,
@@ -580,7 +824,15 @@ export default function VectorWordmark(props: VectorWordmarkProps) {
             ].join("|")
             if (key !== atlasKey) {
                 atlasKey = key
-                rebuildAtlas()
+                try {
+                    rebuildAtlas()
+                    const err = gl!.getError()
+                    if (err !== gl!.NO_ERROR) {
+                        console.warn("[VectorWordmark] GL error after atlas upload:", err)
+                    }
+                } catch (e) {
+                    console.error("[VectorWordmark] atlas rebuild threw:", e)
+                }
             }
         }
 
@@ -651,9 +903,9 @@ export default function VectorWordmark(props: VectorWordmarkProps) {
 
         function draw() {
             const L = live.current
-            const tc = parseColor(L.textColor, [0.859, 0.918, 0.992, 1])
-            const sc = parseColor(L.shade, [0.035, 0.063, 0.102, 1])
-            const ac = L.accentRGBA
+            const tc = cssColor(host!, L.textColor, [1, 1, 1, 1])
+            const sc = cssColor(host!, L.shade, [1, 1, 1, 1])
+            const ac = cssColor(host!, L.accent, L.accentRGBA)
 
             gl!.viewport(0, 0, bufW, bufH)
             gl!.useProgram(prog)
@@ -665,6 +917,7 @@ export default function VectorWordmark(props: VectorWordmarkProps) {
             gl!.uniform2f(U.atlas, atlasRatioW * px, atlasRatioH * px)
             gl!.uniform2f(U.ptr, eased.x, eased.y)
             gl!.uniform1f(U.reach, Math.max(1, L.reach) / boxW)
+            gl!.uniform1f(U.fade, clamp(L.fade, 0, 1))
             gl!.uniform3f(U.text, tc[0], tc[1], tc[2])
             gl!.uniform3f(U.shade, sc[0], sc[1], sc[2])
             gl!.uniform4f(U.accent, ac[0], ac[1], ac[2], ac[3])
@@ -672,6 +925,8 @@ export default function VectorWordmark(props: VectorWordmarkProps) {
             gl!.uniform2f(U.v1, verts[1].x, verts[1].y)
             gl!.uniform2f(U.v2, verts[2].x, verts[2].y)
             gl!.uniform1f(U.half, L.hg.size / 2 / boxH)
+            gl!.clearColor(0, 0, 0, 0)
+            gl!.clear(gl!.COLOR_BUFFER_BIT)
             gl!.drawArrays(gl!.TRIANGLE_STRIP, 0, 4)
         }
 
@@ -705,7 +960,9 @@ export default function VectorWordmark(props: VectorWordmarkProps) {
 
         if (typeof document !== "undefined" && document.fonts) {
             document.fonts.ready.then(
-                () => { if (alive) atlasKey = "" },
+                () => {
+                    if (alive) atlasKey = ""
+                },
                 () => {}
             )
         }
@@ -717,11 +974,9 @@ export default function VectorWordmark(props: VectorWordmarkProps) {
             running = false
             if (raf) cancelAnimationFrame(raf)
             ro.disconnect()
-            host.removeEventListener("pointermove", onMove)
+            window.removeEventListener("pointermove", onMove)
             document.removeEventListener("visibilitychange", gate)
-
         }
-
     }, [])
 
     return (
@@ -731,11 +986,14 @@ export default function VectorWordmark(props: VectorWordmarkProps) {
                 position: "relative",
                 overflow: "hidden",
                 background,
-
-                minWidth: 1200,
-                minHeight: 800,
+                // the old 1200x800 minimum only makes sense for the text demo
+                minWidth: src ? 0 : 1200,
+                minHeight: src ? 0 : 800,
                 width: "100%",
                 height: "100%",
+                // in logo mode the height comes from the aspect ratio, so we
+                // never depend on the parent having a definite height
+                ...(src ? { height: "auto", aspectRatio: String(aspect) } : {}),
                 ...style,
             }}
         >

@@ -13,6 +13,7 @@ import { TechStack } from "@/components/public/tech-stack";
 import Grainient from "@/components/public/Grainient";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 import Blackhole from "@/components/originkit/ui/blackhole";
+import VectorWordmark from "@/components/originkit/ui/vector-wordmark";
 
 interface HomeContentProps {
   projects: Project[];
@@ -52,33 +53,50 @@ const IndustrialSection = ({ id, number, title, children, center = false, fullWi
 // is fully controllable below — no need to edit the SVG file itself.
 // The file must sit at front/public/SHREY_logo.svg (served at
 // /SHREY_logo.svg since Next.js serves /public from the site root).
-const LOGO_COLOR = "var(--secondary)"; // any CSS color works here
+const LOGO_COLOR = "var(--secondary)";
 
 const HeroLogo = ({ layer }: { layer: "solid" | "glow" }) => (
   <div
     className="absolute inset-0 flex items-center justify-center pointer-events-none w-full overflow-hidden [--hero-logo-width:94vw] [--hero-logo-x:0] [--hero-logo-y:-27vh] sm:[--hero-logo-width:88vw] sm:[--hero-logo-x:0] sm:[--hero-logo-y:-34vh] lg:[--hero-logo-width:60vw] lg:[--hero-logo-x:-360px] lg:[--hero-logo-y:-39vh]"
     style={{ transform: "translate(var(--hero-logo-x), var(--hero-logo-y))" }}
   >
-    <div
-      style={{
-        width: "var(--hero-logo-width)",
-        aspectRatio: "1778 / 885",
-        backgroundColor: LOGO_COLOR,
-        WebkitMaskImage: "url('/SHREY_logo.svg')",
-        maskImage: "url('/SHREY_logo.svg')",
-        WebkitMaskRepeat: "no-repeat",
-        maskRepeat: "no-repeat",
-        WebkitMaskSize: "contain",
-        maskSize: "contain",
-        WebkitMaskPosition: "center",
-        maskPosition: "center",
-        opacity: layer === "glow" ? 0.55 : 1,
-        filter: layer === "glow" ? `drop-shadow(0 0 24px ${LOGO_COLOR})` : "none",
-      }}
-    />
+    {layer === "solid" ? (
+      <div style={{ width: "var(--hero-logo-width)", aspectRatio: "1778 / 885" }}>
+        <VectorWordmark
+          src="/SHREY_logo.svg"
+          aspect={1778 / 885}
+          background="transparent"
+          textColor="#F5F5F5"
+          shade="#F5F5F5"
+          accent="#F5F5F5"
+          fade={0}
+          reach={290}
+          speed={50}
+          damping={60}
+          handles={{ labels: true }}
+        />
+      </div>
+    ) : (
+      <div
+        style={{
+          width: "var(--hero-logo-width)",
+          aspectRatio: "1778 / 885",
+          backgroundColor: LOGO_COLOR,
+          WebkitMaskImage: "url('/SHREY_logo.svg')",
+          maskImage: "url('/SHREY_logo.svg')",
+          WebkitMaskRepeat: "no-repeat",
+          maskRepeat: "no-repeat",
+          WebkitMaskSize: "contain",
+          maskSize: "contain",
+          WebkitMaskPosition: "center",
+          maskPosition: "center",
+          opacity: 0.55,
+          filter: `drop-shadow(0 0 24px ${LOGO_COLOR})`,
+        }}
+      />
+    )}
   </div>
 );
-
 const HeroSection = ({ videoUrl, imageUrl, blobs }: { videoUrl: string | null, imageUrl: string | null, opacity: number, grayscale: boolean, blobs: BlobConfig }) => {
   const [topPadding, setTopPadding] = useState(0);
 
